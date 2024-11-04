@@ -20,6 +20,7 @@ import com.hope.apiapp.security.JwtTokenProvider;
 
 @RestController
 @RequestMapping("/api/auth")
+@Validated
 public class AuthController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
