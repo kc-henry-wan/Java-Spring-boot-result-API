@@ -20,6 +20,7 @@ import com.hope.apiapp.service.PasswordResetTokenService;
 
 @RestController
 @RequestMapping("/api/auth")
+@Validated
 public class PasswordUpdateController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PasswordUpdateController.class);
