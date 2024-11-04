@@ -6,11 +6,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hope.apiapp.dto.PharmacyBranchRequestDTO
 import com.hope.apiapp.model.PharmacyBranch;
 import com.hope.apiapp.repository.PharmacyBranchRepository;
 
 @Service
 public class PharmacyBranchService {
+
+	private static final Logger logger = LoggerFactory.getLogger(PharmacyBranchService.class);
 
 	@Autowired
 	private PharmacyBranchRepository pharmacyBranchRepository;
@@ -20,26 +23,61 @@ public class PharmacyBranchService {
 	}
 
 	public Optional<PharmacyBranch> findBranchById(Long id) {
-		return pharmacyBranchRepository.findById(id);
+		return pharmacyBranchRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Brance not found"));
 	}
 
-	public PharmacyBranch saveBranch(PharmacyBranch branch) {
+	public PharmacyBranch addBranch(PharmacyBranchRequestDTO branchReq) {
+		
+		// Build the full address for the API call
+		String fullAddress = branchReq.getAddress1() + " " + branchReq.getAddress2() + " "
+				+ branchReq.getPostalCode();
+		double[] coordinates = CommonUtil.getCoordinatesFromAddress(fullAddress);
+
+		PharmacyBranch branch = new Negotiation();
+
+		branch.setBranchName(branchReq.getBranchName());
+		branch.setAddress1(branchReq.getAddress1());
+		branch.setAddress2(branchReq.getAddress2());
+		branch.setPostalCode(branchReq.getPostalCode());
+		branch.setLongitude(coordinates[0]);
+		branch.setLatitude(coordinates[1);
+		// Set default values for additional fields
+		branch.setStatus("Active"); // Default status
+		branch.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+		branch.setCreatedAt(LocalDateTime.now()); // Set current time for creation
+		branch.setUpdatedAt(LocalDateTime.now()); // Set current time for update
+
 		return pharmacyBranchRepository.save(branch);
 	}
 
-	public PharmacyBranch updateBranch(Long id, PharmacyBranch branchDetails) {
-		PharmacyBranch branch = pharmacyBranchRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Branch not found"));
+	public PharmacyBranch updateBranch(Long id, PharmacyBranchRequestDTO branchDetails) {
+		PharmacyBranch branch = findBranchById(id);
+
+		if(branch != null) {
+			logger.info("Branch is NOT null");
+		// Build the full address for the API call
+		String fullAddress = branchDetails.getAddress1() + " " + branchDetails.getAddress2() + " "
+				+ branchDetails.getPostalCode();
+		double[] coordinates = CommonUtil.getCoordinatesFromAddress(fullAddress);
 
 		branch.setBranchName(branchDetails.getBranchName());
 		branch.setAddress1(branchDetails.getAddress1());
 		branch.setAddress2(branchDetails.getAddress2());
 		branch.setPostalCode(branchDetails.getPostalCode());
-		branch.setLongitude(branchDetails.getLongitude());
-		branch.setLatitude(branchDetails.getLatitude());
+		branch.setLongitude(coordinates[0]);
+		branch.setLatitude(coordinates[1);
 		branch.setStatus(branchDetails.getStatus());
-		branch.setUpdatedUserId(branchDetails.getUpdatedUserId());
+		
+		branch.setUpdatedAt(LocalDateTime.now()); // Set current time for update
+		branch.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 
 		return pharmacyBranchRepository.save(branch);
+		} else {
+			logger.info("Branch is null");
+
+			throw new ResourceNotFoundException("Branch not found with ID " + id);
+
+		}
 	}
 }
