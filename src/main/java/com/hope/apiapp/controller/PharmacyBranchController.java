@@ -17,6 +17,7 @@ import com.hope.apiapp.service.PharmacyBranchService;
 
 @RestController
 @RequestMapping("/PharmacyBranchs")
+@Validated
 public class PharmacyBranchController {
 
 	@Autowired
