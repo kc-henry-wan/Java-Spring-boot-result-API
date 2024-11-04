@@ -1,7 +1,11 @@
 package com.hope.apiapp.dto;
 
 public class LoginRequest {
+
+	@NotNull
 	private String username;
+
+	@NotNull
 	private String password;
 
 	public String getUsername() {
