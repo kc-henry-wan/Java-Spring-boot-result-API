@@ -16,34 +16,41 @@ import com.hope.apiapp.model.PharmacyBranch;
 import com.hope.apiapp.service.PharmacyBranchService;
 
 @RestController
-@RequestMapping("/PharmacyBranchs")
+@RequestMapping("/api")
 @Validated
 public class PharmacyBranchController {
 
 	@Autowired
 	private PharmacyBranchService pharmacyBranchService;
 
-	@GetMapping
-	public List<PharmacyBranch> getAllBranches() {
-		return pharmacyBranchService.findAllBranches();
+	@GetMapping("/v1/branch")
+	public ResponseEntity<ApiResponseSuccess<List<PharmacyBranch>>> getAllBranches() {
+		List<PharmacyBranch> branchs =  pharmacyBranchService.findAllBranches();
+		
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", branchs), HttpStatus.OK);
 	}
 
-	@PostMapping
-	public PharmacyBranch createBranch(@RequestBody PharmacyBranch pharmacyBranch) {
-		return pharmacyBranchService.saveBranch(pharmacyBranch);
+	@GetMapping("/v1/branch/{id}")
+	public ResponseEntity<ApiResponseSuccess<PharmacyBranch>>> getBranchById(@PathVariable Long id) {
+		PharmacyBranch branch = pharmacyBranchService.findBranchById(id);
+		
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", branch), HttpStatus.OK);
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<PharmacyBranch> updateBranch(@PathVariable Long id,
+	@PostMapping("/v1/branch")
+	public ResponseEntity<ApiResponseSuccess<PharmacyBranch>>> addBranch(@RequestBody PharmacyBranch pharmacyBranch) {
+		PharmacyBranch branch = pharmacyBranchService.addBranch(pharmacyBranch);
+		
+		return ResponseEntity<>(new ApiResponseSuccess<>("1.0", updateBranch.getPharmacyBranchId()),
+				HttpStatus.CREATED);
+	}
+
+	@PutMapping("/v1/branch/{id}")
+	public ResponseEntity<ApiResponseSuccess<PharmacyBranch>>> updateBranch(@PathVariable Long id,
 			@RequestBody PharmacyBranch branchDetails) {
 		PharmacyBranch updatedBranch = pharmacyBranchService.updateBranch(id, branchDetails);
-		return ResponseEntity.ok(updatedBranch);
-	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<PharmacyBranch> getBranchById(@PathVariable Long id) {
-		PharmacyBranch branch = pharmacyBranchService.findBranchById(id)
-				.orElseThrow(() -> new RuntimeException("Branch not found"));
-		return ResponseEntity.ok(branch);
+		
+		return ResponseEntity<>(new ApiResponseSuccess<>("1.0", updateBranch.getPharmacyBranchId()),
+				HttpStatus.OK);
 	}
 }
