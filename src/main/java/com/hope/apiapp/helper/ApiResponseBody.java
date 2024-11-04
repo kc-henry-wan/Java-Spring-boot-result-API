@@ -1,4 +1,4 @@
-package com.hope.apiapp.util;
+package com.hope.apiapp.helper;
 
 public abstract class ApiResponseBody {
 	private String apiVersion;

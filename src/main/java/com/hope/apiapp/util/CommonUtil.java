@@ -15,14 +15,24 @@ public class CommonUtil {
 	private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 
 	public static Long getCurrentUserId() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.isAuthenticated()
-				&& !(authentication.getPrincipal() instanceof String)) {
-			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-			// Assuming your UserDetails implementation has a getId() method
-			return userDetails.getUserId();
+		try {
+			logger.info("getCurrentUserId Start");
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+			if (authentication != null && authentication.isAuthenticated()
+					&& !(authentication.getPrincipal() instanceof String)) {
+				CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+				// Assuming your UserDetails implementation has a getId() method
+
+				return userDetails.getUserId();
+			}
+
+			logger.info("getCurrentUserId Failed");
+			return null; // Or handle as appropriate
+		} catch (RuntimeException ex) {
+			logger.info("getCurrentUserId RuntimeException");
+			return null;
 		}
-		return null; // Or handle as appropriate
 	}
 
 	// Method to get coordinates from an external API

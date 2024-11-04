@@ -1,36 +1,94 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2709
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww21160\viewh13800\viewkind0
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+package com.hope.apiapp.controller;
 
-\f0\fs24 \cf0 package com.hope.apiapp.controller;\
-\
-@RunWith(SpringRunner.class)\
-@SpringBootTest\
-@AutoConfigureMockMvc\
-\
-public class NegotiationControllerTest \{\
-\
-    @Autowired\
-    private MockMvc mockMvc;\
-\
-    @MockBean\
-    private NegotiationService negotiationService;\
-\
-    @Test\
-    public void testGetNegotiationById() throws Exception \{\
-        // Mock service behavior\
-        Negotiation negotiation = new Negotiation(...);\
-        Mockito.when(negotiationService.getNegotiationById(1L)).thenReturn(Optional.of(negotiation));\
-\
-        // Perform GET request and check response\
-        mockMvc.perform(get("/api/negotiations/1"))\
-               .andExpect(status().isOk())\
-               .andExpect(jsonPath("$.id").value(1))\
-               .andExpect(jsonPath("$.hourlyRate").value(50.0)) // Verify specific field\
-               .andExpect(jsonPath("$.status").value("Pending"));\
-    \}\
-\}\
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+
+import com.hope.apiapp.dto.NegotiationAddRequestDto;
+import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
+import com.hope.apiapp.helper.ApiResponseSuccess;
+import com.hope.apiapp.model.Negotiation;
+import com.hope.apiapp.service.NegotiationService;
+
+@ExtendWith(MockitoExtension.class)
+public class NegotiationControllerTest {
+
+	@InjectMocks
+	private NegotiationController negotiationController;
+
+	@Mock
+	private NegotiationService negotiationService;
+
+	@Test
+	public void testAddNegotiation_Success() {
+		// Arrange
+		NegotiationAddRequestDto request = new NegotiationAddRequestDto();
+		Negotiation updatedNegotiation = new Negotiation();
+
+		when(negotiationService.addNegotiation(any(NegotiationAddRequestDto.class))).thenReturn(updatedNegotiation);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<Long>> response = negotiationController.addNegotiation(request);
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+	}
+
+	@Test
+	public void testAddNegotiation_Exception() {
+		// Arrange
+		NegotiationAddRequestDto request = new NegotiationAddRequestDto();
+
+		when(negotiationService.addNegotiation(any(NegotiationAddRequestDto.class)))
+				.thenThrow(new RuntimeException("Unexpected error"));
+
+		// Act & Assert
+		assertThatThrownBy(() -> negotiationController.addNegotiation(request)).isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("Unexpected error");
+	}
+
+	@Test
+	public void testUpdateNegotiation_Success() {
+		// Arrange
+		Long id = 1L;
+		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
+		Negotiation updatedNegotiation = new Negotiation();
+
+		when(negotiationService.updateNegotiation(eq(id), any(NegotiationUpdateRequestDto.class)))
+				.thenReturn(updatedNegotiation);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<Long>> response = negotiationController.updateNegotiation(id, request);
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+	}
+
+	@Test
+	public void testUpdateNegotiation_Exception() {
+		// Arrange
+		Long id = 1L;
+		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
+
+		when(negotiationService.updateNegotiation(eq(id), any(NegotiationUpdateRequestDto.class)))
+				.thenThrow(new RuntimeException("Unexpected error"));
+
+		// Act & Assert
+		assertThatThrownBy(() -> negotiationController.updateNegotiation(id, request))
+				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
+	}
+
 }

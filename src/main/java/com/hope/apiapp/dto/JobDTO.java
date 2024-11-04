@@ -13,7 +13,6 @@ public class JobDTO {
 	private String lunchArrangement;
 	private String parkingOption;
 	private BigDecimal ratePerMile;
-	private String statusCode;
 	private String status;
 	private String branchName;
 	private String branchAddress1;
@@ -25,9 +24,9 @@ public class JobDTO {
 
 	// Constructor
 	public JobDTO(Long jobId, String jobRef, LocalDate jobDate, BigDecimal hourlyRate, BigDecimal totalWorkHour,
-			BigDecimal totalPaid, String lunchArrangement, String parkingOption, BigDecimal ratePerMile,
-			String statusCode, String status, String branchName, String branchAddress1, String branchAddress2,
-			String branchPostalCode, Double branchLatitude, Double branchLongitude, Double distance) {
+			BigDecimal totalPaid, String lunchArrangement, String parkingOption, BigDecimal ratePerMile, String status,
+			String branchName, String branchAddress1, String branchAddress2, String branchPostalCode,
+			Double branchLatitude, Double branchLongitude, Double distance) {
 		this.jobId = jobId;
 		this.jobRef = jobRef;
 		this.jobDate = jobDate;
@@ -37,7 +36,6 @@ public class JobDTO {
 		this.lunchArrangement = lunchArrangement;
 		this.parkingOption = parkingOption;
 		this.ratePerMile = ratePerMile;
-		this.statusCode = statusCode;
 		this.status = status;
 		this.branchName = branchName;
 		this.branchAddress1 = branchAddress1;
@@ -118,14 +116,6 @@ public class JobDTO {
 
 	public void setRatePerMile(BigDecimal ratePerMile) {
 		this.ratePerMile = ratePerMile;
-	}
-
-	public String getStatusCode() {
-		return statusCode;
-	}
-
-	public void setStatusCode(String statusCode) {
-		this.statusCode = statusCode;
 	}
 
 	public String getStatus() {

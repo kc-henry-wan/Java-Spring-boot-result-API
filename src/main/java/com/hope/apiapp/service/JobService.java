@@ -18,7 +18,8 @@ import org.springframework.stereotype.Service;
 
 import com.hope.apiapp.dto.JobDTO;
 import com.hope.apiapp.dto.JobProjection;
-import com.hope.apiapp.dto.JobRequest;
+import com.hope.apiapp.dto.JobRequestDto;
+import com.hope.apiapp.dto.JobUpdateRequestDto;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.Job;
 import com.hope.apiapp.repository.JobRepository;
@@ -49,7 +50,7 @@ public class JobService {
 				"SELECT j.jobId AS jobId, j.jobRef AS jobRef, j.jobDate AS jobDate, j.hourlyRate AS hourlyRate, "
 						+ "j.totalWorkHour AS totalWorkHour, j.totalPaid AS totalPaid, "
 						+ "j.lunchArrangement AS lunchArrangement, j.parkingOption AS parkingOption, "
-						+ "j.ratePerMile AS ratePerMile, j.statusCode AS statusCode, j.status AS status, "
+						+ "j.ratePerMile AS ratePerMile, j.status AS status, "
 						+ "pb.branchName AS branchName, pb.address1 AS branchAddress1, "
 						+ "pb.address2 AS branchAddress2, pb.postalCode AS branchPostalCode, "
 						+ "pb.latitude AS branchLatitude, pb.longitude AS branchLongitude "
@@ -137,12 +138,12 @@ public class JobService {
 			logger.debug("For each row: row[1]=" + row[1].toString());
 			logger.debug("For each row: row[2]=" + row[2].toString());
 			logger.debug("For each row: row[3]=" + row[3].toString());
+			logger.debug("For each row: row[14]=" + row[14].toString());
 			logger.debug("For each row: row[15]=" + row[15].toString());
-			logger.debug("For each row: row[16]=" + row[16].toString());
 
 			Double distance = 0.0;
 			if (fromLat != null && fromLng != null) {
-				distance = calculateDistance(fromLat, fromLng, (Double) row[15], (Double) row[16]);
+				distance = calculateDistance(fromLat, fromLng, (Double) row[14], (Double) row[15]);
 				logger.info("For each row: distance:" + distance);
 			}
 
@@ -156,14 +157,13 @@ public class JobService {
 					(String) row[6], // lunchArrangement,
 					(String) row[7], // parkingOption,
 					(BigDecimal) row[8], // ratePerMile,
-					(String) row[9], // statusCode,
-					(String) row[10], // status
-					(String) row[11], // branchName: Cast to String
-					(String) row[12], // branchAddress1;
-					(String) row[13], // branchAddress2;
-					(String) row[14], // branchPostalCode;
-					(Double) row[15], // branchLatitude;
-					(Double) row[16], // branchLongitude;
+					(String) row[9], // status
+					(String) row[10], // branchName: Cast to String
+					(String) row[11], // branchAddress1;
+					(String) row[12], // branchAddress2;
+					(String) row[13], // branchPostalCode;
+					(Double) row[14], // branchLatitude;
+					(Double) row[15], // branchLongitude;
 					(Double) distance // Distance between user address and branch address
 			));
 		}
@@ -178,8 +178,8 @@ public class JobService {
 		return jobDTOs;
 	}
 
-	public Job getJobById(Long id) {
-		logger.info("getJobById: " + id);
+	public Job findById(Long id) {
+		logger.info("findById: " + id);
 		return jobRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 	}
 
@@ -190,12 +190,28 @@ public class JobService {
 		return null;
 	}
 
-	public Job addJob(JobRequest jobRequest) {
+	public Job addJob(JobRequestDto jobRequest) {
 		logger.info("addJob");
 
 		Job job = new Job();
 
-//TODO:set/get
+//TODO:add logic to gen ref number
+//		job.setJobRef();
+		job.setDescription(jobRequest.getDescription());
+		job.setPharmacyGroupId(jobRequest.getPharmacyGroupId());
+
+		// TODO:handle branchID
+//		job.setPharmacyBranchId(jobRequest.getPharmacyBranchId());
+
+		job.setJobDate(jobRequest.getJobDate());
+		job.setJobStartTime(jobRequest.getJobStartTime());
+		job.setJobEndTime(jobRequest.getJobEndTime());
+		job.setHourlyRate(jobRequest.getHourlyRate());
+		job.setTotalWorkHour(jobRequest.getTotalWorkHour());
+		job.setTotalPaid(jobRequest.getTotalPaid());
+		job.setLunchArrangement(jobRequest.getLunchArrangement());
+		job.setParkingOption(jobRequest.getParkingOption());
+		job.setRatePerMile(jobRequest.getRatePerMile());
 
 		// Set default values for additional fields
 		job.setStatus("Active"); // Default status
@@ -206,10 +222,10 @@ public class JobService {
 		return jobRepository.save(job);
 	}
 
-	public Job updateJob(Long id, JobRequest jobRequest) {
+	public Job updateJobStatus(Long id, JobUpdateRequestDto jobRequest) {
 
-		logger.info("updateJob: " + id);
-		Job job = getJobById(id);
+		logger.info("updateJobStatus: " + id);
+		Job job = findById(id);
 
 //		// TODO:Parse the Last-Modified header
 //		Date clientLastModified = new Date(lastModified);
@@ -220,7 +236,54 @@ public class JobService {
 		if (job != null) {
 			logger.info("job is not null");
 
-//TODO:set/get
+			if ("Apply".equalsIgnoreCase(jobRequest.getStatus())) {
+				job.setPharmacistId(CommonUtil.getCurrentUserId());
+			} else if ("Withdraw".equalsIgnoreCase(jobRequest.getStatus())) {
+				job.setPharmacistId(null);
+			}
+			job.setStatus(jobRequest.getStatus());
+			job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
+			job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+
+			return jobRepository.save(job);
+		} else {
+			logger.info("job is null");
+
+			throw new ResourceNotFoundException("Job not found with ID " + id);
+
+		}
+	}
+
+	public Job updateJob(Long id, JobRequestDto jobRequest) {
+
+		logger.info("updateJob: " + id);
+		Job job = findById(id);
+
+//		// TODO:Parse the Last-Modified header
+//		Date clientLastModified = new Date(lastModified);
+//		if (clientLastModified.before(job.getUpdatedAt())) {
+//			throw new ResourceConflictException("Job has been modified by another user.");
+//		}
+
+		if (job != null) {
+			logger.info("job is not null");
+
+			job.setDescription(jobRequest.getDescription());
+			job.setPharmacyGroupId(jobRequest.getPharmacyGroupId());
+
+			// TODO:handle branchID
+//			job.setPharmacyBranchId(jobRequest.getPharmacyBranchId());
+
+			job.setJobDate(jobRequest.getJobDate());
+			job.setJobStartTime(jobRequest.getJobStartTime());
+			job.setJobEndTime(jobRequest.getJobEndTime());
+			job.setHourlyRate(jobRequest.getHourlyRate());
+			job.setTotalWorkHour(jobRequest.getTotalWorkHour());
+			job.setTotalPaid(jobRequest.getTotalPaid());
+			job.setLunchArrangement(jobRequest.getLunchArrangement());
+			job.setParkingOption(jobRequest.getParkingOption());
+			job.setRatePerMile(jobRequest.getRatePerMile());
+
 			job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 			job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 

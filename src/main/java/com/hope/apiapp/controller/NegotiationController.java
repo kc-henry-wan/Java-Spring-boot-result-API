@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hope.apiapp.dto.NegotiationRequest;
+import com.hope.apiapp.dto.NegotiationAddRequestDto;
+import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
+import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.model.Negotiation;
 import com.hope.apiapp.service.NegotiationService;
-import com.hope.apiapp.util.ApiResponseSuccess;
 
 @RestController
 @RequestMapping("/api")
@@ -53,7 +54,8 @@ public class NegotiationController {
 	}
 
 	@PostMapping("/v1/negotiation")
-	public ResponseEntity<ApiResponseSuccess<Long>> addNegotiation(@RequestBody NegotiationRequest negotiationRequest) {
+	public ResponseEntity<ApiResponseSuccess<Long>> addNegotiation(
+			@RequestBody NegotiationAddRequestDto negotiationRequest) {
 		logger.info("addNegotiation");
 
 		Negotiation createdNegotiation = negotiationService.addNegotiation(negotiationRequest);
@@ -64,7 +66,7 @@ public class NegotiationController {
 
 	@PutMapping("/v1/negotiation/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updateNegotiation(@PathVariable Long id,
-			@RequestBody NegotiationRequest negotiationRequest) {
+			@RequestBody NegotiationUpdateRequestDto negotiationRequest) {
 		logger.info("updateNegotiation");
 
 		Negotiation updatedNegotiation = negotiationService.updateNegotiation(id, negotiationRequest);

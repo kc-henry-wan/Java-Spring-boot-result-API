@@ -37,7 +37,7 @@ public class PharmacyBranch {
 	private String status;
 
 	@Column(name = "updated_user_id")
-	private Integer updatedUserId;
+	private Long updatedUserId;
 
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
@@ -109,11 +109,11 @@ public class PharmacyBranch {
 		this.status = status;
 	}
 
-	public Integer getUpdatedUserId() {
+	public Long getUpdatedUserId() {
 		return updatedUserId;
 	}
 
-	public void setUpdatedUserId(Integer updatedUserId) {
+	public void setUpdatedUserId(Long updatedUserId) {
 		this.updatedUserId = updatedUserId;
 	}
 

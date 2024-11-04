@@ -1,4 +1,4 @@
-package com.hope.apiapp.util;
+package com.hope.apiapp.helper;
 
 public class ApiResponseFail extends ApiResponseBody {
 	// Constructor

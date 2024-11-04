@@ -53,7 +53,6 @@ public class Job {
 	private String lunchArrangement;
 	private String parkingOption;
 	private BigDecimal ratePerMile;
-	private String statusCode;
 	private String status;
 	private Boolean deleted = false;
 
@@ -158,14 +157,6 @@ public class Job {
 
 	public void setRatePerMile(BigDecimal ratePerMile) {
 		this.ratePerMile = ratePerMile;
-	}
-
-	public String getStatusCode() {
-		return statusCode;
-	}
-
-	public void setStatusCode(String statusCode) {
-		this.statusCode = statusCode;
 	}
 
 	public String getStatus() {

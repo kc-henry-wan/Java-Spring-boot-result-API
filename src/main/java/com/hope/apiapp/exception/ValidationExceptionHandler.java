@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.hope.apiapp.util.ApiResponseFail;
+import com.hope.apiapp.helper.ApiResponseFail;
 
 @ControllerAdvice
 public class ValidationExceptionHandler {

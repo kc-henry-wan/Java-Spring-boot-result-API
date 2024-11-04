@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hope.apiapp.dto.PharmacistAddRequestDto;
 import com.hope.apiapp.dto.PharmacistProjection;
-import com.hope.apiapp.dto.PharmacistRequest;
+import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
+import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.model.Pharmacist;
 import com.hope.apiapp.service.PharmacistService;
-import com.hope.apiapp.util.ApiResponseSuccess;
 
 @RestController
 @RequestMapping("/api")
 @Validated
-//@CrossOrigin(origins = "http://localhost:73")
 
 public class PharmacistController {
 
@@ -54,7 +54,8 @@ public class PharmacistController {
 	}
 
 	@PostMapping("/v1/pharmacist")
-	public ResponseEntity<ApiResponseSuccess<Long>> addPharmacist(@RequestBody PharmacistRequest pharmacistRequest) {
+	public ResponseEntity<ApiResponseSuccess<Long>> addPharmacist(
+			@RequestBody PharmacistAddRequestDto pharmacistRequest) {
 		logger.info("addPharmacist");
 
 		Pharmacist createdPharmacist = pharmacistService.addPharmacist(pharmacistRequest);
@@ -65,7 +66,7 @@ public class PharmacistController {
 
 	@PutMapping("/v1/pharmacist/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updatePharmacist(@PathVariable Long id,
-			@RequestBody PharmacistRequest pharmacistRequest) {
+			@RequestBody PharmacistUpdateRequestDto pharmacistRequest) {
 		logger.info("updatePharmacist");
 
 		Pharmacist updatedPharmacist = pharmacistService.updatePharmacist(id, pharmacistRequest);

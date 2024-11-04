@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.hope.apiapp.dto.PharmacistAddRequestDto;
 import com.hope.apiapp.dto.PharmacistProjection;
-import com.hope.apiapp.dto.PharmacistRequest;
+import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.Pharmacist;
 import com.hope.apiapp.repository.PharmacistRepository;
@@ -51,7 +52,7 @@ public class PharmacistService {
 				.orElseThrow(() -> new ResourceNotFoundException("Pharmacist not found"));
 	}
 
-	public Pharmacist addPharmacist(PharmacistRequest pharmacistRequest) {
+	public Pharmacist addPharmacist(PharmacistAddRequestDto pharmacistRequest) {
 		logger.info("addPharmacist");
 
 		// Build the full address for the API call
@@ -83,7 +84,7 @@ public class PharmacistService {
 		return pharmacistRepository.save(pharmacist);
 	}
 
-	public Pharmacist updatePharmacist(Long id, PharmacistRequest pharmacistRequest) {
+	public Pharmacist updatePharmacist(Long id, PharmacistUpdateRequestDto pharmacistRequest) {
 
 		logger.info("updatePharmacist: " + id);
 		Pharmacist pharmacist = getPharmacistById(id);

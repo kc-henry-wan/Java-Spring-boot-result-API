@@ -1,4 +1,4 @@
-package com.hope.apiapp.util;
+package com.hope.apiapp.helper;
 
 public class ApiResponseSuccess<T> extends ApiResponseBody {
 	private T data;

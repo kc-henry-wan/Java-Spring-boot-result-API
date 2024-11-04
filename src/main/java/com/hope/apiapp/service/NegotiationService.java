@@ -8,7 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.hope.apiapp.dto.NegotiationRequest;
+import com.hope.apiapp.dto.NegotiationAddRequestDto;
+import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.Negotiation;
 import com.hope.apiapp.repository.NegotiationRepository;
@@ -39,7 +40,7 @@ public class NegotiationService {
 				.orElseThrow(() -> new ResourceNotFoundException("Negotiation not found"));
 	}
 
-	public Negotiation addNegotiation(NegotiationRequest negotiationRequest) {
+	public Negotiation addNegotiation(NegotiationAddRequestDto negotiationRequest) {
 		logger.info("addNegotiation");
 
 		Negotiation negotiation = new Negotiation();
@@ -53,7 +54,7 @@ public class NegotiationService {
 		return negotiationRepository.save(negotiation);
 	}
 
-	public Negotiation updateNegotiation(Long id, NegotiationRequest negotiationRequest) {
+	public Negotiation updateNegotiation(Long id, NegotiationUpdateRequestDto negotiationRequest) {
 
 		logger.info("updateNegotiation: " + id);
 		Negotiation negotiation = getNegotiationById(id);
@@ -67,6 +68,8 @@ public class NegotiationService {
 		if (negotiation != null) {
 			logger.info("negotiation is not null");
 
+			negotiation.setCounterHourlyRate(negotiationRequest.getCounterHourlyRate());
+			negotiation.setCounterTotalPaid(negotiationRequest.getCounterTotalPaid());
 			negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 			negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 

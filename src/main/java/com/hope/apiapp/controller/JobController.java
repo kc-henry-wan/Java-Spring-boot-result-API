@@ -17,12 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hope.apiapp.dto.JobRequestDto;
 import com.hope.apiapp.dto.JobDTO;
 import com.hope.apiapp.dto.JobProjection;
-import com.hope.apiapp.dto.JobRequest;
+import com.hope.apiapp.dto.JobUpdateRequestDto;
+import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.model.Job;
 import com.hope.apiapp.service.JobService;
-import com.hope.apiapp.util.ApiResponseSuccess;
 
 @RestController
 @RequestMapping("/api")
@@ -69,7 +70,7 @@ public class JobController {
 	}
 
 	@PostMapping("/v1/job")
-	public ResponseEntity<ApiResponseSuccess<Long>> addJob(@RequestBody JobRequest jobRequest) {
+	public ResponseEntity<ApiResponseSuccess<Long>> addJob(@RequestBody JobRequestDto jobRequest) {
 		logger.info("addJob");
 
 		Job createdJob = jobService.addJob(jobRequest);
@@ -78,8 +79,18 @@ public class JobController {
 	}
 
 	@PutMapping("/v1/job/{id}")
+	public ResponseEntity<ApiResponseSuccess<Long>> updateJobStatus(@PathVariable Long id,
+			@RequestBody JobUpdateRequestDto jobRequest) {
+		logger.info("updateJob");
+
+		Job updatedJob = jobService.updateJobStatus(id, jobRequest);
+
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", updatedJob.getJobId()), HttpStatus.OK);
+	}
+
+	@PutMapping("/staff/v1/job/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updateJob(@PathVariable Long id,
-			@RequestBody JobRequest jobRequest) {
+			@RequestBody JobRequestDto jobRequest) {
 		logger.info("updateJob");
 
 		Job updatedJob = jobService.updateJob(id, jobRequest);
