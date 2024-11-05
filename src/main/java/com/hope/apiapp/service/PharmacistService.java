@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.hope.apiapp.dto.PharmacistAddRequestDto;
 import com.hope.apiapp.dto.PharmacistProjection;
 import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
+import com.hope.apiapp.exception.ResourceConflictException;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.Pharmacist;
 import com.hope.apiapp.repository.PharmacistRepository;
@@ -60,10 +61,8 @@ public class PharmacistService {
 				+ pharmacistRequest.getPostalCode();
 		double[] coordinates = CommonUtil.getCoordinatesFromAddress(fullAddress);
 
-		String hashedPassword = passwordEncoder.encode(pharmacistRequest.getPassword());
-
 		Pharmacist pharmacist = new Pharmacist();
-		pharmacist.setPassword(hashedPassword);
+		pharmacist.setPassword(passwordEncoder.encode(pharmacistRequest.getPassword()));
 		pharmacist.setEmail(pharmacistRequest.getEmail());
 		pharmacist.setFirstName(pharmacistRequest.getFirstName());
 		pharmacist.setLastName(pharmacistRequest.getLastName());
@@ -89,14 +88,12 @@ public class PharmacistService {
 		logger.info("updatePharmacist: " + id);
 		Pharmacist pharmacist = getPharmacistById(id);
 
-//		// TODO:Parse the Last-Modified header
-//		Date clientLastModified = new Date(lastModified);
-//		if (clientLastModified.before(pharmacist.getUpdatedAt())) {
-//			throw new ResourceConflictException("Job has been modified by another user.");
-//		}
-
 		if (pharmacist != null) {
 			logger.info("pharmacist is not null");
+
+			if (!pharmacistRequest.getUpdatedAt().equals(pharmacist.getUpdatedAt())) {
+				throw new ResourceConflictException("Record has been modified by another user.");
+			}
 
 			// Build the full address for the API call
 			String fullAddress = pharmacistRequest.getAddress1() + " " + pharmacistRequest.getAddress2() + " "
@@ -123,23 +120,26 @@ public class PharmacistService {
 
 		}
 	}
-	public Pharmacist resetPassword(Long id, String newPassword) {
+
+	public boolean resetPassword(Long id, String newPassword) {
 
 		logger.info("updatePharmacist: " + id);
 		Pharmacist pharmacist = getPharmacistById(id);
-		
+
 		if (pharmacist != null) {
 			logger.info("pharmacist is not null");
-			
-				pharmacist.setPassword(passwordEncoder.encode(newPassword));
-				pharmacist.setUpdatedAt(LocalDateTime.now());
+
+			pharmacist.setPassword(passwordEncoder.encode(newPassword));
+			pharmacist.setUpdatedAt(LocalDateTime.now());
 			pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
-		
-				pharmacistRepository.save(pharmacist);
+
+			pharmacistRepository.save(pharmacist);
+
+			return true;
 		} else {
 			logger.info("pharmacist is null");
 
 			throw new ResourceNotFoundException("Pharmacist not found with ID " + id);
-
+		}
 	}
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
+import com.hope.apiapp.exception.ResourceConflictException;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.Negotiation;
 import com.hope.apiapp.repository.NegotiationRepository;
@@ -36,13 +38,15 @@ public class NegotiationServiceTest {
 		Long id = 1L;
 		BigDecimal newHourlyRate = new BigDecimal(60.0);
 		BigDecimal newTotalPaid = new BigDecimal(480.0);
-//		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
 
 		Negotiation existingNegotiation = new Negotiation();
+		existingNegotiation.setUpdatedAt(originalLastModifiedDate);
 
 		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
 		request.setCounterHourlyRate(newHourlyRate);
 		request.setCounterTotalPaid(newTotalPaid);
+		request.setUpdatedAt(originalLastModifiedDate);
 
 		Mockito.when(negotiationRepository.findById(id)).thenReturn(Optional.of(existingNegotiation));
 		Mockito.when(negotiationRepository.save(existingNegotiation)).thenReturn(existingNegotiation);
@@ -69,26 +73,24 @@ public class NegotiationServiceTest {
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
-//	@Test
-//	public void testUpdateNegotiation_RecordModified() {
-//		// Arrange
-//		Long id = 1L;
-//		Double newHourlyRate = 60.0;
-//		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
-//		LocalDateTime updatedLastModifiedDate = LocalDateTime.of(2024, 11, 2, 10, 0);
-//
-//		Negotiation existingNegotiation = new Negotiation();
-//
-//		Mockito.when(negotiationRepository.findById(id)).thenReturn(Optional.of(existingNegotiation));
-//
-//		// Act
-//		//TODO:Check last modificationDate
-////		Negotiation result = negotiationService.updateNegotiation(id, existingNegotiation, originalLastModifiedDate);
-//
-//		// Assert
-//		if (result != null) {
-//		}
-//		Mockito.verify(negotiationRepository, Mockito.never()).save(existingNegotiation);
-//	}
+	@Test
+	public void testUpdateNegotiation_RecordModified() {
+		// Arrange
+		Long id = 1L;
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime updatedLastModifiedDate = LocalDateTime.of(2024, 11, 2, 10, 0);
+
+		Negotiation existingNegotiation = new Negotiation();
+		existingNegotiation.setUpdatedAt(originalLastModifiedDate);
+
+		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
+		request.setUpdatedAt(updatedLastModifiedDate);
+
+		Mockito.when(negotiationRepository.findById(id)).thenReturn(Optional.of(existingNegotiation));
+
+		// Act & Assert
+		assertThatThrownBy(() -> negotiationService.updateNegotiation(id, request))
+				.isInstanceOf(ResourceConflictException.class);
+	}
 
 }

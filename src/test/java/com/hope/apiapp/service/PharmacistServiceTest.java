@@ -3,6 +3,7 @@ package com.hope.apiapp.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
+import com.hope.apiapp.exception.ResourceConflictException;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.Pharmacist;
 import com.hope.apiapp.repository.PharmacistRepository;
@@ -35,13 +37,15 @@ public class PharmacistServiceTest {
 		Long id = 1L;
 		String newLastName = "David";
 		String newMobile = "986532741741";
-//		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
 
 		Pharmacist existingPharmacist = new Pharmacist();
+		existingPharmacist.setUpdatedAt(originalLastModifiedDate);
 
 		PharmacistUpdateRequestDto request = new PharmacistUpdateRequestDto();
 		request.setLastName(newLastName);
 		request.setMobile(newMobile);
+		request.setUpdatedAt(originalLastModifiedDate);
 
 		Mockito.when(pharmacistRepository.findById(id)).thenReturn(Optional.of(existingPharmacist));
 		Mockito.when(pharmacistRepository.save(existingPharmacist)).thenReturn(existingPharmacist);
@@ -68,26 +72,24 @@ public class PharmacistServiceTest {
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
-//	@Test
-//	public void testUpdatePharmacist_RecordModified() {
-//		// Arrange
-//		Long id = 1L;
-//		Double newHourlyRate = 60.0;
-//		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
-//		LocalDateTime updatedLastModifiedDate = LocalDateTime.of(2024, 11, 2, 10, 0);
-//
-//		Pharmacist existingPharmacist = new Pharmacist();
-//
-//		Mockito.when(pharmacistRepository.findById(id)).thenReturn(Optional.of(existingPharmacist));
-//
-//		// Act
-//		//TODO:Check last modificationDate
-////		Pharmacist result = pharmacistService.updatePharmacist(id, existingPharmacist, originalLastModifiedDate);
-//
-//		// Assert
-//		if (result != null) {
-//		}
-//		Mockito.verify(pharmacistRepository, Mockito.never()).save(existingPharmacist);
-//	}
+	@Test
+	public void testUpdatePharmacist_RecordModified() {
+		// Arrange
+		Long id = 1L;
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime updatedLastModifiedDate = LocalDateTime.of(2024, 11, 2, 10, 0);
+
+		Pharmacist existingPharmacist = new Pharmacist();
+		existingPharmacist.setUpdatedAt(originalLastModifiedDate);
+
+		PharmacistUpdateRequestDto request = new PharmacistUpdateRequestDto();
+		request.setUpdatedAt(updatedLastModifiedDate);
+
+		Mockito.when(pharmacistRepository.findById(id)).thenReturn(Optional.of(existingPharmacist));
+
+		// Act & Assert
+		assertThatThrownBy(() -> pharmacistService.updatePharmacist(id, request))
+				.isInstanceOf(ResourceConflictException.class);
+	}
 
 }

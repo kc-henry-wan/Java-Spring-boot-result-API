@@ -29,17 +29,11 @@ public class SecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless session
 				.and().authorizeRequests().requestMatchers("/actuator/**").permitAll() // Public endpoints
 				.requestMatchers("/api/auth/**").permitAll() // Logon api endpoint
-//				.requestMatchers("/api/v1/**").permitAll() // TODO:For testing only
 				.requestMatchers("/api/admin/**").hasRole("ADMIN") // Admin-only endpoints
 				.anyRequest().authenticated(); // All other requests require authentication
 
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
 
-            http.exceptionHandling()
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.sendError(HttpStatus.FORBIDDEN.value(), "Access Denied");
-                });
-		
 		return http.build();
 	}
 

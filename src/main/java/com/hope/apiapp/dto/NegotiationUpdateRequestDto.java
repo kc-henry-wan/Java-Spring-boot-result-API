@@ -1,6 +1,7 @@
 package com.hope.apiapp.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
@@ -15,6 +16,8 @@ public class NegotiationUpdateRequestDto {
 
 	@Size(max = 1, message = "Status code must be a single character")
 	private String statusCode;
+
+	private LocalDateTime updatedAt;
 
 	public BigDecimal getCounterHourlyRate() {
 		return counterHourlyRate;
@@ -38,6 +41,14 @@ public class NegotiationUpdateRequestDto {
 
 	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 }

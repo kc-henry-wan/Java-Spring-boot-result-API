@@ -2,6 +2,7 @@ package com.hope.apiapp.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import jakarta.validation.constraints.DecimalMin;
@@ -47,6 +48,8 @@ public class JobRequestDto {
 	@DecimalMin(value = "0.0", inclusive = false, message = "Rate per mile must be greater than 0")
 	@Digits(integer = 3, fraction = 2, message = "Rate per mile must be a valid decimal number with up to 2 decimal places")
 	private BigDecimal ratePerMile; // Optional, but validated if provided\
+
+	private LocalDateTime updatedAt;
 
 	public String getDescription() {
 		return description;
@@ -143,4 +146,13 @@ public class JobRequestDto {
 	public void setRatePerMile(BigDecimal ratePerMile) {
 		this.ratePerMile = ratePerMile;
 	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 }

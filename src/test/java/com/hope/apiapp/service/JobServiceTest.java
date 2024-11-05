@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -16,6 +17,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.hope.apiapp.dto.JobRequestDto;
+import com.hope.apiapp.dto.JobUpdateRequestDto;
+import com.hope.apiapp.exception.ResourceConflictException;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.Job;
 import com.hope.apiapp.repository.JobRepository;
@@ -37,14 +40,15 @@ public class JobServiceTest {
 		Long id = 1L;
 		LocalTime newTime = LocalTime.of(9, 0);
 		BigDecimal newTotalWorkHour = BigDecimal.valueOf(19.00);
-
-//		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
 
 		Job existingJob = new Job();
+		existingJob.setUpdatedAt(originalLastModifiedDate);
 
 		JobRequestDto request = new JobRequestDto();
 		request.setJobStartTime(newTime);
 		request.setTotalWorkHour(newTotalWorkHour);
+		request.setUpdatedAt(originalLastModifiedDate);
 
 		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
 		Mockito.when(jobRepository.save(existingJob)).thenReturn(existingJob);
@@ -63,33 +67,86 @@ public class JobServiceTest {
 		// Arrange
 		Long id = 1L;
 
-		JobRequestDto jobRequest = new JobRequestDto();
+		JobRequestDto request = new JobRequestDto();
 
 		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> jobService.updateJob(id, jobRequest)).isInstanceOf(ResourceNotFoundException.class);
+		assertThatThrownBy(() -> jobService.updateJob(id, request)).isInstanceOf(ResourceNotFoundException.class);
 	}
 
-//	@Test
-//	public void testUpdateJob_RecordModified() {
-//		// Arrange
-//		Long id = 1L;
-//		Double newHourlyRate = 60.0;
-//		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
-//		LocalDateTime updatedLastModifiedDate = LocalDateTime.of(2024, 11, 2, 10, 0);
-//
-//		Job existingJob = new Job();
-//
-//		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
-//
-//		// Act
-//		//TODO:Check last modificationDate
-////		Job result = jobService.updateJob(id, existingJob, originalLastModifiedDate);
-//
-//		// Assert
-//		if (result != null) {
-//		}
-//		Mockito.verify(jobRepository, Mockito.never()).save(existingJob);
-//	}
+	@Test
+	public void testUpdateJob_RecordModified() {
+		// Arrange
+		Long id = 1L;
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime updatedLastModifiedDate = LocalDateTime.of(2024, 11, 2, 10, 0);
+
+		Job existingJob = new Job();
+		existingJob.setUpdatedAt(originalLastModifiedDate);
+
+		JobRequestDto request = new JobRequestDto();
+		request.setUpdatedAt(updatedLastModifiedDate);
+
+		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+
+		// Act & Assert
+		assertThatThrownBy(() -> jobService.updateJob(id, request)).isInstanceOf(ResourceConflictException.class);
+	}
+
+	@Test
+	public void testUpdateJobStatus_SuccessfulUpdate() {
+		// Arrange
+		Long id = 1L;
+		String newStatus = "Cancelled";
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+
+		Job existingJob = new Job();
+		existingJob.setUpdatedAt(originalLastModifiedDate);
+
+		JobUpdateRequestDto request = new JobUpdateRequestDto();
+		request.setStatus(newStatus);
+		request.setUpdatedAt(originalLastModifiedDate);
+
+		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+		Mockito.when(jobRepository.save(existingJob)).thenReturn(existingJob);
+
+		// Act
+		Job result = jobService.updateJobStatus(id, request);
+
+		// Assert
+		assertEquals(newStatus, result.getStatus());
+		Mockito.verify(jobRepository).save(existingJob);
+	}
+
+	@Test
+	public void testUpdateJobStatus_RecordNotFound() {
+		// Arrange
+		Long id = 1L;
+
+		JobUpdateRequestDto request = new JobUpdateRequestDto();
+
+		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> jobService.updateJobStatus(id, request)).isInstanceOf(ResourceNotFoundException.class);
+	}
+
+	@Test
+	public void testUpdateJobStatus_RecordModified() {
+		// Arrange
+		Long id = 1L;
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime updatedLastModifiedDate = LocalDateTime.of(2024, 11, 2, 10, 0);
+
+		Job existingJob = new Job();
+		existingJob.setUpdatedAt(originalLastModifiedDate);
+
+		JobUpdateRequestDto request = new JobUpdateRequestDto();
+		request.setUpdatedAt(updatedLastModifiedDate);
+
+		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+
+		// Act & Assert
+		assertThatThrownBy(() -> jobService.updateJobStatus(id, request)).isInstanceOf(ResourceConflictException.class);
+	}
 
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.hope.apiapp.helper.ApiResponseFail;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
@@ -34,9 +35,9 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(new ApiResponseFail("401", "Invalid token"), HttpStatus.UNAUTHORIZED);
 	}
 
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<ApiResponseFail> handleIllegalArgumentException(IllegalArgumentException ex) {
-		logger.error("handleIllegalArgumentException ex=" + ex.toString());
+	@ExceptionHandler({ JwtException.class, IllegalArgumentException.class })
+	public ResponseEntity<ApiResponseFail> handleJwtException(Exception ex) {
+		logger.error("handleJwtExceptionn ex=" + ex.toString());
 		return new ResponseEntity<>(new ApiResponseFail("403", "Unauthorized request"), HttpStatus.FORBIDDEN);
 	}
 

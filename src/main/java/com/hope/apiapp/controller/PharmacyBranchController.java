@@ -28,14 +28,14 @@ public class PharmacyBranchController {
 	private PharmacyBranchService pharmacyBranchService;
 
 	@GetMapping("/v1/branch")
-	public ResponseEntity<ApiResponseSuccess<List<PharmacyBranch>>> getAllBranches() {
+	public ResponseEntity<ApiResponseSuccess<List<PharmacyBranch>>> findAllBranches() {
 		List<PharmacyBranch> branchs = pharmacyBranchService.findAllBranches();
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", branchs), HttpStatus.OK);
 	}
 
 	@GetMapping("/v1/branch/{id}")
-	public ResponseEntity<ApiResponseSuccess<PharmacyBranch>> getBranchById(@PathVariable Long id) {
+	public ResponseEntity<ApiResponseSuccess<PharmacyBranch>> findBranchById(@PathVariable Long id) {
 		PharmacyBranch branch = pharmacyBranchService.findBranchById(id);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", branch), HttpStatus.OK);

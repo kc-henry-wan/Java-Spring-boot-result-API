@@ -45,10 +45,20 @@ public class PharmacistController {
 	}
 
 	@GetMapping("/v1/pharmacist/{id}")
-	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getPharmacistById(@PathVariable Long id) {
+	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getPharmacistByIdWithLimitedFields(
+			@PathVariable Long id) {
 		logger.info("getPharmacistById");
 
 		PharmacistProjection pharmacist = pharmacistService.getPharmacistByIdWithLimitedFields(id);
+
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
+	}
+
+	@GetMapping("/v1/staff/pharmacist/{id}")
+	public ResponseEntity<ApiResponseSuccess<Pharmacist>> getPharmacistById(@PathVariable Long id) {
+		logger.info("getPharmacistById");
+
+		Pharmacist pharmacist = pharmacistService.getPharmacistById(id);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
 	}

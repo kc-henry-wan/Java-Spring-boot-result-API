@@ -64,8 +64,7 @@ public class JobController {
 	// GET /v1/job
 	@GetMapping("/v1/myjob")
 	public ResponseEntity<ApiResponseSuccess<List<JobDTO>>> getMyJobs(@RequestParam(required = false) Double fromLat,
-			@RequestParam(required = false) Double fromLng, @RequestParam(required = false) String groupCode,
-			@RequestParam(required = false) String sortingSeq) {
+			@RequestParam(required = false) Double fromLng, @RequestParam(required = false) String sortingSeq) {
 
 		logger.info("JobController - getMyJobs start");
 
@@ -78,8 +77,8 @@ public class JobController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", jobs), HttpStatus.OK);
 	}
 
-	@GetMapping("/v1/staff/job/{id}")
-	public ResponseEntity<ApiResponseSuccess<JobProjection>> getJobById(@PathVariable Long id) {
+	@GetMapping("/staff/v1/job/{id}")
+	public ResponseEntity<ApiResponseSuccess<JobProjection>> getJobByIdWithLimitedFields(@PathVariable Long id) {
 		logger.info("getJobById");
 
 		JobProjection job = jobService.getJobByIdWithLimitedFields(id);

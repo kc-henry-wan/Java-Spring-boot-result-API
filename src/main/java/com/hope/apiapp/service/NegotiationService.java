@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.hope.apiapp.dto.NegotiationAddRequestDto;
 import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
+import com.hope.apiapp.exception.ResourceConflictException;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.Negotiation;
 import com.hope.apiapp.repository.NegotiationRepository;
@@ -53,14 +54,12 @@ public class NegotiationService {
 		logger.info("updateNegotiation: " + id);
 		Negotiation negotiation = getNegotiationById(id);
 
-//		// TODO:Parse the Last-Modified header
-//		Date clientLastModified = new Date(lastModified);
-//		if (clientLastModified.before(negotiation.getUpdatedAt())) {
-//			throw new ResourceConflictException("Job has been modified by another user.");
-//		}
-
 		if (negotiation != null) {
 			logger.info("negotiation is not null");
+
+			if (!negotiationRequest.getUpdatedAt().equals(negotiation.getUpdatedAt())) {
+				throw new ResourceConflictException("Record has been modified by another user.");
+			}
 
 			negotiation.setCounterHourlyRate(negotiationRequest.getCounterHourlyRate());
 			negotiation.setCounterTotalPaid(negotiationRequest.getCounterTotalPaid());

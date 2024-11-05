@@ -20,6 +20,7 @@ import com.hope.apiapp.dto.JobDTO;
 import com.hope.apiapp.dto.JobProjection;
 import com.hope.apiapp.dto.JobRequestDto;
 import com.hope.apiapp.dto.JobUpdateRequestDto;
+import com.hope.apiapp.exception.ResourceConflictException;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.Job;
 import com.hope.apiapp.repository.JobRepository;
@@ -48,13 +49,15 @@ public class JobService {
 
 		StringBuilder queryBuilder = new StringBuilder(
 				"SELECT j.jobId AS jobId, j.jobRef AS jobRef, j.jobDate AS jobDate, j.hourlyRate AS hourlyRate, "
-						+ "j.totalWorkHour AS totalWorkHour, j.totalPaid AS totalPaid, "
-						+ "j.lunchArrangement AS lunchArrangement, j.parkingOption AS parkingOption, "
-						+ "j.ratePerMile AS ratePerMile, j.status AS status, "
-						+ "pb.branchName AS branchName, pb.address1 AS branchAddress1, "
-						+ "pb.address2 AS branchAddress2, pb.postalCode AS branchPostalCode, "
-						+ "pb.latitude AS branchLatitude, pb.longitude AS branchLongitude "
-						+ "FROM Job j JOIN j.pharmacyBranch pb");
+						+ " j.totalWorkHour AS totalWorkHour, j.totalPaid AS totalPaid, "
+						+ " j.lunchArrangement AS lunchArrangement, j.parkingOption AS parkingOption, "
+						+ " j.ratePerMile AS ratePerMile, j.status AS status, "
+						+ " pb.branchName AS branchName, pb.address1 AS branchAddress1, "
+						+ " pb.address2 AS branchAddress2, pb.postalCode AS branchPostalCode, "
+						+ " pb.latitude AS branchLatitude, pb.longitude AS branchLongitude, "
+						+ " p.firstName AS pharmacistFirstName, p.lastName AS pharmacistLastName "
+						+ " FROM Job j JOIN PharmacyBranch pb ON j.pharmacyBranchId = pb.pharmacyBranchId"
+						+ " LEFT OUTER JOIN Pharmacist p ON j.pharmacistId = p.pharmacistId ");
 
 		List<String> conditions = new ArrayList<>();
 
@@ -171,6 +174,8 @@ public class JobService {
 					(String) row[13], // branchPostalCode;
 					(Double) row[14], // branchLatitude;
 					(Double) row[15], // branchLongitude;
+					(String) row[16], // pharmacistFirstName;
+					(String) row[17], // pharmacistLastName;
 					(Double) distance // Distance between user address and branch address
 			));
 		}
@@ -185,16 +190,15 @@ public class JobService {
 		return jobDTOs;
 	}
 
+	public JobProjection getJobByIdWithLimitedFields(Long id) {
+		logger.info("findById: " + id);
+		return jobRepository.getJobByIdWithLimitedFields(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+	}
+
 	public Job findById(Long id) {
 		logger.info("findById: " + id);
 		return jobRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
-	}
-
-	public JobProjection getJobByIdWithLimitedFields(Long id) {
-		logger.info("getJobByIdWithLimitedFields: " + id);
-//		TODO:return jobRepository.findJobByIdWithLimitedFields(id)
-//				.orElseThrow(() -> new ResourceNotFoundException("Job not found"));
-		return null;
 	}
 
 	public Job addJob(JobRequestDto jobRequest) {
@@ -234,14 +238,12 @@ public class JobService {
 		logger.info("updateJobStatus: " + id);
 		Job job = findById(id);
 
-//		// TODO:Parse the Last-Modified header
-//		Date clientLastModified = new Date(lastModified);
-//		if (clientLastModified.before(job.getUpdatedAt())) {
-//			throw new ResourceConflictException("Job has been modified by another user.");
-//		}
-
 		if (job != null) {
 			logger.info("job is not null");
+
+			if (!jobRequest.getUpdatedAt().equals(job.getUpdatedAt())) {
+				throw new ResourceConflictException("Record has been modified by another user.");
+			}
 
 			if ("Apply".equalsIgnoreCase(jobRequest.getStatus())) {
 				job.setPharmacistId(CommonUtil.getCurrentUserId());
@@ -266,21 +268,16 @@ public class JobService {
 		logger.info("updateJob: " + id);
 		Job job = findById(id);
 
-//		// TODO:Parse the Last-Modified header
-//		Date clientLastModified = new Date(lastModified);
-//		if (clientLastModified.before(job.getUpdatedAt())) {
-//			throw new ResourceConflictException("Job has been modified by another user.");
-//		}
-
 		if (job != null) {
 			logger.info("job is not null");
 
+			if (!jobRequest.getUpdatedAt().equals(job.getUpdatedAt())) {
+				throw new ResourceConflictException("Record has been modified by another user.");
+			}
+
 			job.setDescription(jobRequest.getDescription());
 			job.setPharmacyGroupId(jobRequest.getPharmacyGroupId());
-
-			// TODO:handle branchID
-//			job.setPharmacyBranchId(jobRequest.getPharmacyBranchId());
-
+			job.setPharmacyBranchId(jobRequest.getPharmacyBranchId());
 			job.setJobDate(jobRequest.getJobDate());
 			job.setJobStartTime(jobRequest.getJobStartTime());
 			job.setJobEndTime(jobRequest.getJobEndTime());

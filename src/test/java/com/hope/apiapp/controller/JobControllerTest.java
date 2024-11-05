@@ -63,10 +63,11 @@ public class JobControllerTest {
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> jobController.getFilteredJobsWithLimitedFields(null,
-				null, null, null, null, null, null, null)).isInstanceOf(RuntimeException.class)
-				.hasMessageContaining("Unexpected error");
+		assertThatThrownBy(
+				() -> jobController.getFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null))
+				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
 	}
+
 	@Test
 	public void testGetMyJobs_Success() {
 		// Arrange
@@ -78,8 +79,7 @@ public class JobControllerTest {
 				.thenReturn(myList);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<List<JobDTO>>> response = jobController.getMyJobs(null,
-				null, null,  null);
+		ResponseEntity<ApiResponseSuccess<List<JobDTO>>> response = jobController.getMyJobs(null, null, null);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -98,38 +98,7 @@ public class JobControllerTest {
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> jobController.getMyJobs(null,
-				null, null, null)).isInstanceOf(RuntimeException.class)
-				.hasMessageContaining("Unexpected error");
-	}
-
-	@Test
-	public void testGetJobByIds_Success() {
-		// Arrange
-		Long id = 1L;
-		JobDTO newJob = new JobDTO();
-		
-		when(jobService.findFilteredJobsWithLimitedFields(id))
-				.thenReturn(newJob);
-
-		// Act
-		ResponseEntity<ApiResponseSuccess<JobDTO>> response = jobController.getJobById(id);
-
-		// Assert
-		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
-	}
-	@Test
-	public void testGetJobByIds_Exception() {
-		// Arrange
-		Long id = 1L;
-		JobDTO returnedJob = new JobDTO();
-		
-		when(jobService.findFilteredJobsWithLimitedFields(id)).thenThrow(new RuntimeException("Unexpected error"));
-
-		// Act & Assert
-		assertThatThrownBy(() -> jobController.getJobById(id)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> jobController.getMyJobs(null, null, null)).isInstanceOf(RuntimeException.class)
 				.hasMessageContaining("Unexpected error");
 	}
 

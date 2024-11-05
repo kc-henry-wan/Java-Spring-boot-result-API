@@ -20,16 +20,19 @@ public class JobDTO {
 	private String branchPostalCode;
 	private Double branchLatitude;
 	private Double branchLongitude;
+	private String pharmacistFirstName;
+	private String pharmacistLastName;
 	private Double distance;
 
 	// Constructor
 	public JobDTO() {
-	};
+	}
 
 	public JobDTO(Long jobId, String jobRef, LocalDate jobDate, BigDecimal hourlyRate, BigDecimal totalWorkHour,
 			BigDecimal totalPaid, String lunchArrangement, String parkingOption, BigDecimal ratePerMile, String status,
 			String branchName, String branchAddress1, String branchAddress2, String branchPostalCode,
-			Double branchLatitude, Double branchLongitude, Double distance) {
+			Double branchLatitude, Double branchLongitude, String pharmacistFirstName, String pharmacistLastName,
+			Double distance) {
 		this.jobId = jobId;
 		this.jobRef = jobRef;
 		this.jobDate = jobDate;
@@ -46,6 +49,8 @@ public class JobDTO {
 		this.branchPostalCode = branchPostalCode;
 		this.branchLatitude = branchLatitude;
 		this.branchLongitude = branchLongitude;
+		this.pharmacistFirstName = pharmacistFirstName;
+		this.pharmacistLastName = pharmacistLastName;
 		this.distance = distance;
 	}
 
@@ -183,6 +188,22 @@ public class JobDTO {
 
 	public void setDistance(Double distance) {
 		this.distance = distance;
+	}
+
+	public String getPharmacistFirstName() {
+		return pharmacistFirstName;
+	}
+
+	public void setPharmacistFirstName(String pharmacistFirstName) {
+		this.pharmacistFirstName = pharmacistFirstName;
+	}
+
+	public String getPharmacistLastName() {
+		return pharmacistLastName;
+	}
+
+	public void setPharmacistLastName(String pharmacistLastName) {
+		this.pharmacistLastName = pharmacistLastName;
 	}
 
 }

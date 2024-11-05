@@ -6,6 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,8 +38,7 @@ public class NegotiationControllerTest {
 		List<Negotiation> myList = new ArrayList<>();
 		myList.add(returnedNegotiation);
 
-		when(negotiationService.getAllNegotiations())
-				.thenReturn(myList);
+		when(negotiationService.getAllNegotiations()).thenReturn(myList);
 
 		// Act
 		ResponseEntity<ApiResponseSuccess<List<Negotiation>>> response = negotiationController.getAllNegotiations();
@@ -49,16 +51,10 @@ public class NegotiationControllerTest {
 
 	@Test
 	public void testGetNegotiation_Exception() {
-		// Arrange
-		Negotiation returnedNegotiation = new Negotiation();
-		List<Negotiation> myList = new ArrayList<>();
-		myList.add(returnedNegotiation);
-
-		when(negotiationService.getAllNegotiations())
-				.thenThrow(new RuntimeException("Unexpected error"));
+		when(negotiationService.getAllNegotiations()).thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> negotiationController.getAllNegotiations().isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> negotiationController.getAllNegotiations()).isInstanceOf(RuntimeException.class)
 				.hasMessageContaining("Unexpected error");
 	}
 
@@ -67,9 +63,8 @@ public class NegotiationControllerTest {
 		// Arrange
 		Long id = 1L;
 		Negotiation newNegotiation = new Negotiation();
-		
-		when(negotiationService.getNegotiationById(id))
-				.thenReturn(newNegotiation);
+
+		when(negotiationService.getNegotiationById(id)).thenReturn(newNegotiation);
 
 		// Act
 		ResponseEntity<ApiResponseSuccess<Negotiation>> response = negotiationController.getNegotiationById(id);
@@ -84,15 +79,14 @@ public class NegotiationControllerTest {
 	public void testGetNegotiationByIds_Exception() {
 		// Arrange
 		Long id = 1L;
-		Negotiation returnedNegotiation = new Negotiation();
-		
+
 		when(negotiationService.getNegotiationById(id)).thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
 		assertThatThrownBy(() -> negotiationController.getNegotiationById(id)).isInstanceOf(RuntimeException.class)
 				.hasMessageContaining("Unexpected error");
 	}
-	
+
 	@Test
 	public void testAddNegotiation_Success() {
 		// Arrange

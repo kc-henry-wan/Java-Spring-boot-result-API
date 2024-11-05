@@ -7,13 +7,9 @@ import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -34,9 +30,10 @@ public class Job {
 	private Long pharmacistId;
 	private Long pharmacyGroupId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "pharmacy_branch_id", foreignKey = @ForeignKey(name = "fk_pharmacy_branch"))
-	private PharmacyBranch pharmacyBranch;
+	private Long pharmacyBranchId;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "pharmacy_branch_id", foreignKey = @ForeignKey(name = "fk_pharmacy_branch"))
+//	private PharmacyBranch pharmacyBranch;
 
 	@Column(nullable = false)
 	private LocalDate jobDate;
@@ -215,12 +212,20 @@ public class Job {
 		this.pharmacyGroupId = pharmacyGroupId;
 	}
 
-	public PharmacyBranch getPharmacyBranch() {
-		return pharmacyBranch;
+//	public PharmacyBranch getPharmacyBranch() {
+//		return pharmacyBranch;
+//	}
+//
+//	public void setPharmacyBranch(PharmacyBranch pharmacyBranch) {
+//		this.pharmacyBranch = pharmacyBranch;
+//	}
+
+	public Long getPharmacyBranchId() {
+		return pharmacyBranchId;
 	}
 
-	public void setPharmacyBranch(PharmacyBranch pharmacyBranch) {
-		this.pharmacyBranch = pharmacyBranch;
+	public void setPharmacyBranchId(Long pharmacyBranchId) {
+		this.pharmacyBranchId = pharmacyBranchId;
 	}
 
 }

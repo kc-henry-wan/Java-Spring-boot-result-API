@@ -3,6 +3,7 @@ package com.hope.apiapp.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.hope.apiapp.dto.PharmacyBranchRequestDto;
+import com.hope.apiapp.exception.ResourceConflictException;
 import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.PharmacyBranch;
 import com.hope.apiapp.repository.PharmacyBranchRepository;
@@ -34,14 +36,16 @@ public class PharmacyBranchServiceTest {
 		// Arrange
 		Long id = 1L;
 		String newBranchName = "Richmond Branch";
-		String newAddress = "45 Park Road";
-//		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		String newStatus = "Closed";
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
 
 		PharmacyBranch existingPharmacyBranch = new PharmacyBranch();
+		existingPharmacyBranch.setUpdatedAt(originalLastModifiedDate);
 
 		PharmacyBranchRequestDto request = new PharmacyBranchRequestDto();
 		request.setBranchName(newBranchName);
-		request.setAddress1(newAddress);
+		request.setStatus(newStatus);
+		request.setUpdatedAt(originalLastModifiedDate);
 
 		Mockito.when(pharmacyBranchRepository.findById(id)).thenReturn(Optional.of(existingPharmacyBranch));
 		Mockito.when(pharmacyBranchRepository.save(existingPharmacyBranch)).thenReturn(existingPharmacyBranch);
@@ -51,7 +55,7 @@ public class PharmacyBranchServiceTest {
 
 		// Assert
 		assertEquals(newBranchName, result.getBranchName());
-		assertEquals(newAddress, result.getAddress1());
+		assertEquals(newStatus, result.getStatus());
 		Mockito.verify(pharmacyBranchRepository).save(existingPharmacyBranch);
 	}
 
@@ -68,26 +72,24 @@ public class PharmacyBranchServiceTest {
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
-//	@Test
-//	public void testUpdatePharmacyBranch_RecordModified() {
-//		// Arrange
-//		Long id = 1L;
-//		Double newHourlyRate = 60.0;
-//		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
-//		LocalDateTime updatedLastModifiedDate = LocalDateTime.of(2024, 11, 2, 10, 0);
-//
-//		PharmacyBranch existingPharmacyBranch = new PharmacyBranch();
-//
-//		Mockito.when(pharmacyBranchRepository.findById(id)).thenReturn(Optional.of(existingPharmacyBranch));
-//
-//		// Act
-//		//TODO:Check last modificationDate
-////		PharmacyBranch result = pharmacyBranchService.updatePharmacyBranch(id, existingPharmacyBranch, originalLastModifiedDate);
-//
-//		// Assert
-//		if (result != null) {
-//		}
-//		Mockito.verify(pharmacyBranchRepository, Mockito.never()).save(existingPharmacyBranch);
-//	}
+	@Test
+	public void testUpdatePharmacyBranch_RecordModified() {
+		// Arrange
+		Long id = 1L;
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime updatedLastModifiedDate = LocalDateTime.of(2024, 11, 2, 10, 0);
+
+		PharmacyBranch existingPharmacyBranch = new PharmacyBranch();
+		existingPharmacyBranch.setUpdatedAt(originalLastModifiedDate);
+
+		PharmacyBranchRequestDto request = new PharmacyBranchRequestDto();
+		request.setUpdatedAt(updatedLastModifiedDate);
+
+		Mockito.when(pharmacyBranchRepository.findById(id)).thenReturn(Optional.of(existingPharmacyBranch));
+
+		// Act & Assert
+		assertThatThrownBy(() -> pharmacyBranchService.updatePharmacyBranch(id, request))
+				.isInstanceOf(ResourceConflictException.class);
+	}
 
 }
