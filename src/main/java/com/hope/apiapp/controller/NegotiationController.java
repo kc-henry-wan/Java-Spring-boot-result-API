@@ -48,7 +48,7 @@ public class NegotiationController {
 	public ResponseEntity<ApiResponseSuccess<Negotiation>> getNegotiationById(@PathVariable Long id) {
 		logger.info("getNegotiationById");
 
-		Negotiation negotiation = negotiationService.getNegotiationByIdWithLimitedFields(id);
+		Negotiation negotiation = negotiationService.getNegotiationById(id);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", negotiation), HttpStatus.OK);
 	}
