@@ -29,6 +29,71 @@ public class NegotiationControllerTest {
 	private NegotiationService negotiationService;
 
 	@Test
+	public void testGetNegotiation_Success() {
+		// Arrange
+		Negotiation returnedNegotiation = new Negotiation();
+		List<Negotiation> myList = new ArrayList<>();
+		myList.add(returnedNegotiation);
+
+		when(negotiationService.getAllNegotiations())
+				.thenReturn(myList);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<List<Negotiation>>> response = negotiationController.getAllNegotiations();
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+	}
+
+	@Test
+	public void testGetNegotiation_Exception() {
+		// Arrange
+		Negotiation returnedNegotiation = new Negotiation();
+		List<Negotiation> myList = new ArrayList<>();
+		myList.add(returnedNegotiation);
+
+		when(negotiationService.getAllNegotiations())
+				.thenThrow(new RuntimeException("Unexpected error"));
+
+		// Act & Assert
+		assertThatThrownBy(() -> negotiationController.getAllNegotiations().isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("Unexpected error");
+	}
+
+	@Test
+	public void testGetNegotiationByIds_Success() {
+		// Arrange
+		Long id = 1L;
+		Negotiation newNegotiation = new Negotiation();
+		
+		when(negotiationService.getNegotiationById(id))
+				.thenReturn(newNegotiation);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<Negotiation>> response = negotiationController.getNegotiationById(id);
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+	}
+
+	@Test
+	public void testGetNegotiationByIds_Exception() {
+		// Arrange
+		Long id = 1L;
+		Negotiation returnedNegotiation = new Negotiation();
+		
+		when(negotiationService.getNegotiationById(id)).thenThrow(new RuntimeException("Unexpected error"));
+
+		// Act & Assert
+		assertThatThrownBy(() -> negotiationController.getNegotiationById(id)).isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("Unexpected error");
+	}
+	
+	@Test
 	public void testAddNegotiation_Success() {
 		// Arrange
 		NegotiationAddRequestDto request = new NegotiationAddRequestDto();
