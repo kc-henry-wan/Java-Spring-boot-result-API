@@ -34,12 +34,6 @@ public class NegotiationService {
 				.orElseThrow(() -> new ResourceNotFoundException("Negotiation not found"));
 	}
 
-	public Negotiation getNegotiationByIdWithLimitedFields(Long id) {
-		logger.info("getNegotiationByIdWithLimitedFields: " + id);
-		return negotiationRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Negotiation not found"));
-	}
-
 	public Negotiation addNegotiation(NegotiationAddRequestDto negotiationRequest) {
 		logger.info("addNegotiation");
 
