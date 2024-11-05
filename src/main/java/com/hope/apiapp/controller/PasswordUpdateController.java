@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hope.apiapp.model.PasswordResetToken;
 import com.hope.apiapp.model.Pharmacist;
-import com.hope.apiapp.repository.PharmacistRepository;
+import com.hope.apiapp.service.PharmacistService;
 import com.hope.apiapp.service.PasswordResetTokenService;
 
 @RestController
@@ -33,7 +33,7 @@ public class PasswordUpdateController {
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
-	private PharmacistRepository pharmacistRepository;
+	private PharmacistService pharmacistService;
 
 	@PostMapping("/v1/reset-password")
 	public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
@@ -44,10 +44,12 @@ public class PasswordUpdateController {
 
 		if (resetToken != null) {
 			try {
-				Pharmacist user = pharmacistRepository.findById(resetToken.getUserId()).orElseThrow();
-				user.setPassword(passwordEncoder.encode(newPassword));
-				user.setUpdatedAt(LocalDateTime.now());
-				pharmacistRepository.save(user);
+				//Pharmacist user = pharmacistRepository.findById(resetToken.getUserId()).orElseThrow();
+				//user.setPassword(passwordEncoder.encode(newPassword));
+				//user.setUpdatedAt(LocalDateTime.now());
+				//pharmacistRepository.save(user);
+				Long userId = resetToken.getUserId();
+				pharmacistService.resetPassword(userId, newPassword);
 
 				passwordResetService.invalidateToken(resetToken); // Invalidate token after use
 
