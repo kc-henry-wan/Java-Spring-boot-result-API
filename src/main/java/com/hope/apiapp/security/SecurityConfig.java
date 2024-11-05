@@ -34,6 +34,12 @@ public class SecurityConfig {
 				.anyRequest().authenticated(); // All other requests require authentication
 
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
+
+            http.exceptionHandling()
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.sendError(HttpStatus.FORBIDDEN.value(), "Access Denied");
+                });
+		
 		return http.build();
 	}
 
