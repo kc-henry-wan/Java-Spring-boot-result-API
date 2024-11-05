@@ -123,4 +123,23 @@ public class PharmacistService {
 
 		}
 	}
+	public Pharmacist resetPassword(Long id, String newPassword) {
+
+		logger.info("updatePharmacist: " + id);
+		Pharmacist pharmacist = getPharmacistById(id);
+		
+		if (pharmacist != null) {
+			logger.info("pharmacist is not null");
+			
+				pharmacist.setPassword(passwordEncoder.encode(newPassword));
+				pharmacist.setUpdatedAt(LocalDateTime.now());
+			pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+		
+				pharmacistRepository.save(pharmacist);
+		} else {
+			logger.info("pharmacist is null");
+
+			throw new ResourceNotFoundException("Pharmacist not found with ID " + id);
+
+	}
 }
