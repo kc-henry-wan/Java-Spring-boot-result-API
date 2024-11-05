@@ -6,6 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import com.hope.apiapp.dto.JobDTO;
 import com.hope.apiapp.dto.JobRequestDto;
 import com.hope.apiapp.dto.JobUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
@@ -27,6 +31,34 @@ public class JobControllerTest {
 
 	@Mock
 	private JobService jobService;
+
+	@Test
+	public void testGetFilteredJobsWithLimitedFields_Success() {
+		// Arrange
+		JobDTO returnedJob = new JobDTO();
+		List<JobDTO> myList = new ArrayList<>();
+		myList.add(returnedJob);
+
+		when(jobService.findFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null, null))
+				.thenReturn(myList);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<List<JobDTO>>> response = jobController.getFilteredJobsWithLimitedFields(null,
+				null, null, null, null, null, null, null);
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+	}
+
+	@Test
+	public void testGetMyJobs_Success() {
+	}
+
+	@Test
+	public void testGetJobByIds_Success() {
+	}
 
 	@Test
 	public void testAddJob_Success() {

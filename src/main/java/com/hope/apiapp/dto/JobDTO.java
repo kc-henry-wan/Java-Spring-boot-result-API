@@ -23,6 +23,9 @@ public class JobDTO {
 	private Double distance;
 
 	// Constructor
+	public JobDTO() {
+	};
+
 	public JobDTO(Long jobId, String jobRef, LocalDate jobDate, BigDecimal hourlyRate, BigDecimal totalWorkHour,
 			BigDecimal totalPaid, String lunchArrangement, String parkingOption, BigDecimal ratePerMile, String status,
 			String branchName, String branchAddress1, String branchAddress2, String branchPostalCode,

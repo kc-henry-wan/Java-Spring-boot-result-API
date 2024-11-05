@@ -43,7 +43,7 @@ public class JobService {
 
 	@Transactional
 	public List<JobDTO> findFilteredJobsWithLimitedFields(Double fromLat, Double fromLng, String fromDate,
-			String toDate, String statusCode, String jobIds, String groupCode, String sortingSeq) {
+			String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId, String sortingSeq) {
 		logger.info("JobService - findFilteredJobsWithLimitedFields");
 
 		StringBuilder queryBuilder = new StringBuilder(
@@ -72,6 +72,9 @@ public class JobService {
 		}
 		if (groupCode != null) {
 			conditions.add("j.pharmacyGroupId = :groupCode");
+		}
+		if (pharmacistId != null) {
+			conditions.add("j.pharmacistId = :pharmacistId");
 		}
 
 		if (!conditions.isEmpty()) {
@@ -124,6 +127,10 @@ public class JobService {
 		if (groupCode != null) {
 			query.setParameter("groupCode", groupCode);
 			logger.info("Set parameters finished: groupCode:" + groupCode);
+		}
+		if (pharmacistId != null) {
+			query.setParameter("pharmacistId", pharmacistId);
+			logger.info("Set parameters finished: pharmacistId:" + pharmacistId);
 		}
 
 		List<Object[]> results = query.getResultList();

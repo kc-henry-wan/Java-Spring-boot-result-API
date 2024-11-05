@@ -17,13 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hope.apiapp.dto.JobRequestDto;
 import com.hope.apiapp.dto.JobDTO;
 import com.hope.apiapp.dto.JobProjection;
+import com.hope.apiapp.dto.JobRequestDto;
 import com.hope.apiapp.dto.JobUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.model.Job;
 import com.hope.apiapp.service.JobService;
+import com.hope.apiapp.util.CommonUtil;
 
 @RestController
 @RequestMapping("/api")
@@ -52,7 +53,7 @@ public class JobController {
 		logger.info("JobController - getFilteredJobsWithLimitedFields start");
 
 		List<JobDTO> jobs = jobService.findFilteredJobsWithLimitedFields(fromLat, fromLng, fromDate, toDate, statusCode,
-				jobIds, groupCode, sortingSeq);
+				jobIds, groupCode, null, sortingSeq);
 
 		logger.info("JobController - List<JobDTO> returned");
 
@@ -60,7 +61,24 @@ public class JobController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", jobs), HttpStatus.OK);
 	}
 
-	@GetMapping("/v1/job/{id}")
+	// GET /v1/job
+	@GetMapping("/v1/myjob")
+	public ResponseEntity<ApiResponseSuccess<List<JobDTO>>> getMyJobs(@RequestParam(required = false) Double fromLat,
+			@RequestParam(required = false) Double fromLng, @RequestParam(required = false) String groupCode,
+			@RequestParam(required = false) String sortingSeq) {
+
+		logger.info("JobController - getMyJobs start");
+
+		List<JobDTO> jobs = jobService.findFilteredJobsWithLimitedFields(fromLat, fromLng, null, null, null, null, null,
+				CommonUtil.getCurrentUserId(), sortingSeq);
+
+		logger.info("JobController - List<JobDTO> returned");
+
+//		return ResponseEntity.ok(jobs);
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", jobs), HttpStatus.OK);
+	}
+
+	@GetMapping("/v1/staff/job/{id}")
 	public ResponseEntity<ApiResponseSuccess<JobProjection>> getJobById(@PathVariable Long id) {
 		logger.info("getJobById");
 
