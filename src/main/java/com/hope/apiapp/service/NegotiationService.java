@@ -1,11 +1,12 @@
 package com.hope.apiapp.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.hope.apiapp.dto.NegotiationAddRequestDto;
@@ -24,9 +25,13 @@ public class NegotiationService {
 	@Autowired
 	private NegotiationRepository negotiationRepository;
 
-	public List<Negotiation> getAllNegotiations() {
-		logger.info("NegotiationProjection - findAllNegotiationsWithLimitedFields");
-		return negotiationRepository.findAll();
+	public Page<Negotiation> findByStatus(String status, Pageable pageable) {
+		logger.info("NegotiationService - findByStatus: " + status);
+
+		if (status == null || !status.isEmpty()) {
+			return negotiationRepository.findAll(pageable);
+		}
+		return negotiationRepository.findByStatus(status, pageable);
 	}
 
 	public Negotiation getNegotiationById(Long id) {

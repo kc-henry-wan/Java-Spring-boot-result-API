@@ -1,11 +1,12 @@
 package com.hope.apiapp.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +37,9 @@ public class PharmacistService {
 //		return pharmacistRepository.findAll();
 //	}
 
-	public List<PharmacistProjection> getAllPharmacists() {
-		logger.info("PharmacistProjection - findAllPharmacistsWithLimitedFields");
-		return pharmacistRepository.findAllPharmacistsWithLimitedFields();
+	public Page<PharmacistProjection> findByStatusWithLimitedFields(String status, Pageable pageable) {
+		logger.info("PharmacistProjection - findByStatusWithLimitedFields: " + status);
+		return pharmacistRepository.findByStatusWithLimitedFields(status, pageable);
 	}
 
 	public Pharmacist getPharmacistById(Long id) {
@@ -48,8 +49,8 @@ public class PharmacistService {
 	}
 
 	public PharmacistProjection getPharmacistByIdWithLimitedFields(Long id) {
-		logger.info("getPharmacistByIdWithLimitedFields: " + id);
-		return pharmacistRepository.findPharmacistByIdWithLimitedFields(id)
+		logger.info("findByIdWithLimitedFields: " + id);
+		return pharmacistRepository.findByIdWithLimitedFields(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Pharmacist not found"));
 	}
 

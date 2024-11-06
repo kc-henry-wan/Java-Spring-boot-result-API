@@ -3,10 +3,11 @@ package com.hope.apiapp.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.hope.apiapp.dto.PharmacyBranchRequestDto;
@@ -33,14 +38,37 @@ public class PharmacyBranchControllerTest {
 	@Test
 	public void testFindAllBranches_Success() {
 		// Arrange
+		Pageable pageable = PageRequest.of(0, 10);
 		PharmacyBranch returnedPharmacyBranch = new PharmacyBranch();
-		List<PharmacyBranch> myList = new ArrayList<>();
-		myList.add(returnedPharmacyBranch);
+		List<PharmacyBranch> myList = List.of(returnedPharmacyBranch);
+		Page<PharmacyBranch> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(pharmacyBranchService.findAllBranches()).thenReturn(myList);
+		when(pharmacyBranchService.findByStatus(isNull(), any(Pageable.class))).thenReturn(myPage);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<List<PharmacyBranch>>> response = pharmacyBranchController.findAllBranches();
+		ResponseEntity<ApiResponseSuccess<Page<PharmacyBranch>>> response = pharmacyBranchController.getAllBranches(0,
+				10, "status", "asc", null);
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+	}
+
+	@Test
+	public void testFindAllBranchesByStatus_Success() {
+		// Arrange
+		String status = "Open";
+		Pageable pageable = PageRequest.of(0, 10);
+		PharmacyBranch returnedPharmacyBranch = new PharmacyBranch();
+		List<PharmacyBranch> myList = List.of(returnedPharmacyBranch);
+		Page<PharmacyBranch> myPage = new PageImpl<>(myList, pageable, myList.size());
+
+		when(pharmacyBranchService.findByStatus(anyString(), any(Pageable.class))).thenReturn(myPage);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<Page<PharmacyBranch>>> response = pharmacyBranchController.getAllBranches(0,
+				10, "status", "asc", status);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -50,11 +78,13 @@ public class PharmacyBranchControllerTest {
 
 	@Test
 	public void testFindAllBranches_Exception() {
-		when(pharmacyBranchService.findAllBranches()).thenThrow(new RuntimeException("Unexpected error"));
+
+		when(pharmacyBranchService.findByStatus(isNull(), any(Pageable.class)))
+				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> pharmacyBranchController.findAllBranches()).isInstanceOf(RuntimeException.class)
-				.hasMessageContaining("Unexpected error");
+		assertThatThrownBy(() -> pharmacyBranchController.getAllBranches(0, 10, "status", "asc", null))
+				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
 	}
 
 	@Test

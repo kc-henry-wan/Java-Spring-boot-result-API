@@ -1,11 +1,12 @@
 package com.hope.apiapp.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.hope.apiapp.dto.PharmacyBranchRequestDto;
@@ -23,8 +24,13 @@ public class PharmacyBranchService {
 	@Autowired
 	private PharmacyBranchRepository pharmacyBranchRepository;
 
-	public List<PharmacyBranch> findAllBranches() {
-		return pharmacyBranchRepository.findAll();
+	public Page<PharmacyBranch> findByStatus(String status, Pageable pageable) {
+		logger.info("PharmacyBranchService - findByStatus: " + status);
+
+		if (status == null || !status.isEmpty()) {
+			return pharmacyBranchRepository.findAll(pageable);
+		}
+		return pharmacyBranchRepository.findByStatus(status, pageable);
 	}
 
 	public PharmacyBranch findBranchById(Long id) {

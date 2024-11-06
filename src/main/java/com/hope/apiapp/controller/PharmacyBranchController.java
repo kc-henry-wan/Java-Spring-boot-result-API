@@ -1,8 +1,10 @@
 package com.hope.apiapp.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hope.apiapp.dto.PharmacyBranchRequestDto;
@@ -28,8 +31,16 @@ public class PharmacyBranchController {
 	private PharmacyBranchService pharmacyBranchService;
 
 	@GetMapping("/v1/branch")
-	public ResponseEntity<ApiResponseSuccess<List<PharmacyBranch>>> findAllBranches() {
-		List<PharmacyBranch> branchs = pharmacyBranchService.findAllBranches();
+	public ResponseEntity<ApiResponseSuccess<Page<PharmacyBranch>>> getAllBranches(
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
+			@RequestParam(defaultValue = "branchName") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String status) {
+
+		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(page, size, sort);
+
+		Page<PharmacyBranch> branchs = pharmacyBranchService.findByStatus(status, pageable);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", branchs), HttpStatus.OK);
 	}
