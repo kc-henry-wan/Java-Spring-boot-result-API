@@ -14,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.hope.apiapp.dto.JobDTO;
@@ -35,16 +39,18 @@ public class JobControllerTest {
 	@Test
 	public void testGetFilteredJobsWithLimitedFields_Success() {
 		// Arrange
+		Pageable pageable = PageRequest.of(0, 10);
 		JobDTO returnedJob = new JobDTO();
 		List<JobDTO> myList = new ArrayList<>();
 		myList.add(returnedJob);
+		Page<JobDTO> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(jobService.findFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null, null))
-				.thenReturn(myList);
+		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null))
+				.thenReturn(myPage);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<List<JobDTO>>> response = jobController.getFilteredJobsWithLimitedFields(null,
-				null, null, null, null, null, null, null);
+		ResponseEntity<ApiResponseSuccess<Page<JobDTO>>> response = jobController.getFilteredJobsWithLimitedFields(0,
+				10, "status", "asc", null, null, null, null, null, null, null);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -55,31 +61,36 @@ public class JobControllerTest {
 	@Test
 	public void testGetFilteredJobsWithLimitedFields_Exception() {
 		// Arrange
+		Pageable pageable = PageRequest.of(0, 10);
 		JobDTO returnedJob = new JobDTO();
 		List<JobDTO> myList = new ArrayList<>();
 		myList.add(returnedJob);
+		Page<JobDTO> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(jobService.findFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null, null))
+		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(
-				() -> jobController.getFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null))
-				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
+		assertThatThrownBy(() -> jobController.getFilteredJobsWithLimitedFields(0, 10, "status", "asc", null, null,
+				null, null, null, null, null)).isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("Unexpected error");
 	}
 
 	@Test
 	public void testGetMyJobs_Success() {
 		// Arrange
+		Pageable pageable = PageRequest.of(0, 10);
 		JobDTO returnedJob = new JobDTO();
 		List<JobDTO> myList = new ArrayList<>();
 		myList.add(returnedJob);
+		Page<JobDTO> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(jobService.findFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null, null))
-				.thenReturn(myList);
+		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null))
+				.thenReturn(myPage);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<List<JobDTO>>> response = jobController.getMyJobs(null, null, null);
+		ResponseEntity<ApiResponseSuccess<Page<JobDTO>>> response = jobController.getMyJobs(0, 10, "status", "asc",
+				null, null);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -90,16 +101,18 @@ public class JobControllerTest {
 	@Test
 	public void testGetMyJobs_Exception() {
 		// Arrange
+		Pageable pageable = PageRequest.of(0, 10);
 		JobDTO returnedJob = new JobDTO();
 		List<JobDTO> myList = new ArrayList<>();
 		myList.add(returnedJob);
+		Page<JobDTO> myPage = new PageImpl<>(myList, pageable, myList.size());
 
 		when(jobService.findFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null, null))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> jobController.getMyJobs(null, null, null)).isInstanceOf(RuntimeException.class)
-				.hasMessageContaining("Unexpected error");
+		assertThatThrownBy(() -> jobController.getMyJobs(0, 10, "status", "asc", null, null))
+				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
 	}
 
 	@Test

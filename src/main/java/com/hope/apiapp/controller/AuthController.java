@@ -3,6 +3,7 @@ package com.hope.apiapp.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hope.apiapp.dto.JwtAuthenticationResponse;
 import com.hope.apiapp.dto.LoginRequest;
+import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.security.JwtTokenProvider;
 
 @RestController
@@ -49,7 +51,8 @@ public class AuthController {
 			String jwtToken = jwtTokenProvider.generateToken(loginRequest.getUsername());
 			logger.info("authenticateUser: token generated:" + jwtToken);
 
-			return ResponseEntity.ok(new JwtAuthenticationResponse(jwtToken));
+			return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", new JwtAuthenticationResponse(jwtToken)),
+					HttpStatus.OK);
 
 		} catch (BadCredentialsException ex) {
 			throw new BadCredentialsException("Invalid username or password");

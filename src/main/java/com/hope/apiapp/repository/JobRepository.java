@@ -11,13 +11,14 @@ import com.hope.apiapp.dto.JobProjection;
 import com.hope.apiapp.model.Job;
 
 @Repository
-public interface JobRepository extends JpaRepository<Job, Long> {
+public interface JobRepository extends JpaRepository<Job, Long>, CustomJobRepository {
 
-	@Query("SELECT j.jobId AS jobId, j.jobRef AS jobRef, j.jobDate AS jobDate, j.hourlyRate AS hourlyRate, "
-			+ " j.totalWorkHour AS totalWorkHour, j.totalPaid AS totalPaid, "
+	@Query("SELECT j.jobId AS jobId, j.jobRef AS jobRef, j.jobDate AS jobDate, "
+			+ " j.jobStartTime AS jobStartTime, j.jobEndTime AS jobEndTime, "
+			+ " j.hourlyRate AS hourlyRate, j.totalWorkHour AS totalWorkHour, j.totalPaid AS totalPaid, "
 			+ " j.lunchArrangement AS lunchArrangement, j.parkingOption AS parkingOption, "
-			+ " j.ratePerMile AS ratePerMile, j.status AS status, pb.pharmacyBranchId AS pharmacyBranchId, "
-			+ " pb.branchName AS branchName, pb.address1 AS branchAddress1, "
+			+ " j.ratePerMile AS ratePerMile, j.status AS status, j.description as description, j.updatedAt AS updatedAt, "
+			+ " pb.pharmacyBranchId AS pharmacyBranchId, pb.branchName AS branchName, pb.address1 AS branchAddress1, "
 			+ " pb.address2 AS branchAddress2, pb.postalCode AS branchPostalCode, "
 			+ " p.pharmacistId AS pharmacistId, p.firstName AS pharmacistFirstName, p.lastName AS pharmacistLastName "
 			+ " FROM Job j JOIN PharmacyBranch pb ON j.pharmacyBranchId = pb.pharmacyBranchId "

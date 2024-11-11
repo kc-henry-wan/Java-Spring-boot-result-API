@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hope.apiapp.dto.NegotiationAddRequestDto;
+import com.hope.apiapp.dto.NegotiationProjection;
 import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.model.Negotiation;
@@ -28,8 +29,6 @@ import com.hope.apiapp.service.NegotiationService;
 @RestController
 @RequestMapping("/api")
 @Validated
-//@CrossOrigin(origins = "http://localhost:73")
-
 public class NegotiationController {
 
 	private static final Logger logger = LoggerFactory.getLogger(NegotiationController.class);
@@ -42,7 +41,7 @@ public class NegotiationController {
 	}
 
 	@GetMapping("/v1/negotiation")
-	public ResponseEntity<ApiResponseSuccess<Page<Negotiation>>> getAllNegotiations(
+	public ResponseEntity<ApiResponseSuccess<Page<NegotiationProjection>>> getAllNegotiations(
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
 			@RequestParam(defaultValue = "pharmacistId") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String status) {
@@ -51,7 +50,7 @@ public class NegotiationController {
 				: Sort.by(sortBy).descending();
 		Pageable pageable = PageRequest.of(page, size, sort);
 
-		Page<Negotiation> negotiations = negotiationService.findByStatus(status, pageable);
+		Page<NegotiationProjection> negotiations = negotiationService.getNegotiationByStatus(status, pageable);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", negotiations), HttpStatus.OK);
 	}
@@ -60,7 +59,7 @@ public class NegotiationController {
 	public ResponseEntity<ApiResponseSuccess<Negotiation>> getNegotiationById(@PathVariable Long id) {
 		logger.info("getNegotiationById");
 
-		Negotiation negotiation = negotiationService.getNegotiationById(id);
+		Negotiation negotiation = negotiationService.findNegotiationById(id);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", negotiation), HttpStatus.OK);
 	}

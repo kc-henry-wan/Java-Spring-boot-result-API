@@ -2,11 +2,14 @@ package com.hope.apiapp.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class JobDTO {
 	private Long jobId;
 	private String jobRef;
 	private LocalDate jobDate;
+	private LocalTime jobStartTime;
+	private LocalTime jobEndTime;
 	private BigDecimal hourlyRate;
 	private BigDecimal totalWorkHour;
 	private BigDecimal totalPaid;
@@ -28,14 +31,16 @@ public class JobDTO {
 	public JobDTO() {
 	}
 
-	public JobDTO(Long jobId, String jobRef, LocalDate jobDate, BigDecimal hourlyRate, BigDecimal totalWorkHour,
-			BigDecimal totalPaid, String lunchArrangement, String parkingOption, BigDecimal ratePerMile, String status,
-			String branchName, String branchAddress1, String branchAddress2, String branchPostalCode,
-			Double branchLatitude, Double branchLongitude, String pharmacistFirstName, String pharmacistLastName,
-			Double distance) {
+	public JobDTO(Long jobId, String jobRef, LocalDate jobDate, LocalTime jobStartTime, LocalTime jobEndTime,
+			BigDecimal hourlyRate, BigDecimal totalWorkHour, BigDecimal totalPaid, String lunchArrangement,
+			String parkingOption, BigDecimal ratePerMile, String status, String branchName, String branchAddress1,
+			String branchAddress2, String branchPostalCode, Double branchLatitude, Double branchLongitude,
+			String pharmacistFirstName, String pharmacistLastName, Double distance) {
 		this.jobId = jobId;
 		this.jobRef = jobRef;
 		this.jobDate = jobDate;
+		this.jobStartTime = jobStartTime;
+		this.jobEndTime = jobEndTime;
 		this.hourlyRate = hourlyRate;
 		this.totalWorkHour = totalWorkHour;
 		this.totalPaid = totalPaid;
@@ -76,6 +81,22 @@ public class JobDTO {
 
 	public void setJobDate(LocalDate jobDate) {
 		this.jobDate = jobDate;
+	}
+
+	public LocalTime getJobStartTime() {
+		return jobStartTime;
+	}
+
+	public void setJobStartTime(LocalTime jobStartTime) {
+		this.jobStartTime = jobStartTime;
+	}
+
+	public LocalTime getJobEndTime() {
+		return jobEndTime;
+	}
+
+	public void setJobEndTime(LocalTime jobEndTime) {
+		this.jobEndTime = jobEndTime;
 	}
 
 	public BigDecimal getHourlyRate() {

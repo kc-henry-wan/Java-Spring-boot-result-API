@@ -2,6 +2,8 @@ package com.hope.apiapp.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public interface JobProjection {
 
@@ -10,6 +12,10 @@ public interface JobProjection {
 	String getJobRef();
 
 	LocalDate getJobDate();
+
+	LocalTime getJobStartTime();
+
+	LocalTime getJobEndTime();
 
 	BigDecimal getHourlyRate();
 
@@ -24,6 +30,11 @@ public interface JobProjection {
 	BigDecimal getRatePerMile();
 
 	String getStatus();
+
+	String getDescription();
+
+	LocalDateTime getUpdatedAt();
+
 //
 //	Long getGroupCode();
 //

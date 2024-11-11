@@ -1,10 +1,12 @@
 package com.hope.apiapp.controller;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,8 +31,6 @@ import com.hope.apiapp.util.CommonUtil;
 @RestController
 @RequestMapping("/api")
 @Validated
-//@CrossOrigin(origins = "http://localhost:73")
-
 public class JobController {
 
 	private static final Logger logger = LoggerFactory.getLogger(JobController.class);
@@ -44,16 +44,22 @@ public class JobController {
 
 	// GET /v1/job
 	@GetMapping("/v1/job")
-	public ResponseEntity<ApiResponseSuccess<List<JobDTO>>> getFilteredJobsWithLimitedFields(
+	public ResponseEntity<ApiResponseSuccess<Page<JobDTO>>> getFilteredJobsWithLimitedFields(
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "JobDate") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
 			@RequestParam(required = false) Double fromLat, @RequestParam(required = false) Double fromLng,
 			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate,
 			@RequestParam(required = false) String statusCode, @RequestParam(required = false) String jobIds,
-			@RequestParam(required = false) String groupCode, @RequestParam(required = false) String sortingSeq) {
+			@RequestParam(required = false) String groupCode) {
 
 		logger.info("JobController - getFilteredJobsWithLimitedFields start");
 
-		List<JobDTO> jobs = jobService.findFilteredJobsWithLimitedFields(fromLat, fromLng, fromDate, toDate, statusCode,
-				jobIds, groupCode, null, sortingSeq);
+		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(page, size, sort);
+
+		Page<JobDTO> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, fromLat, fromLng, fromDate, toDate,
+				statusCode, jobIds, groupCode, null);
 
 		logger.info("JobController - List<JobDTO> returned");
 
@@ -63,13 +69,19 @@ public class JobController {
 
 	// GET /v1/job
 	@GetMapping("/v1/myjob")
-	public ResponseEntity<ApiResponseSuccess<List<JobDTO>>> getMyJobs(@RequestParam(required = false) Double fromLat,
-			@RequestParam(required = false) Double fromLng, @RequestParam(required = false) String sortingSeq) {
+	public ResponseEntity<ApiResponseSuccess<Page<JobDTO>>> getMyJobs(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) Double fromLat,
+			@RequestParam(required = false) Double fromLng) {
 
 		logger.info("JobController - getMyJobs start");
 
-		List<JobDTO> jobs = jobService.findFilteredJobsWithLimitedFields(fromLat, fromLng, null, null, null, null, null,
-				CommonUtil.getCurrentUserId(), sortingSeq);
+		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(page, size, sort);
+
+		Page<JobDTO> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, fromLat, fromLng, null, null, null,
+				null, null, CommonUtil.getCurrentUserId());
 
 		logger.info("JobController - List<JobDTO> returned");
 
@@ -86,7 +98,7 @@ public class JobController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", job), HttpStatus.OK);
 	}
 
-	@PostMapping("/v1/job")
+	@PostMapping("/staff/v1/job")
 	public ResponseEntity<ApiResponseSuccess<Long>> addJob(@RequestBody JobRequestDto jobRequest) {
 		logger.info("addJob");
 

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.hope.apiapp.dto.NegotiationAddRequestDto;
+import com.hope.apiapp.dto.NegotiationProjection;
 import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
 import com.hope.apiapp.exception.ResourceConflictException;
 import com.hope.apiapp.exception.ResourceNotFoundException;
@@ -25,17 +26,23 @@ public class NegotiationService {
 	@Autowired
 	private NegotiationRepository negotiationRepository;
 
-	public Page<Negotiation> findByStatus(String status, Pageable pageable) {
+	public Page<NegotiationProjection> getNegotiationByStatus(String status, Pageable pageable) {
 		logger.info("NegotiationService - findByStatus: " + status);
 
-		if (status == null || !status.isEmpty()) {
-			return negotiationRepository.findAll(pageable);
-		}
-		return negotiationRepository.findByStatus(status, pageable);
+//		if (status == null || !status.isEmpty()) {
+//			return negotiationRepository.findAll(pageable);
+//		}
+		return negotiationRepository.getNegotiationByStatus(status, pageable);
 	}
 
-	public Negotiation getNegotiationById(Long id) {
-		logger.info("getNegotiationById: " + id);
+	public NegotiationProjection getNegotiationById(Long id) {
+		logger.info("findNegotiationById: " + id);
+		return negotiationRepository.getNegotiationById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Negotiation not found"));
+	}
+
+	public Negotiation findById(Long id) {
+		logger.info("findNegotiationById: " + id);
 		return negotiationRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Negotiation not found"));
 	}
@@ -57,7 +64,7 @@ public class NegotiationService {
 	public Negotiation updateNegotiation(Long id, NegotiationUpdateRequestDto negotiationRequest) {
 
 		logger.info("updateNegotiation: " + id);
-		Negotiation negotiation = getNegotiationById(id);
+		Negotiation negotiation = findById(id);
 
 		if (negotiation != null) {
 			logger.info("negotiation is not null");
