@@ -6,7 +6,7 @@ import java.time.LocalTime;
 
 public interface NegotiationProjection {
 
-	Long getNegotiateId();
+	Long getNegotiationId();
 
 	String getJobRef();
 

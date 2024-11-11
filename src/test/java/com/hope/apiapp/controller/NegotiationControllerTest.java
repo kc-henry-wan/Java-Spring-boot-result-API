@@ -94,12 +94,13 @@ public class NegotiationControllerTest {
 	public void testGetNegotiationByIds_Success() {
 		// Arrange
 		Long id = 1L;
-		Negotiation newNegotiation = new Negotiation();
+		NegotiationProjection newNegotiation = mock(NegotiationProjection.class);
 
-		when(negotiationService.findNegotiationById(id)).thenReturn(newNegotiation);
+		when(negotiationService.getNegotiationById(id)).thenReturn(newNegotiation);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<Negotiation>> response = negotiationController.getNegotiationById(id);
+		ResponseEntity<ApiResponseSuccess<NegotiationProjection>> response = negotiationController
+				.getNegotiationById(id);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -112,7 +113,7 @@ public class NegotiationControllerTest {
 		// Arrange
 		Long id = 1L;
 
-		when(negotiationService.findNegotiationById(id)).thenThrow(new RuntimeException("Unexpected error"));
+		when(negotiationService.getNegotiationById(id)).thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
 		assertThatThrownBy(() -> negotiationController.getNegotiationById(id)).isInstanceOf(RuntimeException.class)
