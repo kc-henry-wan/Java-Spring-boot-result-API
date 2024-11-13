@@ -3,6 +3,7 @@ package com.hope.apiapp.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.hope.apiapp.dto.NegotiationAddRequestDto;
+import com.hope.apiapp.dto.NegotiationDto;
 import com.hope.apiapp.dto.NegotiationProjection;
 import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
@@ -41,38 +43,19 @@ public class NegotiationControllerTest {
 	@Test
 	public void testGetNegotiation_Success() {
 		// Arrange
+		Long id = 1L;
+		String status = "New";
 		Pageable pageable = PageRequest.of(0, 10);
-		NegotiationProjection returnedNegotiation = mock(NegotiationProjection.class);
+		NegotiationDto returnedNegotiation = new NegotiationDto();
 
-		List<NegotiationProjection> myList = List.of(returnedNegotiation);
-		Page<NegotiationProjection> myPage = new PageImpl<>(myList, pageable, myList.size());
+		List<NegotiationDto> myList = List.of(returnedNegotiation);
+		Page<NegotiationDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(negotiationService.getNegotiationByStatus(isNull(), any(Pageable.class))).thenReturn(myPage);
+		when(negotiationService.getNegotiations(any(Pageable.class), anyString(), anyLong())).thenReturn(myPage);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<Page<NegotiationProjection>>> response = negotiationController
-				.getAllNegotiations(0, 10, "status", "asc", null);
-
-		// Assert
-		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
-	}
-
-	@Test
-	public void testGetNegotiationByStatus_Success() {
-		// Arrange
-		String status = "Open";
-		Pageable pageable = PageRequest.of(0, 10);
-		NegotiationProjection returnedNegotiation = mock(NegotiationProjection.class);
-		List<NegotiationProjection> myList = List.of(returnedNegotiation);
-		Page<NegotiationProjection> myPage = new PageImpl<>(myList, pageable, myList.size());
-
-		when(negotiationService.getNegotiationByStatus(anyString(), any(Pageable.class))).thenReturn(myPage);
-
-		// Act
-		ResponseEntity<ApiResponseSuccess<Page<NegotiationProjection>>> response = negotiationController
-				.getAllNegotiations(0, 10, "status", "asc", status);
+		ResponseEntity<ApiResponseSuccess<Page<NegotiationDto>>> response = negotiationController.getNegotiations(0, 10,
+				"status", "asc", status, id);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -82,11 +65,11 @@ public class NegotiationControllerTest {
 
 	@Test
 	public void testGetNegotiation_Exception() {
-		when(negotiationService.getNegotiationByStatus(isNull(), any(Pageable.class)))
+		when(negotiationService.getNegotiations(any(Pageable.class), isNull(), anyLong()))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> negotiationController.getAllNegotiations(0, 10, "status", "asc", null))
+		assertThatThrownBy(() -> negotiationController.getNegotiations(0, 10, "status", "asc", null, 0L))
 				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
 	}
 

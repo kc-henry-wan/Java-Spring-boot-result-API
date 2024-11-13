@@ -1,6 +1,11 @@
 package com.hope.apiapp.dto;
 
+import java.time.LocalDateTime;
+
 public interface PharmacistProjection {
+
+	Long getPharmacistId();
+
 	String getFirstName();
 
 	String getLastName();
@@ -14,4 +19,6 @@ public interface PharmacistProjection {
 	String getPostalCode();
 
 	String getStatus();
+
+	LocalDateTime getUpdatedAt();
 }

@@ -125,8 +125,8 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 		}
 
 //		// Setting pagination using Pageable
-//		query.setFirstResult((int) pageable.getOffset());
-//		query.setMaxResults(pageable.getPageSize());
+		query.setFirstResult((int) pageable.getOffset());
+		query.setMaxResults(pageable.getPageSize());
 
 		List<Object[]> results = query.getResultList();
 
@@ -134,13 +134,6 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
 		// Iterate over results and populate JobDTO list
 		for (Object[] row : results) {
-			logger.debug("For each row: row[0]=" + row[0].toString());
-			logger.debug("For each row: row[1]=" + row[1].toString());
-			logger.debug("For each row: row[2]=" + row[2].toString());
-			logger.debug("For each row: row[3]=" + row[3].toString());
-			logger.debug("For each row: row[14]=" + row[14].toString());
-			logger.debug("For each row: row[15]=" + row[15].toString());
-
 			Double distance = 0.0;
 			if (fromLat != null && fromLng != null) {
 				distance = CommonUtil.calculateDistance(fromLat, fromLng, (Double) row[16], (Double) row[17]);

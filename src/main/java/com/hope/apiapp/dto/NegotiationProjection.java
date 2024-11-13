@@ -2,11 +2,14 @@ package com.hope.apiapp.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public interface NegotiationProjection {
 
 	Long getNegotiationId();
+
+	Long getJobId();
 
 	String getJobRef();
 
@@ -41,6 +44,8 @@ public interface NegotiationProjection {
 	String getReason();
 
 	Long getUpdatedUserId();
+
+	LocalDateTime getUpdatedAt();
 
 	String getBranchName();
 

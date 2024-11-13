@@ -29,7 +29,7 @@ public class NegotiationUpdateRequestDtoTest {
 		NegotiationUpdateRequestDto dto = new NegotiationUpdateRequestDto();
 		dto.setCounterHourlyRate(new BigDecimal("52.50"));
 		dto.setCounterTotalPaid(new BigDecimal("420.00"));
-		dto.setStatusCode("A");
+		dto.setStatus("A");
 
 		Set<ConstraintViolation<NegotiationUpdateRequestDto>> violations = validator.validate(dto);
 		assertTrue(violations.isEmpty(), "Expected no validation errors");
@@ -38,7 +38,7 @@ public class NegotiationUpdateRequestDtoTest {
 	@Test
 	public void testStatusCodeExceedsMaxLength() {
 		NegotiationUpdateRequestDto dto = new NegotiationUpdateRequestDto();
-		dto.setStatusCode("AB");
+		dto.setStatus("AB");
 
 		Set<ConstraintViolation<NegotiationUpdateRequestDto>> violations = validator.validate(dto);
 		assertEquals(1, violations.size(), "Expected one validation error");

@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hope.apiapp.dto.NegotiationAcceptRequestDto;
 import com.hope.apiapp.dto.NegotiationAddRequestDto;
+import com.hope.apiapp.dto.NegotiationDto;
 import com.hope.apiapp.dto.NegotiationProjection;
 import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
@@ -41,16 +43,17 @@ public class NegotiationController {
 	}
 
 	@GetMapping("/v1/negotiation")
-	public ResponseEntity<ApiResponseSuccess<Page<NegotiationProjection>>> getAllNegotiations(
+	public ResponseEntity<ApiResponseSuccess<Page<NegotiationDto>>> getNegotiations(
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
 			@RequestParam(defaultValue = "pharmacistId") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String status) {
+			@RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String status,
+			@RequestParam(required = false) Long pharmacistId) {
 
 		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable pageable = PageRequest.of(page, size, sort);
 
-		Page<NegotiationProjection> negotiations = negotiationService.getNegotiationByStatus(status, pageable);
+		Page<NegotiationDto> negotiations = negotiationService.getNegotiations(pageable, status, pharmacistId);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", negotiations), HttpStatus.OK);
 	}
@@ -76,6 +79,17 @@ public class NegotiationController {
 	}
 
 	@PutMapping("/v1/negotiation/{id}")
+	public ResponseEntity<ApiResponseSuccess<Long>> acceptNegotiation(@PathVariable Long id,
+			@RequestBody NegotiationAcceptRequestDto negotiationRequest) {
+		logger.info("acceptNegotiation");
+
+		Negotiation updatedNegotiation = negotiationService.acceptNegotiation(id, negotiationRequest);
+
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", updatedNegotiation.getNegotiationId()),
+				HttpStatus.OK);
+	}
+
+	@PutMapping("/staff/v1/negotiation/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updateNegotiation(@PathVariable Long id,
 			@RequestBody NegotiationUpdateRequestDto negotiationRequest) {
 		logger.info("updateNegotiation");

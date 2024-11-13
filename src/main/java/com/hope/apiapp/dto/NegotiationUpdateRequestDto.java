@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Size;
 
 public class NegotiationUpdateRequestDto {
 
@@ -14,8 +13,11 @@ public class NegotiationUpdateRequestDto {
 	@DecimalMin(value = "0.0", inclusive = false, message = "Counter total paid must be greater than 0")
 	private BigDecimal counterTotalPaid;
 
-	@Size(max = 1, message = "Status code must be a single character")
-	private String statusCode;
+	private Long jobId;
+
+	private String mode;
+
+	private String status;
 
 	private LocalDateTime updatedAt;
 
@@ -35,12 +37,12 @@ public class NegotiationUpdateRequestDto {
 		this.counterTotalPaid = counterTotalPaid;
 	}
 
-	public String getStatusCode() {
-		return statusCode;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setStatusCode(String statusCode) {
-		this.statusCode = statusCode;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public LocalDateTime getUpdatedAt() {
@@ -49,6 +51,22 @@ public class NegotiationUpdateRequestDto {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
 	}
 
 }

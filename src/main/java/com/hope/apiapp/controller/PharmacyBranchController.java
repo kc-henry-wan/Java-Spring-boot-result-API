@@ -52,7 +52,7 @@ public class PharmacyBranchController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", branch), HttpStatus.OK);
 	}
 
-	@PostMapping("/v1/branch")
+	@PostMapping("/staff/v1/branch")
 	public ResponseEntity<ApiResponseSuccess<Long>> addPharmacyBranch(
 			@RequestBody PharmacyBranchRequestDto pharmacyBranch) {
 		PharmacyBranch branch = pharmacyBranchService.addPharmacyBranch(pharmacyBranch);
@@ -60,7 +60,7 @@ public class PharmacyBranchController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", branch.getPharmacyBranchId()), HttpStatus.CREATED);
 	}
 
-	@PutMapping("/v1/branch/{id}")
+	@PutMapping("/staff/v1/branch/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updatePharmacyBranch(@PathVariable Long id,
 			@RequestBody PharmacyBranchRequestDto branchDetails) {
 		PharmacyBranch updatedBranch = pharmacyBranchService.updatePharmacyBranch(id, branchDetails);

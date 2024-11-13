@@ -18,7 +18,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.hope.apiapp.dto.NegotiationUpdateRequestDto;
 import com.hope.apiapp.exception.ResourceConflictException;
 import com.hope.apiapp.exception.ResourceNotFoundException;
+import com.hope.apiapp.model.Job;
 import com.hope.apiapp.model.Negotiation;
+import com.hope.apiapp.repository.JobRepository;
 import com.hope.apiapp.repository.NegotiationRepository;
 
 @ExtendWith(SpringExtension.class)
@@ -32,6 +34,9 @@ public class NegotiationServiceTest {
 	@MockBean
 	private NegotiationRepository negotiationRepository;
 
+	@MockBean
+	private JobRepository jobRepository;
+
 	@Test
 	public void testUpdateNegotiation_SuccessfulUpdate() {
 		// Arrange
@@ -40,14 +45,17 @@ public class NegotiationServiceTest {
 		BigDecimal newTotalPaid = new BigDecimal(480.0);
 		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
 
+		Job existingJob = new Job();
 		Negotiation existingNegotiation = new Negotiation();
 		existingNegotiation.setUpdatedAt(originalLastModifiedDate);
 
 		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
+		request.setJobId(id);
 		request.setCounterHourlyRate(newHourlyRate);
 		request.setCounterTotalPaid(newTotalPaid);
 		request.setUpdatedAt(originalLastModifiedDate);
 
+		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
 		Mockito.when(negotiationRepository.findById(id)).thenReturn(Optional.of(existingNegotiation));
 		Mockito.when(negotiationRepository.save(existingNegotiation)).thenReturn(existingNegotiation);
 
