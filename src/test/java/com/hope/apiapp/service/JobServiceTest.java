@@ -97,14 +97,15 @@ public class JobServiceTest {
 	public void testUpdateJobStatus_SuccessfulUpdate() {
 		// Arrange
 		Long id = 1L;
-		String newStatus = "Cancelled";
+		String newAction = "Apply";
+		String newStatus = "Applied";
 		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
 
 		Job existingJob = new Job();
 		existingJob.setUpdatedAt(originalLastModifiedDate);
 
 		JobUpdateRequestDto request = new JobUpdateRequestDto();
-		request.setStatus(newStatus);
+		request.setAction(newAction);
 		request.setUpdatedAt(originalLastModifiedDate);
 
 		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));

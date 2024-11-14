@@ -51,6 +51,8 @@ public class JobRequestDto {
 
 	private LocalDateTime updatedAt;
 
+	private String action;
+
 	public String getDescription() {
 		return description;
 	}
@@ -153,6 +155,14 @@ public class JobRequestDto {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
 	}
 
 }

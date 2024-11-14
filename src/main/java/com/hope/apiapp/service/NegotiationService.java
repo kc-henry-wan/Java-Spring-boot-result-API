@@ -85,10 +85,26 @@ public class NegotiationService {
 			negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 
 			if ("AdminAccept".equalsIgnoreCase(negotiationRequest.getMode())) {
+
+				// TODO: Add Job records updatedAt to chekc conflict
+//				if (!negotiationRequest.getJobUpdatedAt().equals(job.getUpdatedAt())) {
+//					throw new ResourceConflictException("Record has been modified by another user.");
+//				}
+
 				negotiation.setStatus("Admin Accepted");
-			} else if (("Counter".equalsIgnoreCase(negotiationRequest.getMode()))
-					|| ("Edit".equalsIgnoreCase(negotiationRequest.getMode()))) {
+
+				job.setPharmacistId(CommonUtil.getCurrentUserId());
+				job.setStatus("Assigned");
+				job.setUpdatedAt(LocalDateTime.now());
+				job.setUpdatedUserId(CommonUtil.getCurrentUserId());
+
+				return updateWithTrxHandling(job, negotiation);
+
+			} else if ("Counter".equalsIgnoreCase(negotiationRequest.getMode())) {
 				negotiation.setStatus("Counter Purposed");
+				negotiation.setCounterHourlyRate(negotiationRequest.getCounterHourlyRate());
+				negotiation.setCounterTotalPaid(negotiationRequest.getCounterTotalPaid());
+			} else if ("Edit".equalsIgnoreCase(negotiationRequest.getMode())) {
 				negotiation.setCounterHourlyRate(negotiationRequest.getCounterHourlyRate());
 				negotiation.setCounterTotalPaid(negotiationRequest.getCounterTotalPaid());
 			} else if ("AdminReject".equalsIgnoreCase(negotiationRequest.getMode())) {

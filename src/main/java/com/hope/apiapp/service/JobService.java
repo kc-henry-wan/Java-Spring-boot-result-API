@@ -78,7 +78,7 @@ public class JobService {
 		job.setParkingOption(jobRequest.getParkingOption());
 		job.setRatePerMile(jobRequest.getRatePerMile());
 
-		job.setStatus("Active"); // Default status
+		job.setStatus("Open"); // Default status
 		job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 		job.setCreatedAt(LocalDateTime.now()); // Set current time for creation
 		job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
@@ -102,11 +102,11 @@ public class JobService {
 				throw new ResourceConflictException("Record has been modified by another user.");
 			}
 
-			job.setStatus(jobRequest.getStatus());
 			job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 			job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 
-			if ("Apply".equalsIgnoreCase(jobRequest.getStatus())) {
+			if ("Apply".equalsIgnoreCase(jobRequest.getAction())) {
+				job.setStatus("Applied");
 				job.setPharmacistId(CommonUtil.getCurrentUserId());
 
 				// TODO: Check if any open negotiation
@@ -121,17 +121,14 @@ public class JobService {
 					}
 
 					return updateWithTrxHandling(job, negotiationList);
-				} else {
-					return jobRepository.save(job);
 				}
 
-			} else if ("Withdraw".equalsIgnoreCase(jobRequest.getStatus())) {
+			} else if ("Withdraw".equalsIgnoreCase(jobRequest.getAction())) {
+				job.setStatus("Open");
 				job.setPharmacistId(null);
-
-				return jobRepository.save(job);
-			} else {
-				return jobRepository.save(job);
 			}
+
+			return jobRepository.save(job);
 
 		} else {
 			logger.info("job is null");
@@ -153,18 +150,22 @@ public class JobService {
 				throw new ResourceConflictException("Record has been modified by another user.");
 			}
 
-			job.setDescription(jobRequest.getDescription());
-			job.setPharmacyGroupId(jobRequest.getPharmacyGroupId());
-			job.setPharmacyBranchId(jobRequest.getPharmacyBranchId());
-			job.setJobDate(jobRequest.getJobDate());
-			job.setJobStartTime(jobRequest.getJobStartTime());
-			job.setJobEndTime(jobRequest.getJobEndTime());
-			job.setHourlyRate(jobRequest.getHourlyRate());
-			job.setTotalWorkHour(jobRequest.getTotalWorkHour());
-			job.setTotalPaid(jobRequest.getTotalPaid());
-			job.setLunchArrangement(jobRequest.getLunchArrangement());
-			job.setParkingOption(jobRequest.getParkingOption());
-			job.setRatePerMile(jobRequest.getRatePerMile());
+			if ("Edit".equalsIgnoreCase(jobRequest.getAction())) {
+				job.setDescription(jobRequest.getDescription());
+				job.setPharmacyGroupId(jobRequest.getPharmacyGroupId());
+				job.setPharmacyBranchId(jobRequest.getPharmacyBranchId());
+				job.setJobDate(jobRequest.getJobDate());
+				job.setJobStartTime(jobRequest.getJobStartTime());
+				job.setJobEndTime(jobRequest.getJobEndTime());
+				job.setHourlyRate(jobRequest.getHourlyRate());
+				job.setTotalWorkHour(jobRequest.getTotalWorkHour());
+				job.setTotalPaid(jobRequest.getTotalPaid());
+				job.setLunchArrangement(jobRequest.getLunchArrangement());
+				job.setParkingOption(jobRequest.getParkingOption());
+				job.setRatePerMile(jobRequest.getRatePerMile());
+			} else if ("Delete".equalsIgnoreCase(jobRequest.getAction())) {
+				job.setDeleted(true);
+			}
 
 			job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 			job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
