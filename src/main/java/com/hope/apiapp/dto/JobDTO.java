@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class JobDTO {
+public class JobDto {
 	private Long jobId;
 	private String jobRef;
 	private LocalDate jobDate;
@@ -28,10 +28,10 @@ public class JobDTO {
 	private Double distance;
 
 	// Constructor
-	public JobDTO() {
+	public JobDto() {
 	}
 
-	public JobDTO(Long jobId, String jobRef, LocalDate jobDate, LocalTime jobStartTime, LocalTime jobEndTime,
+	public JobDto(Long jobId, String jobRef, LocalDate jobDate, LocalTime jobStartTime, LocalTime jobEndTime,
 			BigDecimal hourlyRate, BigDecimal totalWorkHour, BigDecimal totalPaid, String lunchArrangement,
 			String parkingOption, BigDecimal ratePerMile, String status, String branchName, String branchAddress1,
 			String branchAddress2, String branchPostalCode, Double branchLatitude, Double branchLongitude,

@@ -16,7 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.hope.apiapp.dto.JobDTO;
+import com.hope.apiapp.dto.JobDto;
 import com.hope.apiapp.util.CommonUtil;
 
 import jakarta.persistence.EntityManager;
@@ -33,7 +33,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	public Page<JobDTO> findFilteredJobsWithLimitedFields(Pageable pageable, Double fromLat, Double fromLng,
+	public Page<JobDto> findFilteredJobsWithLimitedFields(Pageable pageable, Double fromLat, Double fromLng,
 			String fromDate, String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId) {
 
 		StringBuilder jpql = new StringBuilder("SELECT j.jobId AS jobId, j.jobRef AS jobRef, j.jobDate AS jobDate, "
@@ -47,13 +47,6 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 				+ " p.firstName AS pharmacistFirstName, p.lastName AS pharmacistLastName "
 				+ " FROM Job j JOIN PharmacyBranch pb ON j.pharmacyBranchId = pb.pharmacyBranchId"
 				+ " LEFT OUTER JOIN Pharmacist p ON j.pharmacistId = p.pharmacistId " + " WHERE j.deleted = false ");
-
-//		ToDO: use progrtesql to calcualte distance
-//		(3959 * acos(
-//                cos(radians(:latitude)) * cos(radians(b.latitude)) *
-//                cos(radians(b.longitude) - radians(:longitude)) +
-//                sin(radians(:latitude)) * sin(radians(b.latitude))
-//            )) AS distance 
 
 		StringBuilder countJpql = new StringBuilder("SELECT COUNT(j) FROM Job j WHERE j.deleted = false ");
 
@@ -129,7 +122,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
 		List<Object[]> results = query.getResultList();
 
-		List<JobDTO> resultList = new ArrayList<>();
+		List<JobDto> resultList = new ArrayList<>();
 
 		// Iterate over results and populate JobDTO list
 		for (Object[] row : results) {
@@ -139,7 +132,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 				logger.info("For each row: distance:" + distance);
 			}
 
-			resultList.add(new JobDTO( // Use DTO instead of projection class
+			resultList.add(new JobDto( // Use DTO instead of projection class
 					((Number) row[0]).longValue(), // jobId: Ensure it's cast to Number first, then to long
 					(String) row[1], // jobRef: Cast to String
 					(LocalDate) row[2], // jobDate: Convert java.sql.Date to LocalDate
@@ -163,11 +156,11 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 					(Double) distance // Distance between user address and branch address
 			));
 		}
-		logger.info("List<JobDTO> load completed");
+		logger.info("List<JobDto> load completed");
 
 //		if (sortByDist) {
-//			Collections.sort(jobDTOs, Comparator.comparing(JobDTO::getDistance));
-//			logger.info("List<JobDTO> Sort by distance in ascending order ");
+//			Collections.sort(JobDto, Comparator.comparing(JobDto::getDistance));
+//			logger.info("List<JobDto> Sort by distance in ascending order ");
 //		}
 
 		// Getting total count for pagination

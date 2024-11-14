@@ -20,7 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
-import com.hope.apiapp.dto.JobDTO;
+import com.hope.apiapp.dto.JobDto;
 import com.hope.apiapp.dto.JobRequestDto;
 import com.hope.apiapp.dto.JobUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
@@ -40,16 +40,16 @@ public class JobControllerTest {
 	public void testGetFilteredJobsWithLimitedFields_Success() {
 		// Arrange
 		Pageable pageable = PageRequest.of(0, 10);
-		JobDTO returnedJob = new JobDTO();
-		List<JobDTO> myList = new ArrayList<>();
+		JobDto returnedJob = new JobDto();
+		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
-		Page<JobDTO> myPage = new PageImpl<>(myList, pageable, myList.size());
+		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
 		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null))
 				.thenReturn(myPage);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<Page<JobDTO>>> response = jobController.getFilteredJobsWithLimitedFields(0,
+		ResponseEntity<ApiResponseSuccess<Page<JobDto>>> response = jobController.getFilteredJobsWithLimitedFields(0,
 				10, "status", "asc", null, null, null, null, null, null, null);
 
 		// Assert
@@ -62,10 +62,10 @@ public class JobControllerTest {
 	public void testGetFilteredJobsWithLimitedFields_Exception() {
 		// Arrange
 		Pageable pageable = PageRequest.of(0, 10);
-		JobDTO returnedJob = new JobDTO();
-		List<JobDTO> myList = new ArrayList<>();
+		JobDto returnedJob = new JobDto();
+		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
-		Page<JobDTO> myPage = new PageImpl<>(myList, pageable, myList.size());
+		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
 		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null))
 				.thenThrow(new RuntimeException("Unexpected error"));
@@ -80,16 +80,16 @@ public class JobControllerTest {
 	public void testGetMyJobs_Success() {
 		// Arrange
 		Pageable pageable = PageRequest.of(0, 10);
-		JobDTO returnedJob = new JobDTO();
-		List<JobDTO> myList = new ArrayList<>();
+		JobDto returnedJob = new JobDto();
+		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
-		Page<JobDTO> myPage = new PageImpl<>(myList, pageable, myList.size());
+		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
 		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null))
 				.thenReturn(myPage);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<Page<JobDTO>>> response = jobController.getMyJobs(0, 10, "status", "asc",
+		ResponseEntity<ApiResponseSuccess<Page<JobDto>>> response = jobController.getMyJobs(0, 10, "status", "asc",
 				null, null);
 
 		// Assert
@@ -102,10 +102,10 @@ public class JobControllerTest {
 	public void testGetMyJobs_Exception() {
 		// Arrange
 		Pageable pageable = PageRequest.of(0, 10);
-		JobDTO returnedJob = new JobDTO();
-		List<JobDTO> myList = new ArrayList<>();
+		JobDto returnedJob = new JobDto();
+		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
-		Page<JobDTO> myPage = new PageImpl<>(myList, pageable, myList.size());
+		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
 		when(jobService.findFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null, null))
 				.thenThrow(new RuntimeException("Unexpected error"));

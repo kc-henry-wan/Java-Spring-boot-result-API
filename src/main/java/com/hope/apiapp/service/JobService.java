@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.hope.apiapp.dto.JobDTO;
+import com.hope.apiapp.dto.JobDto;
 import com.hope.apiapp.dto.JobProjection;
 import com.hope.apiapp.dto.JobRequestDto;
 import com.hope.apiapp.dto.JobUpdateRequestDto;
@@ -41,7 +41,7 @@ public class JobService {
 	private NegotiationRepository negotiationRepository;
 
 	@Transactional
-	public Page<JobDTO> findFilteredJobsWithLimitedFields(Pageable pageable, Double fromLat, Double fromLng,
+	public Page<JobDto> findFilteredJobsWithLimitedFields(Pageable pageable, Double fromLat, Double fromLng,
 			String fromDate, String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId) {
 		logger.info("JobService - findFilteredJobsWithLimitedFields");
 
