@@ -7,9 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.hope.apiapp.controller.PharmacistSpecifications;
 import com.hope.apiapp.dto.PharmacistAddRequestDto;
 import com.hope.apiapp.dto.PharmacistProjection;
 import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
@@ -32,10 +34,14 @@ public class PharmacistService {
 	@Autowired
 	private PharmacistRepository pharmacistRepository;
 
-//	public List<Pharmacist> getAllPharmacists() {
-//		logger.info("getAllPharmacists");
-//		return pharmacistRepository.findAll();
-//	}
+	public Page<PharmacistProjection> searchPharmacists(Pageable pageable, String term, String status) {
+		logger.info("PharmacistProjection - searchPharmacists: term:" + term + ";status:" + status);
+
+		Specification<PharmacistProjection> spec = Specification.where(PharmacistSpecifications.containsTerm(term))
+				.and(PharmacistSpecifications.hasStatus(status));
+
+		return pharmacistRepository.findAll(pageable, spec);
+	}
 
 	public Page<PharmacistProjection> findByStatusWithLimitedFields(String status, Pageable pageable) {
 		logger.info("PharmacistProjection - findByStatusWithLimitedFields: " + status);

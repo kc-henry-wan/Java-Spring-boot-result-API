@@ -35,10 +35,16 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(new ApiResponseFail("401", "Invalid token"), HttpStatus.UNAUTHORIZED);
 	}
 
-	@ExceptionHandler({ JwtException.class, IllegalArgumentException.class })
+	@ExceptionHandler(JwtException.class)
 	public ResponseEntity<ApiResponseFail> handleJwtException(Exception ex) {
 		logger.error("handleJwtExceptionn ex=" + ex.toString());
 		return new ResponseEntity<>(new ApiResponseFail("403", "Unauthorized request"), HttpStatus.FORBIDDEN);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ApiResponseFail> handleIllegalArgumentException(Exception ex) {
+		logger.error("handleIllegalArgumentExceptionn ex=" + ex.toString());
+		return new ResponseEntity<>(new ApiResponseFail("404", ex.toString()), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)

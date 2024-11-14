@@ -64,8 +64,6 @@ public class JobService {
 
 		Job job = new Job();
 
-//TODO:add logic to gen ref number
-//		job.setJobRef();
 		job.setDescription(jobRequest.getDescription());
 		job.setPharmacyGroupId(jobRequest.getPharmacyGroupId());
 		job.setPharmacyBranchId(jobRequest.getPharmacyBranchId());
@@ -79,13 +77,16 @@ public class JobService {
 		job.setParkingOption(jobRequest.getParkingOption());
 		job.setRatePerMile(jobRequest.getRatePerMile());
 
-		// Set default values for additional fields
 		job.setStatus("Active"); // Default status
 		job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 		job.setCreatedAt(LocalDateTime.now()); // Set current time for creation
 		job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 
-		return jobRepository.save(job);
+		Job createdJob = jobRepository.save(job);
+		String RefNo = generateRef(createdJob.getJobId());
+		createdJob.setJobRef(RefNo);
+
+		return jobRepository.save(createdJob);
 	}
 
 	public Job updateJobStatus(Long id, JobUpdateRequestDto jobRequest) {
@@ -181,4 +182,11 @@ public class JobService {
 		return updatedJob;
 	}
 
+	public static String generateRef(Long x) {
+		if (x > 10000) {
+			return "REF" + x;
+		} else {
+			return String.format("REF%04d", x);
+		}
+	}
 }

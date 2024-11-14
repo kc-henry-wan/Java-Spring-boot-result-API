@@ -42,6 +42,20 @@ public class PharmacistController {
 	}
 
 	@GetMapping("/v1/pharmacist")
+	public ResponseEntity<ApiResponseSuccess<Page<PharmacistProjection>>> searchPharmacists(
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
+			@RequestParam(defaultValue = "firstName") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
+			@RequestParam(required = false) String term, @RequestParam(required = false) String status) {
+
+		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(page, size, sort);
+
+		Page<PharmacistProjection> pharmacists = pharmacistService.searchPharmacists(pageable, term, status);
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacists), HttpStatus.OK);
+	}
+
+	@GetMapping("/old/v1/pharmacist")
 	public ResponseEntity<ApiResponseSuccess<Page<PharmacistProjection>>> getAllPharmacists(
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
 			@RequestParam(defaultValue = "firstName") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,

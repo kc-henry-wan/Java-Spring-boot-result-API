@@ -10,6 +10,8 @@ public interface PharmacistProjection {
 
 	String getLastName();
 
+	String getEmail();
+
 	String getAddress1();
 
 	String getAddress2();
