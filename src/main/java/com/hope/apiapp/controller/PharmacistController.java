@@ -83,7 +83,7 @@ public class PharmacistController {
 //		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
 //	}
 
-	@PostMapping("/auth/v1/pharmacist")
+	@PostMapping("/auth/v1/register")
 	public ResponseEntity<ApiResponseSuccess<Long>> addPharmacist(
 			@RequestBody PharmacistAddRequestDto pharmacistRequest) {
 		logger.info("addPharmacist");
