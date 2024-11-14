@@ -33,7 +33,7 @@ public class PharmacistDoc {
 	@Column(name = "media_type", nullable = false)
 	private String mediaType;
 
-	private Boolean deleted;
+	private Boolean deleted = false;
 
 	@Column(name = "created_at")
 	private LocalDateTime createdAt = LocalDateTime.now();

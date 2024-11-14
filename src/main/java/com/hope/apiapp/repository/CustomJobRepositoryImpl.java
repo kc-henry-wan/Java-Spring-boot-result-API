@@ -46,7 +46,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 				+ " pb.latitude AS branchLatitude, pb.longitude AS branchLongitude, "
 				+ " p.firstName AS pharmacistFirstName, p.lastName AS pharmacistLastName "
 				+ " FROM Job j JOIN PharmacyBranch pb ON j.pharmacyBranchId = pb.pharmacyBranchId"
-				+ " LEFT OUTER JOIN Pharmacist p ON j.pharmacistId = p.pharmacistId ");
+				+ " LEFT OUTER JOIN Pharmacist p ON j.pharmacistId = p.pharmacistId " + " WHERE j.deleted = false ");
 
 //		ToDO: use progrtesql to calcualte distance
 //		(3959 * acos(
@@ -55,8 +55,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 //                sin(radians(:latitude)) * sin(radians(b.latitude))
 //            )) AS distance 
 
-		StringBuilder countJpql = new StringBuilder(
-				"SELECT COUNT(j) FROM Job j JOIN PharmacyBranch pb ON j.pharmacyBranchId = pb.pharmacyBranchId ");
+		StringBuilder countJpql = new StringBuilder("SELECT COUNT(j) FROM Job j WHERE j.deleted = false ");
 
 		List<String> conditions = new ArrayList<>();
 
@@ -73,15 +72,15 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 			conditions.add("j.jobId IN (:jobIds)");
 		}
 		if (groupCode != null) {
-			conditions.add("LOWER(j.pharmacyGroupId) = LOWER(:groupCode)");
+			conditions.add("j.pharmacyGroupId = :groupCode");
 		}
 		if (pharmacistId != null) {
 			conditions.add("j.pharmacistId = :pharmacistId");
 		}
 
 		if (!conditions.isEmpty()) {
-			jpql.append(" WHERE ").append(String.join(" AND ", conditions));
-			countJpql.append(" WHERE ").append(String.join(" AND ", conditions));
+			jpql.append(" AND ").append(String.join(" AND ", conditions));
+			countJpql.append(" AND ").append(String.join(" AND ", conditions));
 		}
 
 		logger.info("queryBuilder - finish where case. " + jpql.toString());

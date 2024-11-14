@@ -41,9 +41,10 @@ public class CustomNegotiationRepositoryImpl implements CustomNegotiationReposit
 				+ " p.firstName AS pharmacistFirstName, p.lastName AS pharmacistLastName) "
 				+ " FROM Negotiation n JOIN Job j on n.jobId = j.jobId "
 				+ " JOIN PharmacyBranch pb ON j.pharmacyBranchId = pb.pharmacyBranchId "
-				+ " JOIN Pharmacist p ON n.pharmacistId = p.pharmacistId ");
+				+ " JOIN Pharmacist p ON n.pharmacistId = p.pharmacistId " + " WHERE j.deleted = false ");
 
-		StringBuilder countJpql = new StringBuilder("SELECT COUNT(n) FROM Negotiation n ");
+		StringBuilder countJpql = new StringBuilder(
+				"SELECT COUNT(n) FROM Negotiation n JOIN Job j on n.jobId = j.jobId WHERE j.deleted = false ");
 
 		List<String> conditions = new ArrayList<>();
 
@@ -56,8 +57,8 @@ public class CustomNegotiationRepositoryImpl implements CustomNegotiationReposit
 		}
 
 		if (!conditions.isEmpty()) {
-			jpql.append(" WHERE ").append(String.join(" AND ", conditions));
-			countJpql.append(" WHERE ").append(String.join(" AND ", conditions));
+			jpql.append(" AND ").append(String.join(" AND ", conditions));
+			countJpql.append(" AND ").append(String.join(" AND ", conditions));
 		}
 
 		logger.info("queryBuilder - finish where case. " + jpql.toString());

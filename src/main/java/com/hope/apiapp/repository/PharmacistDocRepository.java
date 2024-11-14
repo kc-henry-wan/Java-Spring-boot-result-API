@@ -14,7 +14,7 @@ import com.hope.apiapp.model.PharmacistDoc;
 @Repository
 public interface PharmacistDocRepository extends JpaRepository<PharmacistDoc, Integer> {
 
-	@Query("SELECT i.imageId AS imageId, i.imageType AS imageType FROM PharmacistDoc i where i.pharmacistId = :pharmacistId")
+	@Query("SELECT i.imageId AS imageId, i.imageType AS imageType FROM PharmacistDoc i where i.deleted = false AND i.pharmacistId = :pharmacistId")
 	List<PharmacistDocProjection> findByPharmacistId(@Param("pharmacistId") Long pharmacistId);
 
 	Optional<PharmacistDoc> findByImageId(Long imageId);

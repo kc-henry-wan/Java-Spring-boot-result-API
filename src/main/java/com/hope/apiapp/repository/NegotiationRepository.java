@@ -27,7 +27,7 @@ public interface NegotiationRepository extends JpaRepository<Negotiation, Long>,
 			+ " FROM Negotiation n JOIN Job j on n.jobId = j.jobId "
 			+ " JOIN PharmacyBranch pb ON j.pharmacyBranchId = pb.pharmacyBranchId "
 			+ " LEFT OUTER JOIN Pharmacist p ON n.pharmacistId = p.pharmacistId "
-			+ " WHERE n.negotiationId = :negotiationId ")
+			+ " WHERE j.deleted = false AND n.negotiationId = :negotiationId ")
 	Optional<NegotiationProjection> getNegotiationById(@Param("negotiationId") Long pharmacistId);
 
 	Optional<Negotiation> findById(Long pharmacistId);

@@ -22,7 +22,8 @@ public interface JobRepository extends JpaRepository<Job, Long>, CustomJobReposi
 			+ " pb.address2 AS branchAddress2, pb.postalCode AS branchPostalCode, "
 			+ " p.pharmacistId AS pharmacistId, p.firstName AS pharmacistFirstName, p.lastName AS pharmacistLastName "
 			+ " FROM Job j JOIN PharmacyBranch pb ON j.pharmacyBranchId = pb.pharmacyBranchId "
-			+ " LEFT OUTER JOIN Pharmacist p ON j.pharmacistId = p.pharmacistId " + "WHERE j.jobId = :jobId ")
+			+ " LEFT OUTER JOIN Pharmacist p ON j.pharmacistId = p.pharmacistId "
+			+ " WHERE j.deleted = false AND j.jobId = :jobId ")
 	Optional<JobProjection> getJobByIdWithLimitedFields(@Param("jobId") Long jobId);
 
 	Optional<Job> findById(Long JobId);
