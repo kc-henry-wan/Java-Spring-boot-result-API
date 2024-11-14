@@ -1,6 +1,7 @@
 package com.hope.apiapp.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,14 +110,20 @@ public class JobService {
 				job.setPharmacistId(CommonUtil.getCurrentUserId());
 
 				// TODO: Check if any open negotiation
-				Negotiation negotiation = negotiationRepository.findByJobId(id).orElseThrow();
-				if (negotiation != null) {
-					negotiation.setStatus("Job Picked by others");
-					negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
-					negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
-				}
+				List<Negotiation> negotiationList = negotiationRepository.findByJobId(id);
 
-				return updateWithTrxHandling(job, negotiation);
+				if (negotiationList.size() > 0) {
+
+					for (Negotiation negotiation : negotiationList) {
+						negotiation.setStatus("Job Picked by others");
+						negotiation.setUpdatedAt(LocalDateTime.now());
+						negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId());
+					}
+
+					return updateWithTrxHandling(job, negotiationList);
+				} else {
+					return jobRepository.save(job);
+				}
 
 			} else if ("Withdraw".equalsIgnoreCase(jobRequest.getStatus())) {
 				job.setPharmacistId(null);
@@ -172,11 +179,13 @@ public class JobService {
 	}
 
 	@Transactional
-	public Job updateWithTrxHandling(Job job, Negotiation negotiation) {
+	public Job updateWithTrxHandling(Job job, List<Negotiation> negotiationList) {
 		Job updatedJob = jobRepository.save(job);
 
-		if (negotiation != null) {
-			Negotiation updatedNegotiation = negotiationRepository.save(negotiation);
+		if (negotiationList.size() > 0) {
+			for (Negotiation negotiation : negotiationList) {
+				Negotiation updatedNegotiation = negotiationRepository.save(negotiation);
+			}
 		}
 
 		return updatedJob;

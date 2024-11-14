@@ -3,7 +3,6 @@ package com.hope.apiapp.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -23,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.hope.apiapp.dto.PharmacistAddRequestDto;
+import com.hope.apiapp.dto.PharmacistDto;
 import com.hope.apiapp.dto.PharmacistProjection;
 import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
@@ -39,18 +39,18 @@ public class PharmacistControllerTest {
 	private PharmacistService pharmacistService;
 
 	@Test
-	public void testGetPharmacist_Success() {
+	public void testSearchtPharmacists_Success() {
 		// Arrange
 		Pageable pageable = PageRequest.of(0, 10);
-		PharmacistProjection mockPharmacist = mock(PharmacistProjection.class);
-		List<PharmacistProjection> myList = List.of(mockPharmacist);
-		Page<PharmacistProjection> myPage = new PageImpl<>(myList, pageable, myList.size());
+		PharmacistDto mockPharmacist = new PharmacistDto();
+		List<PharmacistDto> myList = List.of(mockPharmacist);
+		Page<PharmacistDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(pharmacistService.findByStatusWithLimitedFields(isNull(), any(Pageable.class))).thenReturn(myPage);
+		when(pharmacistService.searchPharmacists(any(Pageable.class), isNull(), isNull())).thenReturn(myPage);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<Page<PharmacistProjection>>> response = pharmacistController
-				.getAllPharmacists(0, 10, "status", "asc", null);
+		ResponseEntity<ApiResponseSuccess<Page<PharmacistDto>>> response = pharmacistController.searchPharmacists(0, 10,
+				"status", "asc", null, null);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -59,65 +59,44 @@ public class PharmacistControllerTest {
 	}
 
 	@Test
-	public void testGetPharmacistByStatus_Success() {
-		// Arrange
-		String status = "Open";
-		Pageable pageable = PageRequest.of(0, 10);
-		PharmacistProjection mockPharmacist = mock(PharmacistProjection.class);
-		List<PharmacistProjection> myList = List.of(mockPharmacist);
-		Page<PharmacistProjection> myPage = new PageImpl<>(myList, pageable, myList.size());
-
-		when(pharmacistService.findByStatusWithLimitedFields(anyString(), any(Pageable.class))).thenReturn(myPage);
-
-		// Act
-		ResponseEntity<ApiResponseSuccess<Page<PharmacistProjection>>> response = pharmacistController
-				.getAllPharmacists(0, 10, "status", "asc", status);
-
-		// Assert
-		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
-	}
-
-	@Test
-	public void testGetPharmacist_Exception() {
-		when(pharmacistService.findByStatusWithLimitedFields(isNull(), any(Pageable.class)))
+	public void testSearchPharmacists_Exception() {
+		when(pharmacistService.searchPharmacists(any(Pageable.class), isNull(), isNull()))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> pharmacistController.getAllPharmacists(0, 10, "status", "asc", null))
+		assertThatThrownBy(() -> pharmacistController.searchPharmacists(0, 10, "status", "asc", null, null))
 				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
 	}
 
-	@Test
-	public void testGetPharmacistByIds_Success() {
-		// Arrange
-		Long id = 1L;
-		Pharmacist newPharmacist = new Pharmacist();
-
-		when(pharmacistService.getPharmacistById(id)).thenReturn(newPharmacist);
-
-		// Act
-		ResponseEntity<ApiResponseSuccess<Pharmacist>> response = pharmacistController.getPharmacistById(id);
-
-		// Assert
-		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
-		assertThat(response.getBody().getData().getPassword()).isNull();
-	}
-
-	@Test
-	public void testGetPharmacistByIds_Exception() {
-		// Arrange
-		Long id = 1L;
-
-		when(pharmacistService.getPharmacistById(id)).thenThrow(new RuntimeException("Unexpected error"));
-
-		// Act & Assert
-		assertThatThrownBy(() -> pharmacistController.getPharmacistById(id)).isInstanceOf(RuntimeException.class)
-				.hasMessageContaining("Unexpected error");
-	}
+//	@Test
+//	public void testGetPharmacistByIds_Success() {
+//		// Arrange
+//		Long id = 1L;
+//		Pharmacist newPharmacist = new Pharmacist();
+//
+//		when(pharmacistService.getPharmacistById(id)).thenReturn(newPharmacist);
+//
+//		// Act
+//		ResponseEntity<ApiResponseSuccess<Pharmacist>> response = pharmacistController.getPharmacistById(id);
+//
+//		// Assert
+//		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+//		assertThat(response.getBody()).isNotNull();
+//		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+//		assertThat(response.getBody().getData().getPassword()).isNull();
+//	}
+//
+//	@Test
+//	public void testGetPharmacistByIds_Exception() {
+//		// Arrange
+//		Long id = 1L;
+//
+//		when(pharmacistService.getPharmacistById(id)).thenThrow(new RuntimeException("Unexpected error"));
+//
+//		// Act & Assert
+//		assertThatThrownBy(() -> pharmacistController.getPharmacistById(id)).isInstanceOf(RuntimeException.class)
+//				.hasMessageContaining("Unexpected error");
+//	}
 
 	@Test
 	public void testGetPharmacistByIdsWithLimitedFields_Success() {

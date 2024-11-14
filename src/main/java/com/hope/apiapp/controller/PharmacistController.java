@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,10 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hope.apiapp.dto.PharmacistAddRequestDto;
+import com.hope.apiapp.dto.PharmacistDto;
 import com.hope.apiapp.dto.PharmacistProjection;
 import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
+import com.hope.apiapp.model.PasswordResetToken;
 import com.hope.apiapp.model.Pharmacist;
+import com.hope.apiapp.service.PasswordResetTokenService;
 import com.hope.apiapp.service.PharmacistService;
 
 @RestController
@@ -37,12 +41,16 @@ public class PharmacistController {
 	private final PharmacistService pharmacistService;
 
 	@Autowired
-	public PharmacistController(PharmacistService pharmacistService) {
+	private PasswordResetTokenService passwordResetService;
+
+	@Autowired
+	public PharmacistController(PharmacistService pharmacistService, PasswordResetTokenService passwordResetService) {
 		this.pharmacistService = pharmacistService;
+		this.passwordResetService = passwordResetService;
 	}
 
-	@GetMapping("/v1/pharmacist")
-	public ResponseEntity<ApiResponseSuccess<Page<PharmacistProjection>>> searchPharmacists(
+	@GetMapping("/staff/v1/pharmacist")
+	public ResponseEntity<ApiResponseSuccess<Page<PharmacistDto>>> searchPharmacists(
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
 			@RequestParam(defaultValue = "firstName") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
 			@RequestParam(required = false) String term, @RequestParam(required = false) String status) {
@@ -51,21 +59,8 @@ public class PharmacistController {
 				: Sort.by(sortBy).descending();
 		Pageable pageable = PageRequest.of(page, size, sort);
 
-		Page<PharmacistProjection> pharmacists = pharmacistService.searchPharmacists(pageable, term, status);
-		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacists), HttpStatus.OK);
-	}
+		Page<PharmacistDto> pharmacists = pharmacistService.searchPharmacists(pageable, term, status);
 
-	@GetMapping("/old/v1/pharmacist")
-	public ResponseEntity<ApiResponseSuccess<Page<PharmacistProjection>>> getAllPharmacists(
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
-			@RequestParam(defaultValue = "firstName") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
-			@RequestParam(required = false) String status) {
-
-		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable pageable = PageRequest.of(page, size, sort);
-
-		Page<PharmacistProjection> pharmacists = pharmacistService.findByStatusWithLimitedFields(status, pageable);
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacists), HttpStatus.OK);
 	}
 
@@ -78,17 +73,17 @@ public class PharmacistController {
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
 	}
+//
+//	@GetMapping("/staff/v1/pharmacist/{id}")
+//	public ResponseEntity<ApiResponseSuccess<Pharmacist>> getPharmacistById(@PathVariable Long id) {
+//		logger.info("getPharmacistById");
+//
+//		Pharmacist pharmacist = pharmacistService.getPharmacistById(id);
+//
+//		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
+//	}
 
-	@GetMapping("/v1/staff/pharmacist/{id}")
-	public ResponseEntity<ApiResponseSuccess<Pharmacist>> getPharmacistById(@PathVariable Long id) {
-		logger.info("getPharmacistById");
-
-		Pharmacist pharmacist = pharmacistService.getPharmacistById(id);
-
-		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
-	}
-
-	@PostMapping("/v1/pharmacist")
+	@PostMapping("/auth/v1/pharmacist")
 	public ResponseEntity<ApiResponseSuccess<Long>> addPharmacist(
 			@RequestBody PharmacistAddRequestDto pharmacistRequest) {
 		logger.info("addPharmacist");
@@ -97,6 +92,28 @@ public class PharmacistController {
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", createdPharmacist.getPharmacistId()),
 				HttpStatus.CREATED);
+	}
+
+	@PostMapping("/auth/v1/activate/{id}")
+	public ResponseEntity<ApiResponseSuccess<Long>> activatePharmacist(@PathVariable Long id,
+			@RequestParam String token) {
+		logger.info("activatePharmacist");
+
+		PasswordResetToken resetToken = passwordResetService.validatePasswordResetToken(token);
+
+		if (resetToken != null) {
+			Boolean activateResult = pharmacistService.activatePharmacist(id);
+
+			if (activateResult) {
+				passwordResetService.invalidateToken(resetToken); // Invalidate token after use
+
+				return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", id), HttpStatus.CREATED);
+			} else {
+				throw new BadCredentialsException("Invalid or expired token");
+			}
+		} else {
+			throw new BadCredentialsException("Invalid or expired token");
+		}
 	}
 
 	@PutMapping("/v1/pharmacist/{id}")

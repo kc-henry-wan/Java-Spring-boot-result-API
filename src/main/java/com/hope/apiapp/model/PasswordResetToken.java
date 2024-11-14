@@ -1,6 +1,6 @@
 package com.hope.apiapp.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +32,17 @@ public class PasswordResetToken {
 	private Long userId;
 
 	@Column(name = "expiry_date", nullable = false)
-	private Date expiryDate;
+	private LocalDateTime expiryDate;
 
 	@Column(name = "created_at", updatable = false, insertable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdAt;
+	private LocalDateTime createdAt;
 
 	// Constructors
 	public PasswordResetToken() {
 	}
 
-	public PasswordResetToken(String token, Long userId, Date expiryDate) {
+	public PasswordResetToken(String token, Long userId, LocalDateTime expiryDate) {
 		this.token = token;
 		this.userId = userId;
 		this.expiryDate = expiryDate;
@@ -73,15 +73,15 @@ public class PasswordResetToken {
 		this.userId = userId;
 	}
 
-	public Date getExpiryDate() {
+	public LocalDateTime getExpiryDate() {
 		return expiryDate;
 	}
 
-	public void setExpiryDate(Date expiryDate) {
+	public void setExpiryDate(LocalDateTime expiryDate) {
 		this.expiryDate = expiryDate;
 	}
 
-	public Date getCreatedAt() {
+	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
 

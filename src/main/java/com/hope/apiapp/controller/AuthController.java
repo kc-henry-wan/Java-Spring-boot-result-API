@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hope.apiapp.dto.JwtAuthenticationResponse;
 import com.hope.apiapp.dto.LoginRequest;
+import com.hope.apiapp.helper.ApiResponseFail;
 import com.hope.apiapp.helper.ApiResponseSuccess;
+import com.hope.apiapp.security.CustomUserDetails;
 import com.hope.apiapp.security.JwtTokenProvider;
 
 @RestController
@@ -47,12 +49,21 @@ public class AuthController {
 			// Set authentication in the security context
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
-			// Generate JWT token
-			String jwtToken = jwtTokenProvider.generateToken(loginRequest.getUsername());
-			logger.info("authenticateUser: token generated:" + jwtToken);
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			if ("ACTIVE".equals(userDetails.getStatus().toUpperCase())) {
 
-			return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", new JwtAuthenticationResponse(jwtToken)),
-					HttpStatus.OK);
+				// Generate JWT token
+				String jwtToken = jwtTokenProvider.generateToken(loginRequest.getUsername());
+				logger.info("authenticateUser: token generated:" + jwtToken);
+
+				return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", new JwtAuthenticationResponse(jwtToken)),
+						HttpStatus.OK);
+			} else {
+
+				return new ResponseEntity<>(
+						new ApiResponseFail("400", "Please check email and activate your account before login"),
+						HttpStatus.BAD_REQUEST);
+			}
 
 		} catch (BadCredentialsException ex) {
 			throw new BadCredentialsException("Invalid username or password");

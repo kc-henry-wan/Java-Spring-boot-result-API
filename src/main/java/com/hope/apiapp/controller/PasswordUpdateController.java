@@ -37,11 +37,6 @@ public class PasswordUpdateController {
 
 		if (resetToken != null) {
 			try {
-				// Pharmacist user =
-				// pharmacistRepository.findById(resetToken.getUserId()).orElseThrow();
-				// user.setPassword(passwordEncoder.encode(newPassword));
-				// user.setUpdatedAt(LocalDateTime.now());
-				// pharmacistRepository.save(user);
 				Long userId = resetToken.getUserId();
 
 				boolean resetResult = pharmacistService.resetPassword(userId, newPassword);

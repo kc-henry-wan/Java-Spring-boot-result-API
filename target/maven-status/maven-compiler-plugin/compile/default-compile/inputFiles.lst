@@ -5,7 +5,6 @@ C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\controller\Passwor
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\controller\PasswordUpdateController.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\controller\PharmacistController.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\controller\PharmacistDocControllar.java
-C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\controller\PharmacistSpecifications.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\controller\PharmacyBranchController.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\JobDTO.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\JobProjection.java
@@ -21,6 +20,7 @@ C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\NegotiationUpd
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\NotificationRequest.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\PharmacistAddRequestDto.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\PharmacistDocProjection.java
+C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\PharmacistDto.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\PharmacistProjection.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\PharmacistUpdateRequestDto.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\dto\PharmacyBranchRequestDto.java
@@ -43,6 +43,8 @@ C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\repository\CustomJ
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\repository\CustomJobRepositoryImpl.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\repository\CustomNegotiationRepository.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\repository\CustomNegotiationRepositoryImpl.java
+C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\repository\CustomPharmacistRepository.java
+C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\repository\CustomPharmacistRepositoryImpl.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\repository\JobRepository.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\repository\NegotiationRepository.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\repository\PasswordResetTokenRepository.java
@@ -56,6 +58,7 @@ C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\CustomUse
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\JwtAuthenticationFilter.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\JwtTokenProvider.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\SecurityConfig.java
+C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\WebConfig.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\service\EmailService.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\service\JobService.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\service\NegotiationService.java

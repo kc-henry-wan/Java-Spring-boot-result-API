@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hope.apiapp.service.PasswordResetTokenService;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @Validated
 public class PasswordResetController {
 
@@ -22,9 +22,9 @@ public class PasswordResetController {
 	@Autowired
 	private PasswordResetTokenService passwordResetService;
 
-	@PostMapping("/v1/request-password-reset")
+	@PostMapping("/auth/v1/request-password-reset")
 	public ResponseEntity<String> requestPasswordReset(@RequestParam String email) {
-		String response = passwordResetService.generateResetToken(email);
+		String response = passwordResetService.generateResetToken(email, false);
 		return ResponseEntity.ok(response);
 	}
 }

@@ -7,12 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.hope.apiapp.controller.PharmacistSpecifications;
 import com.hope.apiapp.dto.PharmacistAddRequestDto;
+import com.hope.apiapp.dto.PharmacistDto;
 import com.hope.apiapp.dto.PharmacistProjection;
 import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
 import com.hope.apiapp.exception.ResourceConflictException;
@@ -34,18 +33,14 @@ public class PharmacistService {
 	@Autowired
 	private PharmacistRepository pharmacistRepository;
 
-	public Page<PharmacistProjection> searchPharmacists(Pageable pageable, String term, String status) {
+	@Autowired
+	private PasswordResetTokenService passwordResetTokenService;
+
+	public Page<PharmacistDto> searchPharmacists(Pageable pageable, String term, String status) {
 		logger.info("PharmacistProjection - searchPharmacists: term:" + term + ";status:" + status);
 
-		Specification<PharmacistProjection> spec = Specification.where(PharmacistSpecifications.containsTerm(term))
-				.and(PharmacistSpecifications.hasStatus(status));
+		return pharmacistRepository.searchPharmacists(pageable, term, status);
 
-		return pharmacistRepository.findAll(pageable, spec);
-	}
-
-	public Page<PharmacistProjection> findByStatusWithLimitedFields(String status, Pageable pageable) {
-		logger.info("PharmacistProjection - findByStatusWithLimitedFields: " + status);
-		return pharmacistRepository.findByStatusWithLimitedFields(status, pageable);
 	}
 
 	public Pharmacist getPharmacistById(Long id) {
@@ -82,12 +77,16 @@ public class PharmacistService {
 		pharmacist.setRole(defaultRole);
 
 		// Set default values for additional fields
-		pharmacist.setStatus("Active"); // Default status
+		pharmacist.setStatus("Pending"); // Default status, change to active after call activate API
 		pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 		pharmacist.setCreatedAt(LocalDateTime.now()); // Set current time for creation
 		pharmacist.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 
-		return pharmacistRepository.save(pharmacist);
+		Pharmacist newPharmacist = pharmacistRepository.save(pharmacist);
+
+		passwordResetTokenService.generateResetToken(newPharmacist.getEmail(), true);
+
+		return newPharmacist;
 	}
 
 	public Pharmacist updatePharmacist(Long id, PharmacistUpdateRequestDto pharmacistRequest) {
@@ -125,6 +124,28 @@ public class PharmacistService {
 
 			throw new ResourceNotFoundException("Pharmacist not found with ID " + id);
 
+		}
+	}
+
+	public Boolean activatePharmacist(Long id) {
+
+		logger.info("activatePharmacist: " + id);
+		Pharmacist pharmacist = getPharmacistById(id);
+
+		if (pharmacist != null) {
+			logger.info("pharmacist is not null");
+
+			pharmacist.setStatus("Active");
+			pharmacist.setUpdatedAt(LocalDateTime.now());
+			pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+
+			pharmacistRepository.save(pharmacist);
+
+			return true;
+		} else {
+			logger.info("pharmacist is null");
+
+			throw new ResourceNotFoundException("Pharmacist not found with ID " + id);
 		}
 	}
 

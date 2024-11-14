@@ -67,13 +67,13 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 			conditions.add("j.jobDate <= :toDate");
 		}
 		if (statusCode != null) {
-			conditions.add("j.status = :statusCode");
+			conditions.add("LOWER(j.status) = LOWER(:statusCode)");
 		}
 		if (jobIds != null && !jobIds.isEmpty()) {
 			conditions.add("j.jobId IN (:jobIds)");
 		}
 		if (groupCode != null) {
-			conditions.add("j.pharmacyGroupId = :groupCode");
+			conditions.add("LOWER(j.pharmacyGroupId) = LOWER(:groupCode)");
 		}
 		if (pharmacistId != null) {
 			conditions.add("j.pharmacistId = :pharmacistId");

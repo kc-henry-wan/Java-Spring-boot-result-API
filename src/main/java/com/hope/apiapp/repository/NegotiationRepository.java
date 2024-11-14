@@ -1,5 +1,6 @@
 package com.hope.apiapp.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,5 +32,5 @@ public interface NegotiationRepository extends JpaRepository<Negotiation, Long>,
 
 	Optional<Negotiation> findById(Long pharmacistId);
 
-	Optional<Negotiation> findByJobId(Long jobId);
+	List<Negotiation> findByJobId(Long jobId);
 }

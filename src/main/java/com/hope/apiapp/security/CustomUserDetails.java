@@ -45,6 +45,10 @@ public class CustomUserDetails implements UserDetails {
 		return user.getEmail();
 	}
 
+	public String getStatus() {
+		return user.getStatus();
+	}
+
 	public String getRole() {
 		return user.getRole();
 	}

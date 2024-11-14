@@ -47,8 +47,8 @@ public class CustomNegotiationRepositoryImpl implements CustomNegotiationReposit
 
 		List<String> conditions = new ArrayList<>();
 
-		if (status != null) {
-			conditions.add("n.status = :status");
+		if (status != null && !status.equals("")) {
+			conditions.add("LOWER(n.status) = LOWER(:status)");
 		}
 
 		if (pharmacistId != null) {
@@ -67,7 +67,7 @@ public class CustomNegotiationRepositoryImpl implements CustomNegotiationReposit
 		TypedQuery<Long> countQuery = entityManager.createQuery(countJpql.toString(), Long.class);
 
 		// Set parameters
-		if (status != null) {
+		if (status != null && !status.equals("")) {
 			query.setParameter("status", status);
 			countQuery.setParameter("status", status);
 		}
