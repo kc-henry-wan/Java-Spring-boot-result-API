@@ -65,7 +65,7 @@ public class CommonUtil {
 
 	// Haversine formula for distance calculation
 	public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-		double earthRadius = 6371; // km
+		double earthRadius = 3959; // miles
 		double dLat = Math.toRadians(lat2 - lat1);
 		double dLng = Math.toRadians(lon2 - lon1);
 		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(lat1))

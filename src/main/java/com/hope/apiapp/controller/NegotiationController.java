@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -45,13 +44,9 @@ public class NegotiationController {
 	@GetMapping("/v1/negotiation")
 	public ResponseEntity<ApiResponseSuccess<Page<NegotiationDto>>> getNegotiations(
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
-			@RequestParam(defaultValue = "pharmacistId") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) String status,
-			@RequestParam(required = false) Long pharmacistId) {
+			@RequestParam(required = false) String status, @RequestParam(required = false) Long pharmacistId) {
 
-		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable pageable = PageRequest.of(page, size, sort);
+		Pageable pageable = PageRequest.of(page, size);
 
 		Page<NegotiationDto> negotiations = negotiationService.getNegotiations(pageable, status, pharmacistId);
 

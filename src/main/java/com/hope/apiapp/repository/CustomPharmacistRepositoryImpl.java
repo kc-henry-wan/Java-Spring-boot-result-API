@@ -54,6 +54,19 @@ public class CustomPharmacistRepositoryImpl implements CustomPharmacistRepositor
 		logger.info("queryBuilder - finish where case. " + jpql.toString());
 		logger.info("queryBuilder - finish where case. " + countJpql.toString());
 
+		// Add order by
+//		if ("DA".equalsIgnoreCase(orderBy)) {
+//			jpql.append(" ORDER BY p.firstName, p.lastName ");
+//		} else if ("HR".equalsIgnoreCase(orderBy)) {
+//			jpql.append(" ORDER BY p.lastName, p.firstName ");
+//		} else if ("TP".equalsIgnoreCase(orderBy)) {
+//			jpql.append(" ORDER BY p.email ");
+//		} else {
+		jpql.append(" ORDER BY p.firstName, p.lastName ");
+//		}
+
+		logger.info("queryBuilder - finish order by:" + jpql.toString());
+
 		TypedQuery<PharmacistDto> query = entityManager.createQuery(jpql.toString(), PharmacistDto.class);
 		TypedQuery<Long> countQuery = entityManager.createQuery(countJpql.toString(), Long.class);
 

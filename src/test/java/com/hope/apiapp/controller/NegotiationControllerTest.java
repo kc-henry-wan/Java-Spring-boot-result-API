@@ -55,7 +55,7 @@ public class NegotiationControllerTest {
 
 		// Act
 		ResponseEntity<ApiResponseSuccess<Page<NegotiationDto>>> response = negotiationController.getNegotiations(0, 10,
-				"status", "asc", status, id);
+				status, id);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -69,7 +69,7 @@ public class NegotiationControllerTest {
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> negotiationController.getNegotiations(0, 10, "status", "asc", null, 0L))
+		assertThatThrownBy(() -> negotiationController.getNegotiations(0, 10, null, 0L))
 				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
 	}
 

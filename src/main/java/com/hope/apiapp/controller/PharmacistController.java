@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -52,12 +51,9 @@ public class PharmacistController {
 	@GetMapping("/staff/v1/pharmacist")
 	public ResponseEntity<ApiResponseSuccess<Page<PharmacistDto>>> searchPharmacists(
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
-			@RequestParam(defaultValue = "firstName") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
 			@RequestParam(required = false) String term, @RequestParam(required = false) String status) {
 
-		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable pageable = PageRequest.of(page, size, sort);
+		Pageable pageable = PageRequest.of(page, size);
 
 		Page<PharmacistDto> pharmacists = pharmacistService.searchPharmacists(pageable, term, status);
 
@@ -73,15 +69,6 @@ public class PharmacistController {
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
 	}
-//
-//	@GetMapping("/staff/v1/pharmacist/{id}")
-//	public ResponseEntity<ApiResponseSuccess<Pharmacist>> getPharmacistById(@PathVariable Long id) {
-//		logger.info("getPharmacistById");
-//
-//		Pharmacist pharmacist = pharmacistService.getPharmacistById(id);
-//
-//		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
-//	}
 
 	@PostMapping("/auth/v1/register")
 	public ResponseEntity<ApiResponseSuccess<Long>> addPharmacist(

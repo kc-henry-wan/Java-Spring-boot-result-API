@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -46,20 +45,17 @@ public class JobController {
 	@GetMapping("/v1/job")
 	public ResponseEntity<ApiResponseSuccess<Page<JobDto>>> getFilteredJobsWithLimitedFields(
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-			@RequestParam(defaultValue = "JobDate") String sortBy, @RequestParam(defaultValue = "asc") String sortDir,
 			@RequestParam(defaultValue = "52.4") Double fromLat, @RequestParam(defaultValue = "-1.5") Double fromLng,
 			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate,
 			@RequestParam(required = false) String statusCode, @RequestParam(required = false) String jobIds,
-			@RequestParam(required = false) String groupCode) {
+			@RequestParam(required = false) String groupCode, @RequestParam(required = false) String orderBy) {
 
 		logger.info("JobController - getFilteredJobsWithLimitedFields start");
 
-		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable pageable = PageRequest.of(page, size, sort);
+		Pageable pageable = PageRequest.of(page, size);
 
 		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, fromLat, fromLng, fromDate, toDate,
-				statusCode, jobIds, groupCode, null);
+				statusCode, jobIds, groupCode, null, orderBy);
 
 		logger.info("JobController - List<JobDTO> returned");
 
@@ -70,18 +66,15 @@ public class JobController {
 	// GET /v1/job
 	@GetMapping("/v1/myjob")
 	public ResponseEntity<ApiResponseSuccess<Page<JobDto>>> getMyJobs(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortDir, @RequestParam(required = false) Double fromLat,
-			@RequestParam(required = false) Double fromLng) {
+			@RequestParam(defaultValue = "10") int size, @RequestParam(required = false) Double fromLat,
+			@RequestParam(required = false) Double fromLng, @RequestParam(required = false) String orderBy) {
 
 		logger.info("JobController - getMyJobs start");
 
-		Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable pageable = PageRequest.of(page, size, sort);
+		Pageable pageable = PageRequest.of(page, size);
 
 		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, fromLat, fromLng, null, null, null,
-				null, null, CommonUtil.getCurrentUserId());
+				null, null, CommonUtil.getCurrentUserId(), orderBy);
 
 		logger.info("JobController - List<JobDTO> returned");
 

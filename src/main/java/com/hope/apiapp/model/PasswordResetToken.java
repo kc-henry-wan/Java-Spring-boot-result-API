@@ -2,9 +2,6 @@ package com.hope.apiapp.model;
 
 import java.time.LocalDateTime;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,8 +14,6 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "password_reset_token")
 public class PasswordResetToken {
-
-	private static final Logger logger = LoggerFactory.getLogger(PasswordResetToken.class);
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

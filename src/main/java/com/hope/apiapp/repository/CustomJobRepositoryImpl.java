@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,8 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 	private EntityManager entityManager;
 
 	public Page<JobDto> findFilteredJobsWithLimitedFields(Pageable pageable, Double fromLat, Double fromLng,
-			String fromDate, String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId) {
+			String fromDate, String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId,
+			String orderBy) {
 
 		StringBuilder jpql = new StringBuilder("SELECT j.jobId AS jobId, j.jobRef AS jobRef, j.jobDate AS jobDate, "
 				+ " j.jobStartTime AS jobStartTime, j.jobEndTime AS jobEndTime , j.hourlyRate AS hourlyRate, "
@@ -78,6 +80,19 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
 		logger.info("queryBuilder - finish where case. " + jpql.toString());
 		logger.info("queryBuilder - finish where case. " + countJpql.toString());
+
+		// Add order by
+		if ("DA".equalsIgnoreCase(orderBy)) {
+			jpql.append(" ORDER BY j.jobDate, j.jobStartTime ");
+		} else if ("HR".equalsIgnoreCase(orderBy)) {
+			jpql.append(" ORDER BY j.hourlyRate DESC, j.jobDate, j.jobStartTime ");
+		} else if ("TP".equalsIgnoreCase(orderBy)) {
+			jpql.append(" ORDER BY j.totalPaid DESC, j.jobDate, j.jobStartTime ");
+		} else {
+			jpql.append(" ORDER BY j.jobDate, j.jobStartTime, j.hourlyRate DESC ");
+		}
+
+		logger.info("queryBuilder - finish order by:" + jpql.toString());
 
 		Query query = entityManager.createQuery(jpql.toString());
 		TypedQuery<Long> countQuery = entityManager.createQuery(countJpql.toString(), Long.class);
@@ -129,7 +144,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 			Double distance = 0.0;
 			if (fromLat != null && fromLng != null) {
 				distance = CommonUtil.calculateDistance(fromLat, fromLng, (Double) row[16], (Double) row[17]);
-				logger.info("For each row: distance:" + distance);
+//				logger.info("For each row: distance:" + distance);
 			}
 
 			resultList.add(new JobDto( // Use DTO instead of projection class
@@ -158,10 +173,9 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 		}
 		logger.info("List<JobDto> load completed");
 
-//		if (sortByDist) {
-//			Collections.sort(JobDto, Comparator.comparing(JobDto::getDistance));
-//			logger.info("List<JobDto> Sort by distance in ascending order ");
-//		}
+		if ("DI".equalsIgnoreCase(orderBy)) {
+			resultList.sort(Comparator.comparing(JobDto::getDistance));
+		}
 
 		// Getting total count for pagination
 		Long totalElements = countQuery.getSingleResult();

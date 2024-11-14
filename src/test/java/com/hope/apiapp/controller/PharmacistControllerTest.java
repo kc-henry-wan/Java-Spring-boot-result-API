@@ -50,7 +50,7 @@ public class PharmacistControllerTest {
 
 		// Act
 		ResponseEntity<ApiResponseSuccess<Page<PharmacistDto>>> response = pharmacistController.searchPharmacists(0, 10,
-				"status", "asc", null, null);
+				null, null);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -64,7 +64,7 @@ public class PharmacistControllerTest {
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> pharmacistController.searchPharmacists(0, 10, "status", "asc", null, null))
+		assertThatThrownBy(() -> pharmacistController.searchPharmacists(0, 10, null, null))
 				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
 	}
 

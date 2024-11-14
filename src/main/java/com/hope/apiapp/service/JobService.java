@@ -42,11 +42,12 @@ public class JobService {
 
 	@Transactional
 	public Page<JobDto> findFilteredJobsWithLimitedFields(Pageable pageable, Double fromLat, Double fromLng,
-			String fromDate, String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId) {
+			String fromDate, String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId,
+			String orderBy) {
 		logger.info("JobService - findFilteredJobsWithLimitedFields");
 
 		return jobRepository.findFilteredJobsWithLimitedFields(pageable, fromLat, fromLng, fromDate, toDate, statusCode,
-				jobIds, groupCode, pharmacistId);
+				jobIds, groupCode, pharmacistId, orderBy);
 	}
 
 	public JobProjection getJobByIdWithLimitedFields(Long id) {
@@ -185,7 +186,7 @@ public class JobService {
 
 		if (negotiationList.size() > 0) {
 			for (Negotiation negotiation : negotiationList) {
-				Negotiation updatedNegotiation = negotiationRepository.save(negotiation);
+				negotiationRepository.save(negotiation);
 			}
 		}
 

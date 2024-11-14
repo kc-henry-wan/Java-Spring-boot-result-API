@@ -64,6 +64,18 @@ public class CustomNegotiationRepositoryImpl implements CustomNegotiationReposit
 		logger.info("queryBuilder - finish where case. " + jpql.toString());
 		logger.info("queryBuilder - finish where case. " + countJpql.toString());
 
+		// Add order by
+//		if ("DA".equalsIgnoreCase(orderBy)) {
+//			jpql.append(" ORDER BY j.jobDate, j.jobStartTime ");
+//		} else if ("HR".equalsIgnoreCase(orderBy)) {
+//			jpql.append(" ORDER BY j.hourlyRate DESC, j.jobDate ");
+//		} else if ("TP".equalsIgnoreCase(orderBy)) {
+//			jpql.append(" ORDER BY j.totalPaid DESC, j.jobDate ");
+//		} else {
+		jpql.append(" ORDER BY j.jobDate, j.jobStartTime  ");
+//		}
+
+		logger.info("queryBuilder - finish order by:" + jpql.toString());
 		TypedQuery<NegotiationDto> query = entityManager.createQuery(jpql.toString(), NegotiationDto.class);
 		TypedQuery<Long> countQuery = entityManager.createQuery(countJpql.toString(), Long.class);
 

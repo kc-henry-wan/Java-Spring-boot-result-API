@@ -1,7 +1,5 @@
 package com.hope.apiapp.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,8 +14,6 @@ import com.hope.apiapp.service.PasswordResetTokenService;
 @RequestMapping("/api")
 @Validated
 public class PasswordResetController {
-
-	private static final Logger logger = LoggerFactory.getLogger(PasswordResetController.class);
 
 	@Autowired
 	private PasswordResetTokenService passwordResetService;

@@ -7,6 +7,6 @@ import com.hope.apiapp.dto.JobDto;
 
 public interface CustomJobRepository {
 	Page<JobDto> findFilteredJobsWithLimitedFields(Pageable pageable, Double fromLat, Double fromLng, String fromDate,
-			String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId);
+			String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId, String orderBy);
 
 }

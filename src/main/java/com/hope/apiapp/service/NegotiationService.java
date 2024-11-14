@@ -157,7 +157,7 @@ public class NegotiationService {
 
 	@Transactional
 	public Negotiation updateWithTrxHandling(Job job, Negotiation negotiation) {
-		Job updatedJob = jobRepository.save(job);
+		jobRepository.save(job);
 		Negotiation updatedNegotiation = negotiationRepository.save(negotiation);
 
 		return updatedNegotiation;

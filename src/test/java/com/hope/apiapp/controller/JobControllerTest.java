@@ -45,12 +45,12 @@ public class JobControllerTest {
 		myList.add(returnedJob);
 		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null))
-				.thenReturn(myPage);
+		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null,
+				null)).thenReturn(myPage);
 
 		// Act
 		ResponseEntity<ApiResponseSuccess<Page<JobDto>>> response = jobController.getFilteredJobsWithLimitedFields(0,
-				10, "status", "asc", null, null, null, null, null, null, null);
+				10, null, null, null, null, null, null, null, null);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -65,15 +65,13 @@ public class JobControllerTest {
 		JobDto returnedJob = new JobDto();
 		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
-		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null))
-				.thenThrow(new RuntimeException("Unexpected error"));
+		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null,
+				null)).thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> jobController.getFilteredJobsWithLimitedFields(0, 10, "status", "asc", null, null,
-				null, null, null, null, null)).isInstanceOf(RuntimeException.class)
-				.hasMessageContaining("Unexpected error");
+		assertThatThrownBy(() -> jobController.getFilteredJobsWithLimitedFields(0, 10, null, null, null, null, null,
+				null, null, null)).isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
 	}
 
 	@Test
@@ -85,12 +83,11 @@ public class JobControllerTest {
 		myList.add(returnedJob);
 		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null))
-				.thenReturn(myPage);
+		when(jobService.findFilteredJobsWithLimitedFields(pageable, null, null, null, null, null, null, null, null,
+				null)).thenReturn(myPage);
 
 		// Act
-		ResponseEntity<ApiResponseSuccess<Page<JobDto>>> response = jobController.getMyJobs(0, 10, "status", "asc",
-				null, null);
+		ResponseEntity<ApiResponseSuccess<Page<JobDto>>> response = jobController.getMyJobs(0, 10, null, null, null);
 
 		// Assert
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -101,18 +98,16 @@ public class JobControllerTest {
 	@Test
 	public void testGetMyJobs_Exception() {
 		// Arrange
-		Pageable pageable = PageRequest.of(0, 10);
 		JobDto returnedJob = new JobDto();
 		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
-		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
-		when(jobService.findFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null, null))
+		when(jobService.findFilteredJobsWithLimitedFields(null, null, null, null, null, null, null, null, null, null))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
-		assertThatThrownBy(() -> jobController.getMyJobs(0, 10, "status", "asc", null, null))
-				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
+		assertThatThrownBy(() -> jobController.getMyJobs(0, 10, null, null, null)).isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("Unexpected error");
 	}
 
 	@Test
