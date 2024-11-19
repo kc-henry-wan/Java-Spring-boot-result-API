@@ -20,6 +20,7 @@ import com.hope.apiapp.dto.PharmacistDocProjection;
 import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.model.PharmacistDoc;
 import com.hope.apiapp.service.PharmacistDocService;
+import com.hope.apiapp.util.CommonUtil;
 
 @RestController
 @RequestMapping("/api")
@@ -42,11 +43,12 @@ public class PharmacistDocControllar {
 	}
 
 	@GetMapping("/v1/image/download/{id}")
-	public ResponseEntity<byte[]> viewImage(@PathVariable Long id) {
+	public ResponseEntity<byte[]> viewImageByUserID(@PathVariable Long id) {
 
 		try {
 			// Get the image bytes
-			byte[] imageBytes = pharmacistDocService.viewImage(id);
+			Long userId = CommonUtil.getCurrentUserId();
+			byte[] imageBytes = pharmacistDocService.viewImage(id, userId);
 			PharmacistDoc image = pharmacistDocService.findByImageId(id);
 
 			// Return the image content as a byte array, with the correct content type
@@ -56,7 +58,31 @@ public class PharmacistDocControllar {
 		}
 	}
 
-	@GetMapping("/v1/image/pharmacist/{id}")
+	@GetMapping("/staff/v1/image/download/{id}")
+	public ResponseEntity<byte[]> viewImage(@PathVariable Long id) {
+
+		try {
+			// Get the image bytes
+			byte[] imageBytes = pharmacistDocService.viewImage(id, null);
+			PharmacistDoc image = pharmacistDocService.findByImageId(id);
+
+			// Return the image content as a byte array, with the correct content type
+			return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getMediaType())).body(imageBytes);
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+	}
+
+	@GetMapping("/v1/image/pharmacist/")
+	public ResponseEntity<ApiResponseSuccess<List<PharmacistDocProjection>>> getImagesByPharmacistId() {
+
+		Long userId = CommonUtil.getCurrentUserId();
+		List<PharmacistDocProjection> imageIds = pharmacistDocService.getImageIdsByPharmacistId(userId);
+
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", imageIds), HttpStatus.OK);
+	}
+
+	@GetMapping("/staff/v1/image/pharmacist/{id}")
 	public ResponseEntity<ApiResponseSuccess<List<PharmacistDocProjection>>> getImagesByPharmacistId(
 			@PathVariable Long id) {
 

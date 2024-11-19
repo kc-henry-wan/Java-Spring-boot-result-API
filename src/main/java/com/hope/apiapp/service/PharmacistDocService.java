@@ -67,11 +67,15 @@ public class PharmacistDocService {
 	}
 
 	// View image
-	public byte[] viewImage(Long imageId) throws IOException {
+	public byte[] viewImage(Long imageId, Long userId) throws IOException {
 		PharmacistDoc image = null;
 
-		image = imageRepository.findByImageId(imageId).orElseThrow(() -> new IOException("Image not found"));
+		if (userId == null) {
+			image = imageRepository.findByImageId(imageId).orElseThrow(() -> new IOException("Image not found"));
+		} else {
+			image = imageRepository.findByUserId(imageId, userId).orElseThrow(() -> new IOException("Image not found"));
 
+		}
 		// Retrieve the stored filename from the database
 		String storedFilename = image.getStoredFilename();
 		Path filePath = Paths.get(UPLOAD_DIR, storedFilename);

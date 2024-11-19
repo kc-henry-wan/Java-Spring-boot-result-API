@@ -28,6 +28,7 @@ import com.hope.apiapp.model.PasswordResetToken;
 import com.hope.apiapp.model.Pharmacist;
 import com.hope.apiapp.service.PasswordResetTokenService;
 import com.hope.apiapp.service.PharmacistService;
+import com.hope.apiapp.util.CommonUtil;
 
 @RestController
 @RequestMapping("/api")
@@ -60,7 +61,17 @@ public class PharmacistController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacists), HttpStatus.OK);
 	}
 
-	@GetMapping("/v1/pharmacist/{id}")
+	@GetMapping("/v1/pharmacist")
+	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getPharmacistByUserIdWithLimitedFields() {
+		logger.info("getPharmacistById");
+
+		Long userId = CommonUtil.getCurrentUserId();
+		PharmacistProjection pharmacist = pharmacistService.getPharmacistByIdWithLimitedFields(userId);
+
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
+	}
+
+	@GetMapping("/staff/v1/pharmacist/{id}")
 	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getPharmacistByIdWithLimitedFields(
 			@PathVariable Long id) {
 		logger.info("getPharmacistById");
@@ -103,7 +114,19 @@ public class PharmacistController {
 		}
 	}
 
-	@PutMapping("/v1/pharmacist/{id}")
+	@PutMapping("/v1/pharmacist")
+	public ResponseEntity<ApiResponseSuccess<Long>> updatePharmacist(
+			@RequestBody PharmacistUpdateRequestDto pharmacistRequest) {
+		logger.info("updatePharmacist");
+
+		Long userId = CommonUtil.getCurrentUserId();
+		Pharmacist updatedPharmacist = pharmacistService.updatePharmacist(userId, pharmacistRequest);
+
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", updatedPharmacist.getPharmacistId()),
+				HttpStatus.OK);
+	}
+
+	@PutMapping("/staff/v1/pharmacist/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updatePharmacist(@PathVariable Long id,
 			@RequestBody PharmacistUpdateRequestDto pharmacistRequest) {
 		logger.info("updatePharmacist");

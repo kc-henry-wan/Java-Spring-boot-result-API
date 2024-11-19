@@ -17,5 +17,8 @@ public interface PharmacistDocRepository extends JpaRepository<PharmacistDoc, In
 	@Query("SELECT i.imageId AS imageId, i.imageType AS imageType FROM PharmacistDoc i where i.deleted = false AND i.pharmacistId = :pharmacistId")
 	List<PharmacistDocProjection> findByPharmacistId(@Param("pharmacistId") Long pharmacistId);
 
+	@Query("SELECT i FROM PharmacistDoc i where i.deleted = false AND i.imageId = :imageId AND i.pharmacistId = :pharmacistId")
+	Optional<PharmacistDoc> findByUserId(@Param("imageId") Long imageId, @Param("pharmacistId") Long pharmacistId);
+
 	Optional<PharmacistDoc> findByImageId(Long imageId);
 }
