@@ -31,18 +31,19 @@ public class PharmacistDocControllar {
 	@Autowired
 	private PharmacistDocService pharmacistDocService;
 
-	@PostMapping("/v1/image/upload")
-	public ResponseEntity<ApiResponseSuccess<Long>> uploadImage(@RequestParam("pharmacistId") Long pharmacistId,
-			@RequestParam("imageType") String imageType, @RequestParam("imageFile") MultipartFile imageFile) {
+	@PostMapping("/v1/mydoc/upload")
+	public ResponseEntity<ApiResponseSuccess<Long>> uploadImage(@RequestParam("imageType") String imageType,
+			@RequestParam("imageFile") MultipartFile imageFile) {
 
+		Long userId = CommonUtil.getCurrentUserId();
 		// Save the image and get the metadata with image_id
-		PharmacistDoc savedImage = pharmacistDocService.saveImage(pharmacistId, imageType, imageFile);
+		PharmacistDoc savedImage = pharmacistDocService.saveImage(userId, imageType, imageFile);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", savedImage.getImageId()), HttpStatus.CREATED);
 
 	}
 
-	@GetMapping("/v1/image/download/{id}")
+	@GetMapping("/v1/mydoc/download/{id}")
 	public ResponseEntity<byte[]> viewImageByUserID(@PathVariable Long id) {
 
 		try {
@@ -73,7 +74,7 @@ public class PharmacistDocControllar {
 		}
 	}
 
-	@GetMapping("/v1/image/pharmacist/")
+	@GetMapping("/v1/mydoc/")
 	public ResponseEntity<ApiResponseSuccess<List<PharmacistDocProjection>>> getImagesByPharmacistId() {
 
 		Long userId = CommonUtil.getCurrentUserId();

@@ -61,7 +61,7 @@ public class PharmacistController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacists), HttpStatus.OK);
 	}
 
-	@GetMapping("/v1/pharmacist")
+	@GetMapping("/v1/myprofile")
 	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getPharmacistByUserIdWithLimitedFields() {
 		logger.info("getPharmacistById");
 
@@ -114,7 +114,7 @@ public class PharmacistController {
 		}
 	}
 
-	@PutMapping("/v1/pharmacist")
+	@PutMapping("/v1/myprofile")
 	public ResponseEntity<ApiResponseSuccess<Long>> updatePharmacist(
 			@RequestBody PharmacistUpdateRequestDto pharmacistRequest) {
 		logger.info("updatePharmacist");
