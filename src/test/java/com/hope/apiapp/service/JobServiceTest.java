@@ -41,11 +41,13 @@ public class JobServiceTest {
 		LocalTime newTime = LocalTime.of(9, 0);
 		BigDecimal newTotalWorkHour = BigDecimal.valueOf(19.00);
 		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		String actionMode = "Edit";
 
 		Job existingJob = new Job();
 		existingJob.setUpdatedAt(originalLastModifiedDate);
 
 		JobRequestDto request = new JobRequestDto();
+		request.setAction(actionMode);
 		request.setJobStartTime(newTime);
 		request.setTotalWorkHour(newTotalWorkHour);
 		request.setUpdatedAt(originalLastModifiedDate);

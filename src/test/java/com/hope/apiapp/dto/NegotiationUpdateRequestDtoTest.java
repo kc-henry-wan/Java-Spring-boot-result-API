@@ -29,7 +29,7 @@ public class NegotiationUpdateRequestDtoTest {
 		NegotiationUpdateRequestDto dto = new NegotiationUpdateRequestDto();
 		dto.setCounterHourlyRate(new BigDecimal("52.50"));
 		dto.setCounterTotalPaid(new BigDecimal("420.00"));
-		dto.setStatus("A");
+		dto.setStatus("Counter");
 
 		Set<ConstraintViolation<NegotiationUpdateRequestDto>> violations = validator.validate(dto);
 		assertTrue(violations.isEmpty(), "Expected no validation errors");
@@ -38,11 +38,11 @@ public class NegotiationUpdateRequestDtoTest {
 	@Test
 	public void testStatusCodeExceedsMaxLength() {
 		NegotiationUpdateRequestDto dto = new NegotiationUpdateRequestDto();
-		dto.setStatus("AB");
+		dto.setStatus("A12345678901234567890");
 
 		Set<ConstraintViolation<NegotiationUpdateRequestDto>> violations = validator.validate(dto);
 		assertEquals(1, violations.size(), "Expected one validation error");
-		assertEquals("Status code must be a single character", violations.iterator().next().getMessage());
+		assertEquals("New Status must not exceed 20 characters", violations.iterator().next().getMessage());
 	}
 
 }

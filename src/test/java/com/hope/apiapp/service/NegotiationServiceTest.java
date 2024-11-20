@@ -44,6 +44,7 @@ public class NegotiationServiceTest {
 		BigDecimal newHourlyRate = new BigDecimal(60.0);
 		BigDecimal newTotalPaid = new BigDecimal(480.0);
 		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		String actionMode = "Counter";
 
 		Job existingJob = new Job();
 		Negotiation existingNegotiation = new Negotiation();
@@ -51,6 +52,7 @@ public class NegotiationServiceTest {
 
 		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
 		request.setJobId(id);
+		request.setMode(actionMode);
 		request.setCounterHourlyRate(newHourlyRate);
 		request.setCounterTotalPaid(newTotalPaid);
 		request.setUpdatedAt(originalLastModifiedDate);

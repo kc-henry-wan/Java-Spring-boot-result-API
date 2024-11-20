@@ -1,6 +1,9 @@
 C:\lab\code\java4\apiapp\apiapp\src\test\java\com\hope\apiapp\controller\JobControllerTest.java
 C:\lab\code\java4\apiapp\apiapp\src\test\java\com\hope\apiapp\controller\NegotiationControllerTest.java
+C:\lab\code\java4\apiapp\apiapp\src\test\java\com\hope\apiapp\controller\PasswordResetControllerTest.java
+C:\lab\code\java4\apiapp\apiapp\src\test\java\com\hope\apiapp\controller\PasswordUpdateControllerTest.java
 C:\lab\code\java4\apiapp\apiapp\src\test\java\com\hope\apiapp\controller\PharmacistControllerTest.java
+C:\lab\code\java4\apiapp\apiapp\src\test\java\com\hope\apiapp\controller\PharmacistDocControllarTest.java
 C:\lab\code\java4\apiapp\apiapp\src\test\java\com\hope\apiapp\controller\PharmacyBranchControllerTest.java
 C:\lab\code\java4\apiapp\apiapp\src\test\java\com\hope\apiapp\dto\JobRequestDtoTest.java
 C:\lab\code\java4\apiapp\apiapp\src\test\java\com\hope\apiapp\dto\NegotiationAddRequestDtoTest.java

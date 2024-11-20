@@ -2,12 +2,16 @@ package com.hope.apiapp.dto;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.Size;
+
 public class NegotiationAcceptRequestDto {
 
 	private Long jobId;
 
+	@Size(max = 20, message = "aActino mode must not exceed 20 characters")
 	private String mode;
 
+	@Size(max = 20, message = "Status must not exceed 20 characters")
 	private String status;
 
 	private LocalDateTime updatedAt;

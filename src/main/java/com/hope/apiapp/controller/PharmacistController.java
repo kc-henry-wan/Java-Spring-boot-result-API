@@ -62,7 +62,7 @@ public class PharmacistController {
 	}
 
 	@GetMapping("/v1/myprofile")
-	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getPharmacistByUserIdWithLimitedFields() {
+	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getMyProfile() {
 		logger.info("getPharmacistById");
 
 		Long userId = CommonUtil.getCurrentUserId();
@@ -115,7 +115,7 @@ public class PharmacistController {
 	}
 
 	@PutMapping("/v1/myprofile")
-	public ResponseEntity<ApiResponseSuccess<Long>> updatePharmacist(
+	public ResponseEntity<ApiResponseSuccess<Long>> updateMyProfile(
 			@RequestBody PharmacistUpdateRequestDto pharmacistRequest) {
 		logger.info("updatePharmacist");
 

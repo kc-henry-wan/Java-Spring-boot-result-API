@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import com.hope.apiapp.dto.NegotiationAcceptRequestDto;
 import com.hope.apiapp.dto.NegotiationAddRequestDto;
 import com.hope.apiapp.dto.NegotiationDto;
 import com.hope.apiapp.dto.NegotiationProjection;
@@ -106,8 +107,10 @@ public class NegotiationControllerTest {
 	@Test
 	public void testAddNegotiation_Success() {
 		// Arrange
+		Long id = 77L;
 		NegotiationAddRequestDto request = new NegotiationAddRequestDto();
 		Negotiation updatedNegotiation = new Negotiation();
+		updatedNegotiation.setNegotiationId(id);
 
 		when(negotiationService.addNegotiation(any(NegotiationAddRequestDto.class))).thenReturn(updatedNegotiation);
 
@@ -118,6 +121,7 @@ public class NegotiationControllerTest {
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 		assertThat(response.getBody()).isNotNull();
 		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+		assertThat(response.getBody().getData()).isEqualTo(id);
 	}
 
 	@Test
@@ -134,11 +138,47 @@ public class NegotiationControllerTest {
 	}
 
 	@Test
-	public void testUpdateNegotiation_Success() {
+	public void testAcceptNegotiation_Success() {
+		// Arrange
+		Long id = 77L;
+		NegotiationAcceptRequestDto request = new NegotiationAcceptRequestDto();
+		Negotiation updatedNegotiation = new Negotiation();
+		updatedNegotiation.setNegotiationId(id);
+
+		when(negotiationService.acceptNegotiation(eq(id), any(NegotiationAcceptRequestDto.class)))
+				.thenReturn(updatedNegotiation);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<Long>> response = negotiationController.acceptNegotiation(id, request);
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+		assertThat(response.getBody().getData()).isEqualTo(id);
+	}
+
+	@Test
+	public void testAcceptNegotiationn_Exception() {
 		// Arrange
 		Long id = 1L;
+		NegotiationAcceptRequestDto request = new NegotiationAcceptRequestDto();
+
+		when(negotiationService.acceptNegotiation(eq(id), any(NegotiationAcceptRequestDto.class)))
+				.thenThrow(new RuntimeException("Unexpected error"));
+
+		// Act & Assert
+		assertThatThrownBy(() -> negotiationController.acceptNegotiation(id, request))
+				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
+	}
+
+	@Test
+	public void testUpdateNegotiation_Success() {
+		// Arrange
+		Long id = 77L;
 		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
 		Negotiation updatedNegotiation = new Negotiation();
+		updatedNegotiation.setNegotiationId(id);
 
 		when(negotiationService.updateNegotiation(eq(id), any(NegotiationUpdateRequestDto.class)))
 				.thenReturn(updatedNegotiation);
@@ -150,6 +190,7 @@ public class NegotiationControllerTest {
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 		assertThat(response.getBody()).isNotNull();
 		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+		assertThat(response.getBody().getData()).isEqualTo(id);
 	}
 
 	@Test

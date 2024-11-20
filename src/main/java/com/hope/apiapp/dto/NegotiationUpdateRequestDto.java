@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Size;
 
 public class NegotiationUpdateRequestDto {
 
@@ -15,8 +16,10 @@ public class NegotiationUpdateRequestDto {
 
 	private Long jobId;
 
+	@Size(max = 20, message = "Action mode must not exceed 20 characters")
 	private String mode;
 
+	@Size(max = 20, message = "New Status must not exceed 20 characters")
 	private String status;
 
 	private LocalDateTime updatedAt;

@@ -75,7 +75,7 @@ public class PharmacistDocControllar {
 	}
 
 	@GetMapping("/v1/mydoc/")
-	public ResponseEntity<ApiResponseSuccess<List<PharmacistDocProjection>>> getImagesByPharmacistId() {
+	public ResponseEntity<ApiResponseSuccess<List<PharmacistDocProjection>>> getMyDoc() {
 
 		Long userId = CommonUtil.getCurrentUserId();
 		List<PharmacistDocProjection> imageIds = pharmacistDocService.getImageIdsByPharmacistId(userId);

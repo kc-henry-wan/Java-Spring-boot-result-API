@@ -72,14 +72,15 @@ public class NegotiationService {
 		Long jobId = negotiationRequest.getJobId();
 
 		Negotiation negotiation = findById(id);
+		if (!negotiationRequest.getUpdatedAt().equals(negotiation.getUpdatedAt())) {
+			throw new ResourceConflictException("Record has been modified by another user.");
+		}
+		
 		Job job = jobRepository.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
 		if (negotiation != null && job != null) {
 			logger.info("negotiation is not null");
 
-			if (!negotiationRequest.getUpdatedAt().equals(negotiation.getUpdatedAt())) {
-				throw new ResourceConflictException("Record has been modified by another user.");
-			}
 
 			negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 			negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session

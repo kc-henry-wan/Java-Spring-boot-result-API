@@ -3,6 +3,7 @@ package com.hope.apiapp.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -26,7 +27,9 @@ import com.hope.apiapp.dto.PharmacistDto;
 import com.hope.apiapp.dto.PharmacistProjection;
 import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
+import com.hope.apiapp.model.PasswordResetToken;
 import com.hope.apiapp.model.Pharmacist;
+import com.hope.apiapp.service.PasswordResetTokenService;
 import com.hope.apiapp.service.PharmacistService;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +40,9 @@ public class PharmacistControllerTest {
 
 	@Mock
 	private PharmacistService pharmacistService;
+
+	@Mock
+	private PasswordResetTokenService passwordResetService;
 
 	@Test
 	public void testSearchtPharmacists_Success() {
@@ -68,35 +74,34 @@ public class PharmacistControllerTest {
 				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
 	}
 
-//	@Test
-//	public void testGetPharmacistByIds_Success() {
-//		// Arrange
-//		Long id = 1L;
-//		Pharmacist newPharmacist = new Pharmacist();
-//
-//		when(pharmacistService.getPharmacistById(id)).thenReturn(newPharmacist);
-//
-//		// Act
-//		ResponseEntity<ApiResponseSuccess<Pharmacist>> response = pharmacistController.getPharmacistById(id);
-//
-//		// Assert
-//		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-//		assertThat(response.getBody()).isNotNull();
-//		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
-//		assertThat(response.getBody().getData().getPassword()).isNull();
-//	}
-//
-//	@Test
-//	public void testGetPharmacistByIds_Exception() {
-//		// Arrange
-//		Long id = 1L;
-//
-//		when(pharmacistService.getPharmacistById(id)).thenThrow(new RuntimeException("Unexpected error"));
-//
-//		// Act & Assert
-//		assertThatThrownBy(() -> pharmacistController.getPharmacistById(id)).isInstanceOf(RuntimeException.class)
-//				.hasMessageContaining("Unexpected error");
-//	}
+	@Test
+	public void testGgetMyProfile_Success() {
+		// Arrange
+		PharmacistProjection mockPharmacist = mock(PharmacistProjection.class);
+
+		when(pharmacistService.getPharmacistByIdWithLimitedFields(isNull())).thenReturn(mockPharmacist);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<PharmacistProjection>> response = pharmacistController.getMyProfile();
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+		assertThat(response.getBody().getData().getAddress2()).isNull();
+	}
+
+	@Test
+	public void testGgetMyProfile_Exception() {
+		// Arrange
+
+		when(pharmacistService.getPharmacistByIdWithLimitedFields(isNull()))
+				.thenThrow(new RuntimeException("Unexpected error"));
+
+		// Act & Assert
+		assertThatThrownBy(() -> pharmacistController.getMyProfile()).isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("Unexpected error");
+	}
 
 	@Test
 	public void testGetPharmacistByIdsWithLimitedFields_Success() {
@@ -133,8 +138,10 @@ public class PharmacistControllerTest {
 	@Test
 	public void testAddPharmacist_Success() {
 		// Arrange
+		Long id = 77L;
 		PharmacistAddRequestDto request = new PharmacistAddRequestDto();
 		Pharmacist updatedPharmacist = new Pharmacist();
+		updatedPharmacist.setPharmacistId(id);
 
 		when(pharmacistService.addPharmacist(any(PharmacistAddRequestDto.class))).thenReturn(updatedPharmacist);
 
@@ -145,6 +152,7 @@ public class PharmacistControllerTest {
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 		assertThat(response.getBody()).isNotNull();
 		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+		assertThat(response.getBody().getData()).isEqualTo(id);
 	}
 
 	@Test
@@ -161,11 +169,95 @@ public class PharmacistControllerTest {
 	}
 
 	@Test
-	public void testUpdatePharmacist_Success() {
+	public void testActivatePharmacist_Success() {
+		// Arrange
+		Long id = 77L;
+		String token = "abc";
+		PasswordResetToken resetToken = new PasswordResetToken();
+
+		when(passwordResetService.validatePasswordResetToken(anyString())).thenReturn(resetToken);
+		when(pharmacistService.activatePharmacist(eq(id))).thenReturn(true);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<Long>> response = pharmacistController.activatePharmacist(id, token);
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+		assertThat(response.getBody().getData()).isEqualTo(id);
+	}
+
+	@Test
+	public void testActivatePharmacist_TokenException() {
+		// Arrange
+		Long id = 1L;
+		String token = "abc";
+
+		when(passwordResetService.validatePasswordResetToken(anyString()))
+				.thenThrow(new RuntimeException("Unexpected error"));
+
+		// Act & Assert
+		assertThatThrownBy(() -> pharmacistController.activatePharmacist(id, token))
+				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
+	}
+
+	@Test
+	public void testActivatePharmacist_Exception() {
+		// Arrange
+		Long id = 1L;
+		String token = "abc";
+		PasswordResetToken resetToken = new PasswordResetToken();
+
+		when(passwordResetService.validatePasswordResetToken(anyString())).thenReturn(resetToken);
+		when(pharmacistService.activatePharmacist(eq(id))).thenThrow(new RuntimeException("Unexpected error"));
+
+		// Act & Assert
+		assertThatThrownBy(() -> pharmacistController.activatePharmacist(id, token))
+				.isInstanceOf(RuntimeException.class).hasMessageContaining("Unexpected error");
+	}
+
+	@Test
+	public void testupdateMyProfile_Success() {
 		// Arrange
 		Long id = 1L;
 		PharmacistUpdateRequestDto request = new PharmacistUpdateRequestDto();
 		Pharmacist updatedPharmacist = new Pharmacist();
+		updatedPharmacist.setPharmacistId(id);
+
+		when(pharmacistService.updatePharmacist(isNull(), any(PharmacistUpdateRequestDto.class)))
+				.thenReturn(updatedPharmacist);
+
+		// Act
+		ResponseEntity<ApiResponseSuccess<Long>> response = pharmacistController.updateMyProfile(request);
+
+		// Assert
+		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+		assertThat(response.getBody().getData()).isEqualTo(id);
+	}
+
+	@Test
+	public void testupdateMyProfile_Exception() {
+		// Arrange
+		Long id = 1L;
+		PharmacistUpdateRequestDto request = new PharmacistUpdateRequestDto();
+
+		when(pharmacistService.updatePharmacist(isNull(), any(PharmacistUpdateRequestDto.class)))
+				.thenThrow(new RuntimeException("Unexpected error"));
+
+		// Act & Assert
+		assertThatThrownBy(() -> pharmacistController.updateMyProfile(request)).isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("Unexpected error");
+	}
+
+	public void testUpdatePharmacist_Success() {
+		// Arrange
+		Long id = 77L;
+		PharmacistUpdateRequestDto request = new PharmacistUpdateRequestDto();
+		Pharmacist updatedPharmacist = new Pharmacist();
+		updatedPharmacist.setPharmacistId(id);
 
 		when(pharmacistService.updatePharmacist(eq(id), any(PharmacistUpdateRequestDto.class)))
 				.thenReturn(updatedPharmacist);
@@ -177,6 +269,7 @@ public class PharmacistControllerTest {
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 		assertThat(response.getBody()).isNotNull();
 		assertThat(response.getBody().getApiStatus()).isEqualTo("Success");
+		assertThat(response.getBody().getData()).isEqualTo(id);
 	}
 
 	@Test
