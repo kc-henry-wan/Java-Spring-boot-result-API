@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,7 @@ public class JobServiceTest {
 		LocalTime newTime = LocalTime.of(9, 0);
 		BigDecimal newTotalWorkHour = BigDecimal.valueOf(19.00);
 		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime currentTime = LocalDateTime.now();
 		String actionMode = "Edit";
 
 		Job existingJob = new Job();
@@ -61,6 +63,8 @@ public class JobServiceTest {
 		// Assert
 		assertEquals(newTime, result.getJobStartTime());
 		assertEquals(newTotalWorkHour, result.getTotalWorkHour());
+		assertEquals(currentTime.truncatedTo(ChronoUnit.MINUTES),
+				result.getUpdatedAt().truncatedTo(ChronoUnit.MINUTES));
 		Mockito.verify(jobRepository).save(existingJob);
 	}
 
@@ -102,6 +106,7 @@ public class JobServiceTest {
 		String newAction = "Apply";
 		String newStatus = "Applied";
 		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime currentTime = LocalDateTime.now();
 
 		Job existingJob = new Job();
 		existingJob.setUpdatedAt(originalLastModifiedDate);
@@ -118,6 +123,8 @@ public class JobServiceTest {
 
 		// Assert
 		assertEquals(newStatus, result.getStatus());
+		assertEquals(currentTime.truncatedTo(ChronoUnit.MINUTES),
+				result.getUpdatedAt().truncatedTo(ChronoUnit.MINUTES));
 		Mockito.verify(jobRepository).save(existingJob);
 	}
 

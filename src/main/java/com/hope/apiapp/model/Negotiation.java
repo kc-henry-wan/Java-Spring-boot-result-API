@@ -32,7 +32,6 @@ public class Negotiation {
 	private BigDecimal counterHourlyRate;
 	private BigDecimal counterTotalPaid;
 	private String status;
-	private Boolean deleted = false;
 
 	private Long updatedUserId;
 
@@ -125,14 +124,6 @@ public class Negotiation {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
 	}
 
 	public Long getUpdatedUserId() {

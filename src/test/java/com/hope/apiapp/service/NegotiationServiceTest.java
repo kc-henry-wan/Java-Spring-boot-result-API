@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -38,17 +39,60 @@ public class NegotiationServiceTest {
 	private JobRepository jobRepository;
 
 	@Test
-	public void testUpdateNegotiation_SuccessfulUpdate() {
+	public void testUpdateNegotiation_SuccessfulUpdate_AdminAccept() {
 		// Arrange
 		Long id = 1L;
 		BigDecimal newHourlyRate = new BigDecimal(60.0);
 		BigDecimal newTotalPaid = new BigDecimal(480.0);
 		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
-		String actionMode = "Counter";
+		LocalDateTime currentTime = LocalDateTime.now();
+		String actionMode = "AdminAccept";
+		String originalStatus = "New";
+		String newStatus = "Admin Accepted";
 
 		Job existingJob = new Job();
 		Negotiation existingNegotiation = new Negotiation();
 		existingNegotiation.setUpdatedAt(originalLastModifiedDate);
+		existingNegotiation.setStatus(originalStatus);
+
+		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
+		request.setJobId(id);
+		request.setMode(actionMode);
+		request.setCounterHourlyRate(newHourlyRate);
+		request.setCounterTotalPaid(newTotalPaid);
+		request.setUpdatedAt(originalLastModifiedDate);
+
+		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+		Mockito.when(negotiationRepository.findById(id)).thenReturn(Optional.of(existingNegotiation));
+		Mockito.when(negotiationRepository.save(existingNegotiation)).thenReturn(existingNegotiation);
+
+		// Act
+		Negotiation result = negotiationService.updateNegotiation(id, request);
+
+		// Assert
+		assertEquals(null, result.getCounterHourlyRate());
+		assertEquals(null, result.getCounterTotalPaid());
+		assertEquals(newStatus, result.getStatus());
+		assertEquals(currentTime.truncatedTo(ChronoUnit.MINUTES),
+				result.getUpdatedAt().truncatedTo(ChronoUnit.MINUTES));
+		Mockito.verify(negotiationRepository).save(existingNegotiation);
+	}
+
+	@Test
+	public void testUpdateNegotiation_SuccessfulUpdate_Edit() {
+		// Arrange
+		Long id = 1L;
+		BigDecimal newHourlyRate = new BigDecimal(60.0);
+		BigDecimal newTotalPaid = new BigDecimal(480.0);
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime currentTime = LocalDateTime.now();
+		String actionMode = "Edit";
+		String originalStatus = "Counter Purposed";
+
+		Job existingJob = new Job();
+		Negotiation existingNegotiation = new Negotiation();
+		existingNegotiation.setUpdatedAt(originalLastModifiedDate);
+		existingNegotiation.setStatus(originalStatus);
 
 		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
 		request.setJobId(id);
@@ -67,6 +111,89 @@ public class NegotiationServiceTest {
 		// Assert
 		assertEquals(newHourlyRate, result.getCounterHourlyRate());
 		assertEquals(newTotalPaid, result.getCounterTotalPaid());
+		assertEquals(originalStatus, result.getStatus());
+		assertEquals(currentTime.truncatedTo(ChronoUnit.MINUTES),
+				result.getUpdatedAt().truncatedTo(ChronoUnit.MINUTES));
+		Mockito.verify(negotiationRepository).save(existingNegotiation);
+	}
+
+	@Test
+	public void testUpdateNegotiation_SuccessfulUpdate_AdminReject() {
+		// Arrange
+		Long id = 1L;
+		BigDecimal newHourlyRate = new BigDecimal(60.0);
+		BigDecimal newTotalPaid = new BigDecimal(480.0);
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime currentTime = LocalDateTime.now();
+		String actionMode = "AdminReject";
+		String originalStatus = "New";
+		String newStatus = "Admin Rejected";
+
+		Job existingJob = new Job();
+		Negotiation existingNegotiation = new Negotiation();
+		existingNegotiation.setUpdatedAt(originalLastModifiedDate);
+		existingNegotiation.setStatus(originalStatus);
+
+		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
+		request.setJobId(id);
+		request.setMode(actionMode);
+		request.setCounterHourlyRate(newHourlyRate);
+		request.setCounterTotalPaid(newTotalPaid);
+		request.setUpdatedAt(originalLastModifiedDate);
+
+		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+		Mockito.when(negotiationRepository.findById(id)).thenReturn(Optional.of(existingNegotiation));
+		Mockito.when(negotiationRepository.save(existingNegotiation)).thenReturn(existingNegotiation);
+
+		// Act
+		Negotiation result = negotiationService.updateNegotiation(id, request);
+
+		// Assert
+		assertEquals(null, result.getCounterHourlyRate());
+		assertEquals(null, result.getCounterTotalPaid());
+		assertEquals(newStatus, result.getStatus());
+		assertEquals(currentTime.truncatedTo(ChronoUnit.MINUTES),
+				result.getUpdatedAt().truncatedTo(ChronoUnit.MINUTES));
+		Mockito.verify(negotiationRepository).save(existingNegotiation);
+	}
+
+	@Test
+	public void testUpdateNegotiation_Successful_Counter() {
+		// Arrange
+		Long id = 1L;
+		BigDecimal newHourlyRate = new BigDecimal(60.0);
+		BigDecimal newTotalPaid = new BigDecimal(480.0);
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime currentTime = LocalDateTime.now();
+		String actionMode = "Counter";
+		String originalStatus = "New";
+		String newStatus = "Counter Purposed";
+
+		Job existingJob = new Job();
+		Negotiation existingNegotiation = new Negotiation();
+		existingNegotiation.setUpdatedAt(originalLastModifiedDate);
+		existingNegotiation.setStatus(originalStatus);
+
+		NegotiationUpdateRequestDto request = new NegotiationUpdateRequestDto();
+		request.setJobId(id);
+		request.setMode(actionMode);
+		request.setCounterHourlyRate(newHourlyRate);
+		request.setCounterTotalPaid(newTotalPaid);
+		request.setUpdatedAt(originalLastModifiedDate);
+
+		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+		Mockito.when(negotiationRepository.findById(id)).thenReturn(Optional.of(existingNegotiation));
+		Mockito.when(negotiationRepository.save(existingNegotiation)).thenReturn(existingNegotiation);
+
+		// Act
+		Negotiation result = negotiationService.updateNegotiation(id, request);
+
+		// Assert
+		assertEquals(newHourlyRate, result.getCounterHourlyRate());
+		assertEquals(newTotalPaid, result.getCounterTotalPaid());
+		assertEquals(newStatus, result.getStatus());
+		assertEquals(currentTime.truncatedTo(ChronoUnit.MINUTES),
+				result.getUpdatedAt().truncatedTo(ChronoUnit.MINUTES));
 		Mockito.verify(negotiationRepository).save(existingNegotiation);
 	}
 

@@ -12,16 +12,10 @@ public class NegotiationAddRequestDto {
 	private String reason;
 
 	@NotNull(message = "Job ID is required")
-	private Integer jobId;
+	private Long jobId;
 
 	@NotNull(message = "Pharmacist ID is required")
-	private Integer pharmacistId;
-
-	@DecimalMin(value = "0.0", inclusive = false, message = "Original hourly rate must be greater than 0")
-	private BigDecimal originalHourlyRate;
-
-	@DecimalMin(value = "0.0", inclusive = false, message = "Original total paid must be greater than 0")
-	private BigDecimal originalTotalPaid;
+	private Long pharmacistId;
 
 	@DecimalMin(value = "0.0", inclusive = false, message = "Purposed hourly rate must be greater than 0")
 	private BigDecimal purposedHourlyRate;
@@ -37,36 +31,20 @@ public class NegotiationAddRequestDto {
 		this.reason = reason;
 	}
 
-	public Integer getJobId() {
+	public Long getJobId() {
 		return jobId;
 	}
 
-	public void setJobId(Integer jobId) {
+	public void setJobId(Long jobId) {
 		this.jobId = jobId;
 	}
 
-	public Integer getPharmacistId() {
+	public Long getPharmacistId() {
 		return pharmacistId;
 	}
 
-	public void setPharmacistId(Integer pharmacistId) {
+	public void setPharmacistId(Long pharmacistId) {
 		this.pharmacistId = pharmacistId;
-	}
-
-	public BigDecimal getOriginalHourlyRate() {
-		return originalHourlyRate;
-	}
-
-	public void setOriginalHourlyRate(BigDecimal originalHourlyRate) {
-		this.originalHourlyRate = originalHourlyRate;
-	}
-
-	public BigDecimal getOriginalTotalPaid() {
-		return originalTotalPaid;
-	}
-
-	public void setOriginalTotalPaid(BigDecimal originalTotalPaid) {
-		this.originalTotalPaid = originalTotalPaid;
 	}
 
 	public BigDecimal getPurposedHourlyRate() {

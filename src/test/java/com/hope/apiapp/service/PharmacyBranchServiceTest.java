@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ public class PharmacyBranchServiceTest {
 		String newBranchName = "Richmond Branch";
 		String newStatus = "Closed";
 		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+		LocalDateTime currentTime = LocalDateTime.now();
 
 		PharmacyBranch existingPharmacyBranch = new PharmacyBranch();
 		existingPharmacyBranch.setUpdatedAt(originalLastModifiedDate);
@@ -56,6 +58,8 @@ public class PharmacyBranchServiceTest {
 		// Assert
 		assertEquals(newBranchName, result.getBranchName());
 		assertEquals(newStatus, result.getStatus());
+		assertEquals(currentTime.truncatedTo(ChronoUnit.MINUTES),
+				result.getUpdatedAt().truncatedTo(ChronoUnit.MINUTES));
 		Mockito.verify(pharmacyBranchRepository).save(existingPharmacyBranch);
 	}
 
