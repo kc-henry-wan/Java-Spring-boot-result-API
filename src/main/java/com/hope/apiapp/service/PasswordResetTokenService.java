@@ -6,9 +6,9 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
+import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.model.PasswordResetToken;
 import com.hope.apiapp.model.Pharmacist;
 import com.hope.apiapp.repository.PasswordResetTokenRepository;
@@ -34,7 +34,7 @@ public class PasswordResetTokenService {
 	public String generateResetToken(String email, Boolean forActivateNewUser) {
 		Pharmacist pUser = null;
 
-		pUser = pharmacistRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Pharmacist not found"));
+		pUser = pharmacistRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("RNF-R201"));
 
 		String token = UUID.randomUUID().toString();
 		logger.info("PasswordResetService - generateResetToken: " + token);
@@ -70,7 +70,7 @@ public class PasswordResetTokenService {
 		logger.info("validatePasswordResetToken start");
 
 		PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
-				.orElseThrow(() -> new BadCredentialsException("Invalid token"));
+				.orElseThrow(() -> new ResourceNotFoundException("RNF-R202"));
 
 		logger.info("validatePasswordResetToken expiryDateTime:" + resetToken.getExpiryDate());
 
@@ -79,7 +79,7 @@ public class PasswordResetTokenService {
 		logger.info("validatePasswordResetToken expiryDateTime:" + expiryDateTime);
 
 		if (expiryDateTime.isBefore(LocalDateTime.now())) {
-			throw new BadCredentialsException("Token expired");
+			throw new ResourceNotFoundException("RNF-R203-EXPIRED");
 		}
 		return resetToken;
 	}

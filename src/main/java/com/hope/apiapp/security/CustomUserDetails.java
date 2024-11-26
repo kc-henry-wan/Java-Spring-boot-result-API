@@ -53,6 +53,14 @@ public class CustomUserDetails implements UserDetails {
 		return user.getRole();
 	}
 
+	public Double getLatitude() {
+		return user.getLatitude();
+	}
+
+	public Double getLongitude() {
+		return user.getLongitude();
+	}
+
 	@Override
 	public boolean isAccountNonExpired() {
 		return true; // Implement as needed

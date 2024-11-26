@@ -28,7 +28,7 @@ public class NotificationService {
 //			PublishRequest publishRequest = new PublishRequest(deviceToken.getToken(), message);
 //			snsClient.publish(publishRequest);
 //		} else {
-//			throw new RuntimeException("No device token found for user: " + userId);
+//			throw new ResourceNotFoundException("RBF-D001- " + userId);
 //		}
 //	}
 //

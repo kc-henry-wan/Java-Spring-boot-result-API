@@ -56,13 +56,15 @@ public class AuthController {
 				String jwtToken = jwtTokenProvider.generateToken(loginRequest.getUsername());
 				logger.info("authenticateUser: token generated:" + jwtToken);
 
-				return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", new JwtAuthenticationResponse(jwtToken)),
-						HttpStatus.OK);
+				JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwtToken, userDetails.getUserId(),
+						userDetails.getLatitude(), userDetails.getLongitude());
+
+				return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", response), HttpStatus.OK);
 			} else {
 
 				return new ResponseEntity<>(
 						new ApiResponseFail("L001", "Please check email and activate your account before login"),
-						HttpStatus.OK);
+						HttpStatus.FORBIDDEN);
 			}
 
 		} catch (BadCredentialsException ex) {

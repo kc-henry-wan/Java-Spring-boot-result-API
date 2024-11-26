@@ -144,7 +144,6 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 			Double distance = 0.0;
 			if (fromLat != null && fromLng != null) {
 				distance = CommonUtil.calculateDistance(fromLat, fromLng, (Double) row[16], (Double) row[17]);
-//				logger.info("For each row: distance:" + distance);
 			}
 
 			resultList.add(new JobDto( // Use DTO instead of projection class

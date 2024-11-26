@@ -45,14 +45,13 @@ public class PharmacistService {
 
 	public Pharmacist getPharmacistById(Long id) {
 		logger.info("getPharmacistById: " + id);
-		return pharmacistRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Pharmacist not found"));
+		return pharmacistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("RNF-P001-" + id));
 	}
 
 	public PharmacistProjection getPharmacistByIdWithLimitedFields(Long id) {
 		logger.info("findByIdWithLimitedFields: " + id);
 		return pharmacistRepository.findByIdWithLimitedFields(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Pharmacist not found"));
+				.orElseThrow(() -> new ResourceNotFoundException("RNF-P002-" + id));
 	}
 
 	public Pharmacist addPharmacist(PharmacistAddRequestDto pharmacistRequest) {
@@ -98,7 +97,7 @@ public class PharmacistService {
 			logger.info("pharmacist is not null");
 
 			if (!pharmacistRequest.getUpdatedAt().equals(pharmacist.getUpdatedAt())) {
-				throw new ResourceConflictException("Record has been modified by another user.");
+				throw new ResourceConflictException("RCE-P401");
 			}
 
 			// Build the full address for the API call
@@ -122,7 +121,7 @@ public class PharmacistService {
 		} else {
 			logger.info("pharmacist is null");
 
-			throw new ResourceNotFoundException("Pharmacist not found with ID " + id);
+			throw new ResourceNotFoundException("RNF-P003- " + id);
 
 		}
 	}
@@ -145,7 +144,7 @@ public class PharmacistService {
 		} else {
 			logger.info("pharmacist is null");
 
-			throw new ResourceNotFoundException("Pharmacist not found with ID " + id);
+			throw new ResourceNotFoundException("RNF-P004-" + id);
 		}
 	}
 
@@ -167,7 +166,7 @@ public class PharmacistService {
 		} else {
 			logger.info("pharmacist is null");
 
-			throw new ResourceNotFoundException("Pharmacist not found with ID " + id);
+			throw new ResourceNotFoundException("RNF-P005-" + id);
 		}
 	}
 }

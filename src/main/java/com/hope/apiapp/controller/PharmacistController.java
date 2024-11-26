@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +22,7 @@ import com.hope.apiapp.dto.PharmacistAddRequestDto;
 import com.hope.apiapp.dto.PharmacistDto;
 import com.hope.apiapp.dto.PharmacistProjection;
 import com.hope.apiapp.dto.PharmacistUpdateRequestDto;
+import com.hope.apiapp.exception.ResourceNotFoundException;
 import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.model.PasswordResetToken;
 import com.hope.apiapp.model.Pharmacist;
@@ -107,10 +107,10 @@ public class PharmacistController {
 
 				return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", id), HttpStatus.CREATED);
 			} else {
-				throw new BadCredentialsException("Invalid or expired token");
+				throw new ResourceNotFoundException("RNF-P201-" + id);
 			}
 		} else {
-			throw new BadCredentialsException("Invalid or expired token");
+			throw new ResourceNotFoundException("RNF-P202-" + id);
 		}
 	}
 

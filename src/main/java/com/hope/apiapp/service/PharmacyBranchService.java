@@ -34,8 +34,7 @@ public class PharmacyBranchService {
 	}
 
 	public PharmacyBranch findBranchById(Long id) {
-		return pharmacyBranchRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Brance not found"));
+		return pharmacyBranchRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("RNF-B003-" + id));
 	}
 
 	public PharmacyBranch addPharmacyBranch(PharmacyBranchRequestDto branchReq) {
@@ -68,7 +67,7 @@ public class PharmacyBranchService {
 			logger.info("Branch is NOT null");
 
 			if (!branchReq.getUpdatedAt().equals(branch.getUpdatedAt())) {
-				throw new ResourceConflictException("Record has been modified by another user.");
+				throw new ResourceConflictException("RCE-B401");
 			}
 
 			// Build the full address for the API call
@@ -91,7 +90,7 @@ public class PharmacyBranchService {
 		} else {
 			logger.info("Branch is null");
 
-			throw new ResourceNotFoundException("Branch not found with ID " + id);
+			throw new ResourceNotFoundException("RNF-B002-" + id);
 
 		}
 	}

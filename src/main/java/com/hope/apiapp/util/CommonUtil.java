@@ -32,6 +32,27 @@ public class CommonUtil {
 		}
 	}
 
+	public static Double[] getUserCoordinates() {
+		try {
+			logger.info("getCurrentUserId Start");
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+			if (authentication != null && authentication.isAuthenticated()
+					&& !(authentication.getPrincipal() instanceof String)) {
+				CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+				// Assuming your UserDetails implementation has a getId() method
+
+				return new Double[] { userDetails.getLatitude(), userDetails.getLongitude() };
+			}
+
+			logger.info("getCurrentUserId Failed");
+			return null; // Or handle as appropriate
+		} catch (RuntimeException ex) {
+			logger.info("getCurrentUserId RuntimeException");
+			return null;
+		}
+	}
+
 	// Method to get coordinates from an external API
 	public static double[] getCoordinatesFromAddress(String address) {
 		try {

@@ -45,7 +45,6 @@ public class JobController {
 	@GetMapping("/v1/job")
 	public ResponseEntity<ApiResponseSuccess<Page<JobDto>>> getFilteredJobsWithLimitedFields(
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-			@RequestParam(defaultValue = "52.4") Double fromLat, @RequestParam(defaultValue = "-1.5") Double fromLng,
 			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate,
 			@RequestParam(required = false) String statusCode, @RequestParam(required = false) String jobIds,
 			@RequestParam(required = false) String groupCode, @RequestParam(required = false) String orderBy) {
@@ -54,8 +53,10 @@ public class JobController {
 
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, fromLat, fromLng, fromDate, toDate,
-				statusCode, jobIds, groupCode, null, orderBy);
+		Double[] coordinate = CommonUtil.getUserCoordinates();
+
+		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, coordinate[0], coordinate[1],
+				fromDate, toDate, statusCode, jobIds, groupCode, null, orderBy);
 
 		logger.info("JobController - List<JobDTO> returned");
 
@@ -66,15 +67,17 @@ public class JobController {
 	// GET /v1/job
 	@GetMapping("/v1/myjob")
 	public ResponseEntity<ApiResponseSuccess<Page<JobDto>>> getMyJobs(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size, @RequestParam(required = false) Double fromLat,
-			@RequestParam(required = false) Double fromLng, @RequestParam(required = false) String orderBy) {
+			@RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String orderBy) {
 
 		logger.info("JobController - getMyJobs start");
 
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, fromLat, fromLng, null, null, null,
-				null, null, CommonUtil.getCurrentUserId(), orderBy);
+		Double[] coordinate = CommonUtil.getUserCoordinates();
+		Long userId = CommonUtil.getCurrentUserId();
+
+		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, coordinate[0], coordinate[1], null,
+				null, null, null, null, userId, orderBy);
 
 		logger.info("JobController - List<JobDTO> returned");
 

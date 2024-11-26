@@ -45,6 +45,15 @@ public class JobService {
 			String fromDate, String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId,
 			String orderBy) {
 		logger.info("JobService - findFilteredJobsWithLimitedFields");
+		logger.info("fromLat=" + fromLat);
+		logger.info("fromLng=" + fromLng);
+		logger.info("fromDate=" + fromDate);
+		logger.info("toDate=" + toDate);
+		logger.info("statusCode=" + statusCode);
+		logger.info("jobIds=" + jobIds);
+		logger.info("groupCode=" + groupCode);
+		logger.info("pharmacistId=" + pharmacistId);
+		logger.info("orderBy=" + orderBy);
 
 		return jobRepository.findFilteredJobsWithLimitedFields(pageable, fromLat, fromLng, fromDate, toDate, statusCode,
 				jobIds, groupCode, pharmacistId, orderBy);
@@ -53,12 +62,12 @@ public class JobService {
 	public JobProjection getJobByIdWithLimitedFields(Long id) {
 		logger.info("findById: " + id);
 		return jobRepository.getJobByIdWithLimitedFields(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+				.orElseThrow(() -> new ResourceNotFoundException("RNF-J001-" + id));
 	}
 
 	public Job findById(Long id) {
 		logger.info("findById: " + id);
-		return jobRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+		return jobRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("RNF-J002-" + id));
 	}
 
 	public Job addJob(JobRequestDto jobRequest) {
@@ -100,7 +109,7 @@ public class JobService {
 			logger.info("job is not null");
 
 			if (!jobRequest.getUpdatedAt().equals(job.getUpdatedAt())) {
-				throw new ResourceConflictException("Record has been modified by another user.");
+				throw new ResourceConflictException("RCE-J401");
 			}
 			if ("Open".equalsIgnoreCase(job.getStatus())) {
 
@@ -132,12 +141,12 @@ public class JobService {
 
 				return jobRepository.save(job);
 			} else {
-				throw new ResourceConflictException("Job Record status is not OPEN.");
+				throw new ResourceConflictException("RCE-J901");
 			}
 		} else {
 			logger.info("job is null");
 
-			throw new ResourceNotFoundException("Job not found with ID " + id);
+			throw new ResourceNotFoundException("RNF-J003-" + id);
 
 		}
 	}
@@ -151,7 +160,7 @@ public class JobService {
 			logger.info("job is not null");
 
 			if (!jobRequest.getUpdatedAt().equals(job.getUpdatedAt())) {
-				throw new ResourceConflictException("Record has been modified by another user.");
+				throw new ResourceConflictException("RCE-J402");
 			}
 
 			if ("Edit".equalsIgnoreCase(jobRequest.getAction())) {
@@ -178,7 +187,7 @@ public class JobService {
 		} else {
 			logger.info("job is null");
 
-			throw new ResourceNotFoundException("Job not found with ID " + id);
+			throw new ResourceNotFoundException("RNF-J004-" + id);
 
 		}
 	}

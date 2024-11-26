@@ -25,57 +25,59 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ExpiredJwtException.class)
 	public ResponseEntity<ApiResponseFail> handleExpiredJwtException(ExpiredJwtException ex) {
-		logger.info("handleExpiredJwtException ex=" + ex.toString());
-		return new ResponseEntity<>(new ApiResponseFail("401", "Token has expired"), HttpStatus.UNAUTHORIZED);
+		logger.info("handleExpiredJwtException ex=" + ex.getMessage());
+		return new ResponseEntity<>(new ApiResponseFail("JE003", "Token has expired"), HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler({ MalformedJwtException.class, SignatureException.class, UnsupportedJwtException.class })
 	public ResponseEntity<ApiResponseFail> handleInvalidJwtException(Exception ex) {
-		logger.info("handleInvalidJwtException ex=" + ex.toString());
-		return new ResponseEntity<>(new ApiResponseFail("401", "Invalid token"), HttpStatus.UNAUTHORIZED);
+		logger.info("handleInvalidJwtException ex=" + ex.getMessage());
+		return new ResponseEntity<>(new ApiResponseFail("JE002", "Invalid token"), HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(JwtException.class)
 	public ResponseEntity<ApiResponseFail> handleJwtException(Exception ex) {
-		logger.error("handleJwtExceptionn ex=" + ex.toString());
-		return new ResponseEntity<>(new ApiResponseFail("403", "Unauthorized request"), HttpStatus.FORBIDDEN);
+		logger.error("handleJwtExceptionn ex=" + ex.getMessage());
+		return new ResponseEntity<>(new ApiResponseFail("JE001", "Unauthorized request"), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ApiResponseFail> handleIllegalArgumentException(Exception ex) {
-		logger.error("handleIllegalArgumentExceptionn ex=" + ex.toString());
-		return new ResponseEntity<>(new ApiResponseFail("404", ex.toString()), HttpStatus.FORBIDDEN);
+		logger.error("handleIllegalArgumentExceptionn ex=" + ex.getMessage());
+		return new ResponseEntity<>(new ApiResponseFail("IA001", ex.getMessage()), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ApiResponseFail> handleAccessDeniedException(AccessDeniedException ex) {
-		logger.error("handleAccessDeniedException ex=" + ex.toString());
-		return new ResponseEntity<>(new ApiResponseFail("403", "Unauthorized request"), HttpStatus.FORBIDDEN);
+		logger.error("handleAccessDeniedException ex=" + ex.getMessage());
+		return new ResponseEntity<>(new ApiResponseFail("AD001", "Unauthorized request"), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<ApiResponseFail> handleBadCredentialsException(BadCredentialsException ex) {
-		logger.info("handleBadCredentialsException ex=" + ex.toString());
-		return new ResponseEntity<>(new ApiResponseFail("401", "Invalid token"), HttpStatus.UNAUTHORIZED);
+		logger.info("handleBadCredentialsException ex=" + ex.getMessage());
+		return new ResponseEntity<>(new ApiResponseFail("BC001", "Invalid username or password."),
+				HttpStatus.UNAUTHORIZED);
 
 	}
 
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ApiResponseFail> handleResourceNotFoundException(ResourceNotFoundException ex) {
-		logger.warn("handleResourceNotFoundException ex=" + ex.toString());
-		return new ResponseEntity<>(new ApiResponseFail("404", "Resource not found"), HttpStatus.NOT_FOUND);
+		logger.warn("handleResourceNotFoundException ex=" + ex.getMessage());
+		return new ResponseEntity<>(new ApiResponseFail(ex.getMessage(), "Resource Not Found."), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(ResourceConflictException.class)
 	public ResponseEntity<ApiResponseFail> handleResourceConflictException(ResourceConflictException ex) {
-		logger.warn("handleResourceConflictException ex=" + ex.toString());
-		return new ResponseEntity<>(new ApiResponseFail("409", "Resource conflict"), HttpStatus.CONFLICT);
+		logger.warn("handleResourceConflictException ex=" + ex.getMessage());
+		return new ResponseEntity<>(new ApiResponseFail(ex.getMessage(), "Record has been modified by another user."),
+				HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponseFail> handleGeneralException(Exception ex) {
-		logger.error("handleGeneralException ex=" + ex.toString());
-		return new ResponseEntity<>(new ApiResponseFail("500", "System error, please try again later"),
+		logger.error("handleGeneralException ex=" + ex.getMessage());
+		return new ResponseEntity<>(new ApiResponseFail("ERR001", "System error, please try again later"),
 				HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

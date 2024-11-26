@@ -71,9 +71,11 @@ public class PharmacistDocService {
 		PharmacistDoc image = null;
 
 		if (userId == null) {
-			image = imageRepository.findByImageId(imageId).orElseThrow(() -> new IOException("Image not found"));
+			image = imageRepository.findByImageId(imageId)
+					.orElseThrow(() -> new ResourceNotFoundException("RNF-I002-" + imageId));
 		} else {
-			image = imageRepository.findByUserId(imageId, userId).orElseThrow(() -> new IOException("Image not found"));
+			image = imageRepository.findByUserId(imageId, userId)
+					.orElseThrow(() -> new ResourceNotFoundException("RNF-I003-" + imageId));
 
 		}
 		// Retrieve the stored filename from the database
@@ -93,7 +95,7 @@ public class PharmacistDocService {
 
 	public PharmacistDoc findByImageId(Long imageId) {
 		return imageRepository.findByImageId(imageId)
-				.orElseThrow(() -> new ResourceNotFoundException("Document record not found"));
+				.orElseThrow(() -> new ResourceNotFoundException("RNF-I001-" + imageId));
 	}
 
 	private String getExtension(String filename) {
