@@ -61,8 +61,8 @@ public class AuthController {
 			} else {
 
 				return new ResponseEntity<>(
-						new ApiResponseFail("400", "Please check email and activate your account before login"),
-						HttpStatus.BAD_REQUEST);
+						new ApiResponseFail("L001", "Please check email and activate your account before login"),
+						HttpStatus.OK);
 			}
 
 		} catch (BadCredentialsException ex) {
