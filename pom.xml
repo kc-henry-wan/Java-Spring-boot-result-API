@@ -98,7 +98,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Add these dependencies for Swagger -->
+		<!--  Swagger -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -118,7 +118,15 @@
 		    <groupId>jakarta.validation</groupId>
 		    <artifactId>jakarta.validation-api</artifactId>
 		</dependency>
-
+		
+		
+		<!-- opencage API for getting Coordinates From Address -->
+  <dependency>
+    <groupId>com.opencagedata</groupId>
+    <artifactId>jopencage</artifactId>
+    <version>2.2.2</version>
+  </dependency>
+  
 	</dependencies>
 	<build>
 		<plugins>

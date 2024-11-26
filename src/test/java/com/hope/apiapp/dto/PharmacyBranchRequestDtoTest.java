@@ -7,6 +7,10 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hope.apiapp.util.CommonUtil;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -17,11 +21,29 @@ public class PharmacyBranchRequestDtoTest {
 
 	private static Validator validator;
 
+	private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
+
 	@BeforeAll
 	public static void setUp() {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
 	}
+
+//	@Test
+//	public void testUtil() {
+//
+//		JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder("bf6403129c2347dd836c2b806b9a9472");
+//
+//		JOpenCageForwardRequest request = new JOpenCageForwardRequest("10%20Downing%20Street,%20London");
+//		request.setMinConfidence(1);
+//		request.setRestrictToCountryCode("gb");
+//		request.setNoAnnotations(false);
+//		request.setNoDedupe(true);
+//		JOpenCageResponse response = jOpenCageGeocoder.forward(request);
+//		JOpenCageLatLng firstResultLatLng = response.getFirstPosition(); // get the coordinate pair of the first result
+//		logger.info(firstResultLatLng.getLat().toString() + "," + firstResultLatLng.getLng().toString());
+//
+//	}
 
 	@Test
 	public void testValidPharmacyBranchRequestDto() {

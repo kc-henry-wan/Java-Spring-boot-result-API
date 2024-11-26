@@ -2,18 +2,25 @@ package com.hope.apiapp.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.hope.apiapp.security.CustomUserDetails;
+import com.opencagedata.jopencage.JOpenCageGeocoder;
+import com.opencagedata.jopencage.model.JOpenCageForwardRequest;
+import com.opencagedata.jopencage.model.JOpenCageLatLng;
+import com.opencagedata.jopencage.model.JOpenCageResponse;
 
 public class CommonUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 
+	@Value("${opencage.api.key}")
+	private static String opencageApiKey;
+
 	public static Long getCurrentUserId() {
 		try {
-			logger.info("getCurrentUserId Start");
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 			if (authentication != null && authentication.isAuthenticated()
@@ -27,14 +34,13 @@ public class CommonUtil {
 			logger.info("getCurrentUserId Failed");
 			return null; // Or handle as appropriate
 		} catch (RuntimeException ex) {
-			logger.info("getCurrentUserId RuntimeException");
+			logger.info("getCurrentUserId RuntimeException" + ex.toString());
 			return null;
 		}
 	}
 
 	public static Double[] getUserCoordinates() {
 		try {
-			logger.info("getCurrentUserId Start");
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 			if (authentication != null && authentication.isAuthenticated()
@@ -46,42 +52,28 @@ public class CommonUtil {
 			}
 
 			logger.info("getCurrentUserId Failed");
-			return null; // Or handle as appropriate
+//			return new Double[] { 52.4, -1.5 };
+			return new Double[] { 0.0, 0.0 };
 		} catch (RuntimeException ex) {
-			logger.info("getCurrentUserId RuntimeException");
-			return null;
+			logger.info("getCurrentUserId RuntimeException=" + ex.toString());
+			return new Double[] { 0.0, 0.0 };
 		}
 	}
 
-	// Method to get coordinates from an external API
 	public static double[] getCoordinatesFromAddress(String address) {
-		try {
-			logger.info("getCoordinatesFromAddress Start");
-//			// URL encode the address
-//			String encodedAddress = java.net.URLEncoder.encode(address, "UTF-8");
-//
-//			// Use Nominatim API (or any other suitable API)
-//			String url = "https://nominatim.openstreetmap.org/search?q=" + encodedAddress + "&format=json&limit=1";
-//
-//			RestTemplate restTemplate = new RestTemplate();
-//			String response = restTemplate.getForObject(url, String.class);
-//
-//			// Parse the response
-//			if (response != null && !response.isEmpty()) {
-//				JSONArray jsonArray = new JSONArray(response);
-//				if (jsonArray.length() > 0) {
-//					JSONObject jsonObject = jsonArray.getJSONObject(0);
-//					double latitude = jsonObject.getDouble("lat");
-//					double longitude = jsonObject.getDouble("lon");
-//					return new double[] { longitude, latitude };
-//				}
-//			}
-			return new double[] { -1.49957404, 52.4188218 };
 
-		} catch (Exception e) {
-			logger.error("Failed to get coordinates for address: " + address, e);
-		}
-		return new double[] { 0.0, 0.0 }; // Return default coordinates if API call fails
+		JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder(opencageApiKey);
+
+		JOpenCageForwardRequest request = new JOpenCageForwardRequest(address);
+		request.setMinConfidence(1);
+		request.setRestrictToCountryCode("gb");
+		request.setNoAnnotations(false);
+		request.setNoDedupe(true);
+		JOpenCageResponse response = jOpenCageGeocoder.forward(request);
+		JOpenCageLatLng firstResultLatLng = response.getFirstPosition(); // get the coordinate pair of the first result
+		logger.info(firstResultLatLng.getLat().toString() + "," + firstResultLatLng.getLng().toString());
+
+		return new double[] { firstResultLatLng.getLat(), firstResultLatLng.getLng() };
 	}
 
 	// Haversine formula for distance calculation
