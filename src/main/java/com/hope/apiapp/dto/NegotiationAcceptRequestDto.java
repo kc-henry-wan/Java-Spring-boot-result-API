@@ -15,6 +15,7 @@ public class NegotiationAcceptRequestDto {
 	private String status;
 
 	private LocalDateTime updatedAt;
+	private LocalDateTime jobUpdatedAt;
 
 	public Long getJobId() {
 		return jobId;
@@ -46,6 +47,14 @@ public class NegotiationAcceptRequestDto {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public LocalDateTime getJobUpdatedAt() {
+		return jobUpdatedAt;
+	}
+
+	public void setJobUpdatedAt(LocalDateTime jobUpdatedAt) {
+		this.jobUpdatedAt = jobUpdatedAt;
 	}
 
 }

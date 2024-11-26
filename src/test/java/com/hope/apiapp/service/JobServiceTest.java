@@ -104,11 +104,13 @@ public class JobServiceTest {
 		// Arrange
 		Long id = 1L;
 		String newAction = "Apply";
+		String Status = "Open";
 		String newStatus = "Applied";
 		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
 		LocalDateTime currentTime = LocalDateTime.now();
 
 		Job existingJob = new Job();
+		existingJob.setStatus(Status);
 		existingJob.setUpdatedAt(originalLastModifiedDate);
 
 		JobUpdateRequestDto request = new JobUpdateRequestDto();
@@ -152,6 +154,26 @@ public class JobServiceTest {
 
 		JobUpdateRequestDto request = new JobUpdateRequestDto();
 		request.setUpdatedAt(updatedLastModifiedDate);
+
+		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+
+		// Act & Assert
+		assertThatThrownBy(() -> jobService.updateJobStatus(id, request)).isInstanceOf(ResourceConflictException.class);
+	}
+
+	@Test
+	public void testUpdateJobStatus_StatusModified() {
+		// Arrange
+		Long id = 1L;
+		String status = "Assigned";
+		LocalDateTime originalLastModifiedDate = LocalDateTime.of(2024, 11, 1, 10, 0);
+
+		Job existingJob = new Job();
+		existingJob.setStatus(status);
+		existingJob.setUpdatedAt(originalLastModifiedDate);
+
+		JobUpdateRequestDto request = new JobUpdateRequestDto();
+		request.setUpdatedAt(originalLastModifiedDate);
 
 		Mockito.when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
 

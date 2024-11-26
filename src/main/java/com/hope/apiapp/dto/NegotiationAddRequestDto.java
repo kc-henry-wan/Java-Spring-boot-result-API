@@ -14,9 +14,6 @@ public class NegotiationAddRequestDto {
 	@NotNull(message = "Job ID is required")
 	private Long jobId;
 
-	@NotNull(message = "Pharmacist ID is required")
-	private Long pharmacistId;
-
 	@DecimalMin(value = "0.0", inclusive = false, message = "Purposed hourly rate must be greater than 0")
 	private BigDecimal purposedHourlyRate;
 
@@ -37,14 +34,6 @@ public class NegotiationAddRequestDto {
 
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
-	}
-
-	public Long getPharmacistId() {
-		return pharmacistId;
-	}
-
-	public void setPharmacistId(Long pharmacistId) {
-		this.pharmacistId = pharmacistId;
 	}
 
 	public BigDecimal getPurposedHourlyRate() {

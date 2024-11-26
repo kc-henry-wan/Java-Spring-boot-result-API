@@ -102,35 +102,38 @@ public class JobService {
 			if (!jobRequest.getUpdatedAt().equals(job.getUpdatedAt())) {
 				throw new ResourceConflictException("Record has been modified by another user.");
 			}
+			if ("Open".equalsIgnoreCase(job.getStatus())) {
 
-			job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
-			job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+				job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
+				job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 
-			if ("Apply".equalsIgnoreCase(jobRequest.getAction())) {
-				job.setStatus("Applied");
-				job.setPharmacistId(CommonUtil.getCurrentUserId());
+				if ("Apply".equalsIgnoreCase(jobRequest.getAction())) {
+					job.setStatus("Applied");
+					job.setPharmacistId(CommonUtil.getCurrentUserId());
 
-				// TODO: Check if any open negotiation
-				List<Negotiation> negotiationList = negotiationRepository.findByJobId(id);
+					// Check if any open negotiation
+					List<Negotiation> negotiationList = negotiationRepository.findByJobId(id);
 
-				if (negotiationList.size() > 0) {
+					if (negotiationList.size() > 0) {
 
-					for (Negotiation negotiation : negotiationList) {
-						negotiation.setStatus("Job Picked by others");
-						negotiation.setUpdatedAt(LocalDateTime.now());
-						negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId());
+						for (Negotiation negotiation : negotiationList) {
+							negotiation.setStatus("Job Picked by others");
+							negotiation.setUpdatedAt(LocalDateTime.now());
+							negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId());
+						}
+
+						return updateWithTrxHandling(job, negotiationList);
 					}
 
-					return updateWithTrxHandling(job, negotiationList);
+				} else if ("Withdraw".equalsIgnoreCase(jobRequest.getAction())) {
+					job.setStatus("Open");
+					job.setPharmacistId(null);
 				}
 
-			} else if ("Withdraw".equalsIgnoreCase(jobRequest.getAction())) {
-				job.setStatus("Open");
-				job.setPharmacistId(null);
+				return jobRepository.save(job);
+			} else {
+				throw new ResourceConflictException("Job Record status is not OPEN.");
 			}
-
-			return jobRepository.save(job);
-
 		} else {
 			logger.info("job is null");
 
@@ -194,10 +197,10 @@ public class JobService {
 	}
 
 	public static String generateRef(Long x) {
-		if (x > 10000) {
+		if (x > 100000) {
 			return "REF" + x;
 		} else {
-			return String.format("REF%04d", x);
+			return String.format("REF%05d", x);
 		}
 	}
 }

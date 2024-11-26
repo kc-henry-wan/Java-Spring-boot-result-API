@@ -59,21 +59,25 @@ public class NegotiationService {
 		Long jobId = request.getJobId();
 		Job job = jobRepository.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-		negotiation.setJobId(request.getJobId());
-		negotiation.setOriginalHourlyRate(job.getHourlyRate());
-		negotiation.setOriginalTotalPaid(job.getTotalPaid());
-		negotiation.setPharmacistId(request.getPharmacistId());
-		negotiation.setPurposedHourlyRate(request.getPurposedHourlyRate());
-		negotiation.setPurposedTotalPaid(request.getPurposedTotalPaid());
-		negotiation.setReason(request.getReason());
+		if ("Open".equalsIgnoreCase(job.getStatus())) {
+			negotiation.setJobId(request.getJobId());
+			negotiation.setOriginalHourlyRate(job.getHourlyRate());
+			negotiation.setOriginalTotalPaid(job.getTotalPaid());
+			negotiation.setPharmacistId(CommonUtil.getCurrentUserId());
+			negotiation.setPurposedHourlyRate(request.getPurposedHourlyRate());
+			negotiation.setPurposedTotalPaid(request.getPurposedTotalPaid());
+			negotiation.setReason(request.getReason());
 
-		// Set default values for additional fields
-		negotiation.setStatus("New"); // Default status
-		negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
-		negotiation.setCreatedAt(LocalDateTime.now()); // Set current time for creation
-		negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
+			// Set default values for additional fields
+			negotiation.setStatus("New"); // Default status
+			negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+			negotiation.setCreatedAt(LocalDateTime.now()); // Set current time for creation
+			negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 
-		return negotiationRepository.save(negotiation);
+			return negotiationRepository.save(negotiation);
+		} else {
+			throw new ResourceConflictException("Job Record status is not OPEN.");
+		}
 	}
 
 	public Negotiation updateNegotiation(Long id, NegotiationUpdateRequestDto negotiationRequest) {
@@ -96,20 +100,23 @@ public class NegotiationService {
 
 			if ("AdminAccept".equalsIgnoreCase(negotiationRequest.getMode())) {
 
-				// TODO: Add Job records updatedAt to chekc conflict
-//				if (!negotiationRequest.getJobUpdatedAt().equals(job.getUpdatedAt())) {
-//					throw new ResourceConflictException("Record has been modified by another user.");
-//				}
+				// Add Job records updatedAt to check conflict
+				if (!negotiationRequest.getJobUpdatedAt().equals(job.getUpdatedAt())) {
+					throw new ResourceConflictException("Job Record has been modified by another user.");
+				}
 
-				negotiation.setStatus("Admin Accepted");
+				if ("Open".equalsIgnoreCase(job.getStatus())) {
+					negotiation.setStatus("Admin Accepted");
 
-				job.setPharmacistId(CommonUtil.getCurrentUserId());
-				job.setStatus("Assigned");
-				job.setUpdatedAt(LocalDateTime.now());
-				job.setUpdatedUserId(CommonUtil.getCurrentUserId());
+					job.setPharmacistId(CommonUtil.getCurrentUserId());
+					job.setStatus("Assigned");
+					job.setUpdatedAt(LocalDateTime.now());
+					job.setUpdatedUserId(CommonUtil.getCurrentUserId());
 
-				return updateWithTrxHandling(job, negotiation);
-
+					return updateWithTrxHandling(job, negotiation);
+				} else {
+					throw new ResourceConflictException("Job Record status is not OPEN.");
+				}
 			} else if ("Counter".equalsIgnoreCase(negotiationRequest.getMode())) {
 				negotiation.setStatus("Counter Purposed");
 				negotiation.setCounterHourlyRate(negotiationRequest.getCounterHourlyRate());
@@ -137,26 +144,35 @@ public class NegotiationService {
 		Long jobId = negotiationRequest.getJobId();
 
 		Negotiation negotiation = findById(id);
+
+		if (!negotiationRequest.getUpdatedAt().equals(negotiation.getUpdatedAt())) {
+			throw new ResourceConflictException("Record has been modified by another user.");
+		}
+
 		Job job = jobRepository.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
 		if (negotiation != null && job != null) {
 			logger.info("negotiation is not null");
 
-			if (!negotiationRequest.getUpdatedAt().equals(negotiation.getUpdatedAt())) {
-				throw new ResourceConflictException("Record has been modified by another user.");
+			// Add Job records updatedAt to check conflict
+			if (!negotiationRequest.getJobUpdatedAt().equals(job.getUpdatedAt())) {
+				throw new ResourceConflictException("Job Record has been modified by another user.");
 			}
 
-			negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
-			negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
-			negotiation.setStatus("Pharmacist Accepted");
+			if ("Open".equalsIgnoreCase(job.getStatus())) {
+				negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
+				negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+				negotiation.setStatus("Pharmacist Accepted");
 
-			job.setPharmacistId(CommonUtil.getCurrentUserId());
-			job.setStatus("Assigned");
-			job.setUpdatedAt(LocalDateTime.now());
-			job.setUpdatedUserId(CommonUtil.getCurrentUserId());
+				job.setPharmacistId(CommonUtil.getCurrentUserId());
+				job.setStatus("Assigned");
+				job.setUpdatedAt(LocalDateTime.now());
+				job.setUpdatedUserId(CommonUtil.getCurrentUserId());
 
-			return updateWithTrxHandling(job, negotiation);
-
+				return updateWithTrxHandling(job, negotiation);
+			} else {
+				throw new ResourceConflictException("Job Record status is not OPEN.");
+			}
 		} else {
 			logger.info("negotiation is null");
 

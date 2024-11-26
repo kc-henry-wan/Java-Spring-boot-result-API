@@ -23,6 +23,7 @@ public class NegotiationUpdateRequestDto {
 	private String status;
 
 	private LocalDateTime updatedAt;
+	private LocalDateTime jobUpdatedAt;
 
 	public BigDecimal getCounterHourlyRate() {
 		return counterHourlyRate;
@@ -70,6 +71,14 @@ public class NegotiationUpdateRequestDto {
 
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
+	}
+
+	public LocalDateTime getJobUpdatedAt() {
+		return jobUpdatedAt;
+	}
+
+	public void setJobUpdatedAt(LocalDateTime jobUpdatedAt) {
+		this.jobUpdatedAt = jobUpdatedAt;
 	}
 
 }
