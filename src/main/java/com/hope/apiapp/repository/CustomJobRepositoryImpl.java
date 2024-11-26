@@ -78,9 +78,6 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 			countJpql.append(" AND ").append(String.join(" AND ", conditions));
 		}
 
-		logger.info("queryBuilder - finish where case. " + jpql.toString());
-		logger.info("queryBuilder - finish where case. " + countJpql.toString());
-
 		// Add order by
 		if ("DA".equalsIgnoreCase(orderBy)) {
 			jpql.append(" ORDER BY j.jobDate, j.jobStartTime ");
@@ -170,7 +167,6 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 					(Double) distance // Distance between user address and branch address
 			));
 		}
-		logger.info("List<JobDto> load completed");
 
 		if ("DI".equalsIgnoreCase(orderBy)) {
 			resultList.sort(Comparator.comparing(JobDto::getDistance));

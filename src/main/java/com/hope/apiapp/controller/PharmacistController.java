@@ -63,7 +63,6 @@ public class PharmacistController {
 
 	@GetMapping("/v1/myprofile")
 	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getMyProfile() {
-		logger.info("getPharmacistById");
 
 		Long userId = CommonUtil.getCurrentUserId();
 		PharmacistProjection pharmacist = pharmacistService.getPharmacistByIdWithLimitedFields(userId);
@@ -74,7 +73,6 @@ public class PharmacistController {
 	@GetMapping("/staff/v1/pharmacist/{id}")
 	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getPharmacistByIdWithLimitedFields(
 			@PathVariable Long id) {
-		logger.info("getPharmacistById");
 
 		PharmacistProjection pharmacist = pharmacistService.getPharmacistByIdWithLimitedFields(id);
 
@@ -84,7 +82,6 @@ public class PharmacistController {
 	@PostMapping("/auth/v1/register")
 	public ResponseEntity<ApiResponseSuccess<Long>> addPharmacist(
 			@RequestBody PharmacistAddRequestDto pharmacistRequest) {
-		logger.info("addPharmacist");
 
 		Pharmacist createdPharmacist = pharmacistService.addPharmacist(pharmacistRequest);
 
@@ -95,7 +92,6 @@ public class PharmacistController {
 	@PostMapping("/auth/v1/activate/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> activatePharmacist(@PathVariable Long id,
 			@RequestParam String token) {
-		logger.info("activatePharmacist");
 
 		PasswordResetToken resetToken = passwordResetService.validatePasswordResetToken(token);
 
@@ -117,7 +113,6 @@ public class PharmacistController {
 	@PutMapping("/v1/myprofile")
 	public ResponseEntity<ApiResponseSuccess<Long>> updateMyProfile(
 			@RequestBody PharmacistUpdateRequestDto pharmacistRequest) {
-		logger.info("updatePharmacist");
 
 		Long userId = CommonUtil.getCurrentUserId();
 		Pharmacist updatedPharmacist = pharmacistService.updatePharmacist(userId, pharmacistRequest);
@@ -129,7 +124,6 @@ public class PharmacistController {
 	@PutMapping("/staff/v1/pharmacist/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updatePharmacist(@PathVariable Long id,
 			@RequestBody PharmacistUpdateRequestDto pharmacistRequest) {
-		logger.info("updatePharmacist");
 
 		Pharmacist updatedPharmacist = pharmacistService.updatePharmacist(id, pharmacistRequest);
 

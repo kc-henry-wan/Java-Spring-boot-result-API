@@ -37,7 +37,6 @@ public class PasswordResetTokenService {
 		pUser = pharmacistRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("RNF-R201"));
 
 		String token = UUID.randomUUID().toString();
-		logger.info("PasswordResetService - generateResetToken: " + token);
 
 		PasswordResetToken resetToken = new PasswordResetToken();
 		resetToken.setToken(token);
@@ -49,13 +48,12 @@ public class PasswordResetTokenService {
 			resetToken.setExpiryDate(calculateExpiryDate(EXPIRATION_24HOURS));
 		}
 
-		logger.info("calculateExpiryDate resetToken expiry date:" + resetToken.getExpiryDate());
-
 		passwordResetTokenRepository.save(resetToken);
 
 		// TODO:Logic to send the token to the user's email
 		if (forActivateNewUser) {
 			logger.info("emailService.sendActivateUserEmail: " + token);
+			// TODO: Build email service
 //			emailService.sendActivateUserEmail(email, token);
 		} else {
 			logger.info("emailService.sendPasswordResetEmail: " + token);
@@ -67,16 +65,10 @@ public class PasswordResetTokenService {
 
 	public PasswordResetToken validatePasswordResetToken(String token) {
 
-		logger.info("validatePasswordResetToken start");
-
 		PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
 				.orElseThrow(() -> new ResourceNotFoundException("RNF-R202"));
 
-		logger.info("validatePasswordResetToken expiryDateTime:" + resetToken.getExpiryDate());
-
 		LocalDateTime expiryDateTime = resetToken.getExpiryDate();
-
-		logger.info("validatePasswordResetToken expiryDateTime:" + expiryDateTime);
 
 		if (expiryDateTime.isBefore(LocalDateTime.now())) {
 			throw new ResourceNotFoundException("RNF-R203-EXPIRED");
@@ -90,21 +82,9 @@ public class PasswordResetTokenService {
 
 	// Utility method to calculate the expiry date
 	private LocalDateTime calculateExpiryDate(int expiryTimeInMinutes) {
-
-		logger.info("calculateExpiryDate start");
-
 		LocalDateTime currentTime = LocalDateTime.now();
-		logger.info("calculateExpiryDate current time: " + currentTime);
-
 		LocalDateTime expiryTime = currentTime.plusMinutes(expiryTimeInMinutes);
-		logger.info("calculateExpiryDate expiry time: " + expiryTime);
 
 		return expiryTime;
 	}
-
-//	// Method to check if the token is expired
-//	public boolean isExpired() {
-//		return new Date().after(this.expiryDate);
-//	}
-
 }

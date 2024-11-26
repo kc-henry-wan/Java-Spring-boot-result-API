@@ -23,13 +23,6 @@ public class JwtTokenProvider {
 
 	public String generateToken(String username) {
 
-		logger.info("generateToken: start");
-
-//		Map<String, Object> claims = new HashMap<>();
-
-//		return Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
-//				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-//				.signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
 		return Jwts.builder().setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(SignatureAlgorithm.HS512, secretKey).compact();
@@ -38,14 +31,10 @@ public class JwtTokenProvider {
 
 	public boolean validateToken(String token) {
 		try {
-			logger.info("validateToken: start, token:" + token);
-
 			Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
-			logger.info("validateToken: Successful");
 			return true;
 		} catch (Exception e) {
-			logger.info("validateToken: Fail");
 			return false; // Token is invalid
 		}
 	}

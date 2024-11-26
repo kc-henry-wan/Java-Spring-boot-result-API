@@ -55,7 +55,6 @@ public class NegotiationController {
 
 	@GetMapping("/v1/negotiation/{id}")
 	public ResponseEntity<ApiResponseSuccess<NegotiationProjection>> getNegotiationById(@PathVariable Long id) {
-		logger.info("getNegotiationById");
 
 		NegotiationProjection negotiation = negotiationService.getNegotiationById(id);
 
@@ -65,7 +64,6 @@ public class NegotiationController {
 	@PostMapping("/v1/negotiation")
 	public ResponseEntity<ApiResponseSuccess<Long>> addNegotiation(
 			@RequestBody NegotiationAddRequestDto negotiationRequest) {
-		logger.info("addNegotiation");
 
 		Negotiation createdNegotiation = negotiationService.addNegotiation(negotiationRequest);
 
@@ -76,7 +74,6 @@ public class NegotiationController {
 	@PutMapping("/v1/negotiation/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> acceptNegotiation(@PathVariable Long id,
 			@RequestBody NegotiationAcceptRequestDto negotiationRequest) {
-		logger.info("acceptNegotiation");
 
 		Negotiation updatedNegotiation = negotiationService.acceptNegotiation(id, negotiationRequest);
 
@@ -87,7 +84,6 @@ public class NegotiationController {
 	@PutMapping("/staff/v1/negotiation/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updateNegotiation(@PathVariable Long id,
 			@RequestBody NegotiationUpdateRequestDto negotiationRequest) {
-		logger.info("updateNegotiation");
 
 		Negotiation updatedNegotiation = negotiationService.updateNegotiation(id, negotiationRequest);
 

@@ -49,8 +49,6 @@ public class JobController {
 			@RequestParam(required = false) String statusCode, @RequestParam(required = false) String jobIds,
 			@RequestParam(required = false) String groupCode, @RequestParam(required = false) String orderBy) {
 
-		logger.info("JobController - getFilteredJobsWithLimitedFields start");
-
 		Pageable pageable = PageRequest.of(page, size);
 
 		Double[] coordinate = CommonUtil.getUserCoordinates();
@@ -58,9 +56,6 @@ public class JobController {
 		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, coordinate[0], coordinate[1],
 				fromDate, toDate, statusCode, jobIds, groupCode, null, orderBy);
 
-		logger.info("JobController - List<JobDTO> returned");
-
-//		return ResponseEntity.ok(jobs);
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", jobs), HttpStatus.OK);
 	}
 
@@ -68,8 +63,6 @@ public class JobController {
 	@GetMapping("/v1/myjob")
 	public ResponseEntity<ApiResponseSuccess<Page<JobDto>>> getMyJobs(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String orderBy) {
-
-		logger.info("JobController - getMyJobs start");
 
 		Pageable pageable = PageRequest.of(page, size);
 
@@ -79,15 +72,11 @@ public class JobController {
 		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, coordinate[0], coordinate[1], null,
 				null, null, null, null, userId, orderBy);
 
-		logger.info("JobController - List<JobDTO> returned");
-
-//		return ResponseEntity.ok(jobs);
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", jobs), HttpStatus.OK);
 	}
 
 	@GetMapping("/staff/v1/job/{id}")
 	public ResponseEntity<ApiResponseSuccess<JobProjection>> getJobByIdWithLimitedFields(@PathVariable Long id) {
-		logger.info("getJobById");
 
 		JobProjection job = jobService.getJobByIdWithLimitedFields(id);
 
@@ -96,7 +85,6 @@ public class JobController {
 
 	@PostMapping("/staff/v1/job")
 	public ResponseEntity<ApiResponseSuccess<Long>> addJob(@RequestBody JobRequestDto jobRequest) {
-		logger.info("addJob");
 
 		Job createdJob = jobService.addJob(jobRequest);
 
@@ -106,7 +94,6 @@ public class JobController {
 	@PutMapping("/v1/job/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updateJobStatus(@PathVariable Long id,
 			@RequestBody JobUpdateRequestDto jobRequest) {
-		logger.info("updateJob");
 
 		Job updatedJob = jobService.updateJobStatus(id, jobRequest);
 
@@ -116,7 +103,6 @@ public class JobController {
 	@PutMapping("/staff/v1/job/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updateJob(@PathVariable Long id,
 			@RequestBody JobRequestDto jobRequest) {
-		logger.info("updateJob");
 
 		Job updatedJob = jobService.updateJob(id, jobRequest);
 

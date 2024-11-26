@@ -25,37 +25,37 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ExpiredJwtException.class)
 	public ResponseEntity<ApiResponseFail> handleExpiredJwtException(ExpiredJwtException ex) {
-		logger.info("handleExpiredJwtException ex=" + ex.getMessage());
+		logger.error("JE003 - handleExpiredJwtException ex=" + ex.getMessage());
 		return new ResponseEntity<>(new ApiResponseFail("JE003", "Token has expired"), HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler({ MalformedJwtException.class, SignatureException.class, UnsupportedJwtException.class })
 	public ResponseEntity<ApiResponseFail> handleInvalidJwtException(Exception ex) {
-		logger.info("handleInvalidJwtException ex=" + ex.getMessage());
+		logger.error("JE002 - handleInvalidJwtException ex=" + ex.getMessage());
 		return new ResponseEntity<>(new ApiResponseFail("JE002", "Invalid token"), HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(JwtException.class)
 	public ResponseEntity<ApiResponseFail> handleJwtException(Exception ex) {
-		logger.error("handleJwtExceptionn ex=" + ex.getMessage());
+		logger.error("JE001 - handleJwtExceptionn ex=" + ex.getMessage());
 		return new ResponseEntity<>(new ApiResponseFail("JE001", "Unauthorized request"), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ApiResponseFail> handleIllegalArgumentException(Exception ex) {
-		logger.error("handleIllegalArgumentExceptionn ex=" + ex.getMessage());
+		logger.error("IA001 - handleIllegalArgumentExceptionn ex=" + ex.getMessage());
 		return new ResponseEntity<>(new ApiResponseFail("IA001", ex.getMessage()), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ApiResponseFail> handleAccessDeniedException(AccessDeniedException ex) {
-		logger.error("handleAccessDeniedException ex=" + ex.getMessage());
+		logger.error("AD001 - handleAccessDeniedException ex=" + ex.getMessage());
 		return new ResponseEntity<>(new ApiResponseFail("AD001", "Unauthorized request"), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<ApiResponseFail> handleBadCredentialsException(BadCredentialsException ex) {
-		logger.info("handleBadCredentialsException ex=" + ex.getMessage());
+		logger.error("BC001 - handleBadCredentialsException ex=" + ex.getMessage());
 		return new ResponseEntity<>(new ApiResponseFail("BC001", "Invalid username or password."),
 				HttpStatus.UNAUTHORIZED);
 
@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponseFail> handleGeneralException(Exception ex) {
-		logger.error("handleGeneralException ex=" + ex.getMessage());
+		logger.error("ERR001 - handleGeneralException ex=" + ex.getMessage());
 		return new ResponseEntity<>(new ApiResponseFail("ERR001", "System error, please try again later"),
 				HttpStatus.INTERNAL_SERVER_ERROR);
 	}

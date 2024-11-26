@@ -60,18 +60,15 @@ public class JobService {
 	}
 
 	public JobProjection getJobByIdWithLimitedFields(Long id) {
-		logger.info("findById: " + id);
 		return jobRepository.getJobByIdWithLimitedFields(id)
 				.orElseThrow(() -> new ResourceNotFoundException("RNF-J001-" + id));
 	}
 
 	public Job findById(Long id) {
-		logger.info("findById: " + id);
 		return jobRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("RNF-J002-" + id));
 	}
 
 	public Job addJob(JobRequestDto jobRequest) {
-		logger.info("addJob");
 
 		Job job = new Job();
 
@@ -102,12 +99,9 @@ public class JobService {
 
 	public Job updateJobStatus(Long id, JobUpdateRequestDto jobRequest) {
 
-		logger.info("updateJobStatus: " + id);
 		Job job = findById(id);
 
 		if (job != null) {
-			logger.info("job is not null");
-
 			if (!jobRequest.getUpdatedAt().equals(job.getUpdatedAt())) {
 				throw new ResourceConflictException("RCE-J401");
 			}
@@ -144,21 +138,15 @@ public class JobService {
 				throw new ResourceConflictException("RCE-J901");
 			}
 		} else {
-			logger.info("job is null");
-
 			throw new ResourceNotFoundException("RNF-J003-" + id);
-
 		}
 	}
 
 	public Job updateJob(Long id, JobRequestDto jobRequest) {
 
-		logger.info("updateJob: " + id);
 		Job job = findById(id);
 
 		if (job != null) {
-			logger.info("job is not null");
-
 			if (!jobRequest.getUpdatedAt().equals(job.getUpdatedAt())) {
 				throw new ResourceConflictException("RCE-J402");
 			}
@@ -185,8 +173,6 @@ public class JobService {
 
 			return jobRepository.save(job);
 		} else {
-			logger.info("job is null");
-
 			throw new ResourceNotFoundException("RNF-J004-" + id);
 
 		}

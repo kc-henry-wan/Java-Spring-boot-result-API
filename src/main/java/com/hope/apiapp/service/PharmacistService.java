@@ -37,27 +37,20 @@ public class PharmacistService {
 	private PasswordResetTokenService passwordResetTokenService;
 
 	public Page<PharmacistDto> searchPharmacists(Pageable pageable, String term, String status) {
-		logger.info("PharmacistProjection - searchPharmacists: term:" + term + ";status:" + status);
-
 		return pharmacistRepository.searchPharmacists(pageable, term, status);
 
 	}
 
 	public Pharmacist getPharmacistById(Long id) {
-		logger.info("getPharmacistById: " + id);
 		return pharmacistRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("RNF-P001-" + id));
 	}
 
 	public PharmacistProjection getPharmacistByIdWithLimitedFields(Long id) {
-		logger.info("findByIdWithLimitedFields: " + id);
 		return pharmacistRepository.findByIdWithLimitedFields(id)
 				.orElseThrow(() -> new ResourceNotFoundException("RNF-P002-" + id));
 	}
 
 	public Pharmacist addPharmacist(PharmacistAddRequestDto pharmacistRequest) {
-		logger.info("addPharmacist");
-
-		// Build the full address for the API call
 		String fullAddress = pharmacistRequest.getAddress1() + " " + pharmacistRequest.getAddress2() + " "
 				+ pharmacistRequest.getPostalCode();
 		double[] coordinates = CommonUtil.getCoordinatesFromAddress(fullAddress);
@@ -89,13 +82,9 @@ public class PharmacistService {
 	}
 
 	public Pharmacist updatePharmacist(Long id, PharmacistUpdateRequestDto pharmacistRequest) {
-
-		logger.info("updatePharmacist: " + id);
 		Pharmacist pharmacist = getPharmacistById(id);
 
 		if (pharmacist != null) {
-			logger.info("pharmacist is not null");
-
 			if (!pharmacistRequest.getUpdatedAt().equals(pharmacist.getUpdatedAt())) {
 				throw new ResourceConflictException("RCE-P401");
 			}
@@ -119,21 +108,14 @@ public class PharmacistService {
 
 			return pharmacistRepository.save(pharmacist);
 		} else {
-			logger.info("pharmacist is null");
-
 			throw new ResourceNotFoundException("RNF-P003- " + id);
-
 		}
 	}
 
 	public Boolean activatePharmacist(Long id) {
-
-		logger.info("activatePharmacist: " + id);
 		Pharmacist pharmacist = getPharmacistById(id);
 
 		if (pharmacist != null) {
-			logger.info("pharmacist is not null");
-
 			pharmacist.setStatus("Active");
 			pharmacist.setUpdatedAt(LocalDateTime.now());
 			pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
@@ -142,20 +124,14 @@ public class PharmacistService {
 
 			return true;
 		} else {
-			logger.info("pharmacist is null");
-
 			throw new ResourceNotFoundException("RNF-P004-" + id);
 		}
 	}
 
 	public boolean resetPassword(Long id, String newPassword) {
-
-		logger.info("updatePharmacist: " + id);
 		Pharmacist pharmacist = getPharmacistById(id);
 
 		if (pharmacist != null) {
-			logger.info("pharmacist is not null");
-
 			pharmacist.setPassword(passwordEncoder.encode(newPassword));
 			pharmacist.setUpdatedAt(LocalDateTime.now());
 			pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
@@ -164,8 +140,6 @@ public class PharmacistService {
 
 			return true;
 		} else {
-			logger.info("pharmacist is null");
-
 			throw new ResourceNotFoundException("RNF-P005-" + id);
 		}
 	}

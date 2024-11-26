@@ -54,7 +54,6 @@ public class AuthController {
 
 				// Generate JWT token
 				String jwtToken = jwtTokenProvider.generateToken(loginRequest.getUsername());
-				logger.info("authenticateUser: token generated:" + jwtToken);
 
 				JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwtToken, userDetails.getUserId(),
 						userDetails.getLatitude(), userDetails.getLongitude());

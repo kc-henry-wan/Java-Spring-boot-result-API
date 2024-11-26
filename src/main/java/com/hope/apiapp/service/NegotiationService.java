@@ -35,25 +35,20 @@ public class NegotiationService {
 	private JobRepository jobRepository;
 
 	public Page<NegotiationDto> getNegotiations(Pageable pageable, String status, Long pharmacistId) {
-		logger.info("NegotiationService - findByStatus: " + status);
 		return negotiationRepository.getNegotiations(pageable, status, pharmacistId);
 
 	}
 
 	public NegotiationProjection getNegotiationById(Long id) {
-		logger.info("findNegotiationById: " + id);
 		return negotiationRepository.getNegotiationById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("RNF-N001-" + id));
 	}
 
 	public Negotiation findById(Long id) {
-		logger.info("findNegotiationById: " + id);
 		return negotiationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("RNF-N002-" + id));
 	}
 
 	public Negotiation addNegotiation(NegotiationAddRequestDto request) {
-		logger.info("addNegotiation");
-
 		Negotiation negotiation = new Negotiation();
 		Long jobId = request.getJobId();
 		Job job = jobRepository.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("RNF-J005-" + jobId));
@@ -80,8 +75,6 @@ public class NegotiationService {
 	}
 
 	public Negotiation updateNegotiation(Long id, NegotiationUpdateRequestDto negotiationRequest) {
-
-		logger.info("updateNegotiation: " + id);
 		Long jobId = negotiationRequest.getJobId();
 
 		Negotiation negotiation = findById(id);
@@ -92,8 +85,6 @@ public class NegotiationService {
 		Job job = jobRepository.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("RNF-J006-" + jobId));
 
 		if (negotiation != null && job != null) {
-			logger.info("negotiation is not null");
-
 			negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 			negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
 
@@ -130,16 +121,11 @@ public class NegotiationService {
 			return negotiationRepository.save(negotiation);
 
 		} else {
-			logger.info("negotiation is null");
-
 			throw new ResourceNotFoundException("RNF-N003-" + id);
-
 		}
 	}
 
 	public Negotiation acceptNegotiation(Long id, NegotiationAcceptRequestDto negotiationRequest) {
-
-		logger.info("acceptNegotiation: " + id);
 		Long jobId = negotiationRequest.getJobId();
 
 		Negotiation negotiation = findById(id);
@@ -151,9 +137,6 @@ public class NegotiationService {
 		Job job = jobRepository.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("RNF-J007-" + jobId));
 
 		if (negotiation != null && job != null) {
-			logger.info("negotiation is not null");
-
-			// Add Job records updatedAt to check conflict
 			if (!negotiationRequest.getJobUpdatedAt().equals(job.getUpdatedAt())) {
 				throw new ResourceConflictException("RCE-J408");
 			}
@@ -173,10 +156,7 @@ public class NegotiationService {
 				throw new ResourceConflictException("RCE-J903");
 			}
 		} else {
-			logger.info("negotiation is null");
-
 			throw new ResourceNotFoundException("RNF-N004-" + id);
-
 		}
 	}
 

@@ -51,19 +51,7 @@ public class CustomPharmacistRepositoryImpl implements CustomPharmacistRepositor
 			countJpql.append(" WHERE ").append(String.join(" AND ", conditions));
 		}
 
-		logger.info("queryBuilder - finish where case. " + jpql.toString());
-		logger.info("queryBuilder - finish where case. " + countJpql.toString());
-
-		// Add order by
-//		if ("DA".equalsIgnoreCase(orderBy)) {
-//			jpql.append(" ORDER BY p.firstName, p.lastName ");
-//		} else if ("HR".equalsIgnoreCase(orderBy)) {
-//			jpql.append(" ORDER BY p.lastName, p.firstName ");
-//		} else if ("TP".equalsIgnoreCase(orderBy)) {
-//			jpql.append(" ORDER BY p.email ");
-//		} else {
 		jpql.append(" ORDER BY p.firstName, p.lastName ");
-//		}
 
 		logger.info("queryBuilder - finish order by:" + jpql.toString());
 
@@ -85,8 +73,6 @@ public class CustomPharmacistRepositoryImpl implements CustomPharmacistRepositor
 		query.setMaxResults(pageable.getPageSize());
 
 		List<PharmacistDto> resultList = query.getResultList();
-
-		logger.info("List<PharmacistDto> load completed");
 
 		// Getting total count for pagination
 		Long totalElements = countQuery.getSingleResult();

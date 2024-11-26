@@ -25,8 +25,6 @@ public class PharmacyBranchService {
 	private PharmacyBranchRepository pharmacyBranchRepository;
 
 	public Page<PharmacyBranch> findByStatus(String status, Pageable pageable) {
-		logger.info("PharmacyBranchService - findByStatus: " + status);
-
 		if (status == null || !status.isEmpty()) {
 			return pharmacyBranchRepository.findAll(pageable);
 		}
@@ -64,8 +62,6 @@ public class PharmacyBranchService {
 		PharmacyBranch branch = findBranchById(id);
 
 		if (branch != null) {
-			logger.info("Branch is NOT null");
-
 			if (!branchReq.getUpdatedAt().equals(branch.getUpdatedAt())) {
 				throw new ResourceConflictException("RCE-B401");
 			}
@@ -88,8 +84,6 @@ public class PharmacyBranchService {
 
 			return pharmacyBranchRepository.save(branch);
 		} else {
-			logger.info("Branch is null");
-
 			throw new ResourceNotFoundException("RNF-B002-" + id);
 
 		}

@@ -31,8 +31,6 @@ public class PasswordUpdateController {
 	@PostMapping("/v1/reset-password")
 	public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
 
-		logger.info("PasswordUpdateController start");
-
 		PasswordResetToken resetToken = passwordResetService.validatePasswordResetToken(token);
 
 		if (resetToken != null) {
