@@ -3,6 +3,7 @@ package com.hope.apiapp.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -31,6 +32,7 @@ import com.hope.apiapp.model.PasswordResetToken;
 import com.hope.apiapp.model.Pharmacist;
 import com.hope.apiapp.service.PasswordResetTokenService;
 import com.hope.apiapp.service.PharmacistService;
+import com.hope.apiapp.util.CommonUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class PharmacistControllerTest {
@@ -43,6 +45,9 @@ public class PharmacistControllerTest {
 
 	@Mock
 	private PasswordResetTokenService passwordResetService;
+
+	@Mock
+	private CommonUtil commonUtil;
 
 	@Test
 	public void testSearchtPharmacists_Success() {
@@ -77,9 +82,12 @@ public class PharmacistControllerTest {
 	@Test
 	public void testGgetMyProfile_Success() {
 		// Arrange
+		Long id = 1L;
+
 		PharmacistProjection mockPharmacist = mock(PharmacistProjection.class);
 
-		when(pharmacistService.getPharmacistByIdWithLimitedFields(isNull())).thenReturn(mockPharmacist);
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(pharmacistService.getPharmacistByIdWithLimitedFields(anyLong())).thenReturn(mockPharmacist);
 
 		// Act
 		ResponseEntity<ApiResponseSuccess<PharmacistProjection>> response = pharmacistController.getMyProfile();
@@ -94,8 +102,10 @@ public class PharmacistControllerTest {
 	@Test
 	public void testGgetMyProfile_Exception() {
 		// Arrange
+		Long id = 1L;
 
-		when(pharmacistService.getPharmacistByIdWithLimitedFields(isNull()))
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(pharmacistService.getPharmacistByIdWithLimitedFields(id))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
@@ -225,7 +235,8 @@ public class PharmacistControllerTest {
 		Pharmacist updatedPharmacist = new Pharmacist();
 		updatedPharmacist.setPharmacistId(id);
 
-		when(pharmacistService.updatePharmacist(isNull(), any(PharmacistUpdateRequestDto.class)))
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(pharmacistService.updatePharmacist(anyLong(), any(PharmacistUpdateRequestDto.class)))
 				.thenReturn(updatedPharmacist);
 
 		// Act
@@ -244,7 +255,8 @@ public class PharmacistControllerTest {
 		Long id = 1L;
 		PharmacistUpdateRequestDto request = new PharmacistUpdateRequestDto();
 
-		when(pharmacistService.updatePharmacist(isNull(), any(PharmacistUpdateRequestDto.class)))
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(pharmacistService.updatePharmacist(anyLong(), any(PharmacistUpdateRequestDto.class)))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert

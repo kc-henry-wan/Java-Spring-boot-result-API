@@ -2,6 +2,7 @@ package com.hope.apiapp.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -22,6 +23,7 @@ import com.hope.apiapp.dto.PharmacistDocProjection;
 import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.model.PharmacistDoc;
 import com.hope.apiapp.service.PharmacistDocService;
+import com.hope.apiapp.util.CommonUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class PharmacistDocControllarTest {
@@ -32,6 +34,9 @@ public class PharmacistDocControllarTest {
 	@Mock
 	private PharmacistDocService pharmacistDocService;
 
+	@Mock
+	private CommonUtil commonUtil;
+
 	@Test
 	public void testUploadImage_Success() {
 		// Arrange
@@ -40,7 +45,8 @@ public class PharmacistDocControllarTest {
 		PharmacistDoc pDoc = new PharmacistDoc();
 		pDoc.setImageId(id);
 
-		when(pharmacistDocService.saveImage(isNull(), anyString(), isNull())).thenReturn(pDoc);
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(pharmacistDocService.saveImage(anyLong(), anyString(), isNull())).thenReturn(pDoc);
 
 		// Act
 		ResponseEntity<ApiResponseSuccess<Long>> response = pharmacistDocControllar.uploadImage(imageType, null);
@@ -55,9 +61,11 @@ public class PharmacistDocControllarTest {
 	@Test
 	public void testUploadImage_Exception() {
 		// Arrange
+		Long id = 77L;
 		String imageType = "Document";
 
-		when(pharmacistDocService.saveImage(isNull(), anyString(), isNull()))
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(pharmacistDocService.saveImage(anyLong(), anyString(), isNull()))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
@@ -124,7 +132,8 @@ public class PharmacistDocControllarTest {
 		List<PharmacistDocProjection> myList = new ArrayList<>();
 		myList.add(pDoc);
 
-		when(pharmacistDocService.getImageIdsByPharmacistId(isNull())).thenReturn(myList);
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(pharmacistDocService.getImageIdsByPharmacistId(anyLong())).thenReturn(myList);
 
 		// Act
 		ResponseEntity<ApiResponseSuccess<List<PharmacistDocProjection>>> response = pharmacistDocControllar.getMyDoc();
@@ -137,8 +146,10 @@ public class PharmacistDocControllarTest {
 
 	@Test
 	public void testGetMyDoc_Exception() {
+		Long id = 77L;
 
-		when(pharmacistDocService.getImageIdsByPharmacistId(isNull()))
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(pharmacistDocService.getImageIdsByPharmacistId(anyLong()))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert

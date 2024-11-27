@@ -31,6 +31,7 @@ import com.hope.apiapp.dto.JobUpdateRequestDto;
 import com.hope.apiapp.helper.ApiResponseSuccess;
 import com.hope.apiapp.model.Job;
 import com.hope.apiapp.service.JobService;
+import com.hope.apiapp.util.CommonUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class JobControllerTest {
@@ -41,15 +42,21 @@ public class JobControllerTest {
 	@Mock
 	private JobService jobService;
 
+	@Mock
+	private CommonUtil commonUtil;
+
 	@Test
 	public void testGetFilteredJobsWithLimitedFields_Success() {
 		// Arrange
+		Long id = 1L;
+		Double[] coordinate = new Double[] { 1.1, 1.1 };
 		Pageable pageable = PageRequest.of(0, 10);
 		JobDto returnedJob = new JobDto();
 		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
 		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
+		when(commonUtil.getUserCoordinates()).thenReturn(coordinate);
 		when(jobService.findFilteredJobsWithLimitedFields(any(Pageable.class), anyDouble(), anyDouble(), isNull(),
 				isNull(), isNull(), isNull(), isNull(), isNull(), isNull())).thenReturn(myPage);
 
@@ -66,11 +73,14 @@ public class JobControllerTest {
 	@Test
 	public void testGetFilteredJobsWithLimitedFields_Exception() {
 		// Arrange
+		Long id = 1L;
+		Double[] coordinate = new Double[] { 1.1, 1.1 };
 		Pageable pageable = PageRequest.of(0, 10);
 		JobDto returnedJob = new JobDto();
 		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
 
+		when(commonUtil.getUserCoordinates()).thenReturn(coordinate);
 		when(jobService.findFilteredJobsWithLimitedFields(any(Pageable.class), anyDouble(), anyDouble(), isNull(),
 				isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
 				.thenThrow(new RuntimeException("Unexpected error"));
@@ -84,14 +94,18 @@ public class JobControllerTest {
 	@Test
 	public void testGetMyJobs_Success() {
 		// Arrange
+		Long id = 1L;
+		Double[] coordinate = new Double[] { 1.1, 1.1 };
 		Pageable pageable = PageRequest.of(0, 10);
 		JobDto returnedJob = new JobDto();
 		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
 		Page<JobDto> myPage = new PageImpl<>(myList, pageable, myList.size());
 
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(commonUtil.getUserCoordinates()).thenReturn(coordinate);
 		when(jobService.findFilteredJobsWithLimitedFields(any(Pageable.class), anyDouble(), anyDouble(), isNull(),
-				isNull(), isNull(), isNull(), isNull(), isNull(), isNull())).thenReturn(myPage);
+				isNull(), isNull(), isNull(), isNull(), anyLong(), isNull())).thenReturn(myPage);
 
 		// Act
 		ResponseEntity<ApiResponseSuccess<Page<JobDto>>> response = jobController.getMyJobs(0, 10, null);
@@ -105,12 +119,16 @@ public class JobControllerTest {
 	@Test
 	public void testGetMyJobs_Exception() {
 		// Arrange
+		Long id = 1L;
+		Double[] latlng = new Double[] { 1.1, 1.1 };
 		JobDto returnedJob = new JobDto();
 		List<JobDto> myList = new ArrayList<>();
 		myList.add(returnedJob);
 
+		when(commonUtil.getCurrentUserId()).thenReturn(id);
+		when(commonUtil.getUserCoordinates()).thenReturn(latlng);
 		when(jobService.findFilteredJobsWithLimitedFields(any(Pageable.class), anyDouble(), anyDouble(), isNull(),
-				isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+				isNull(), isNull(), isNull(), isNull(), anyLong(), isNull()))
 				.thenThrow(new RuntimeException("Unexpected error"));
 
 		// Act & Assert
