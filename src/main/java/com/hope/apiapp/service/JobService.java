@@ -40,6 +40,9 @@ public class JobService {
 	@Autowired
 	private NegotiationRepository negotiationRepository;
 
+	@Autowired
+	private CommonUtil commonUtil;
+
 	@Transactional
 	public Page<JobDto> findFilteredJobsWithLimitedFields(Pageable pageable, Double fromLat, Double fromLng,
 			String fromDate, String toDate, String statusCode, String jobIds, String groupCode, Long pharmacistId,
@@ -86,7 +89,7 @@ public class JobService {
 		job.setRatePerMile(jobRequest.getRatePerMile());
 
 		job.setStatus("Open"); // Default status
-		job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+		job.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 		job.setCreatedAt(LocalDateTime.now()); // Set current time for creation
 		job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 
@@ -108,11 +111,11 @@ public class JobService {
 			if ("Open".equalsIgnoreCase(job.getStatus())) {
 
 				job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
-				job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+				job.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 
 				if ("Apply".equalsIgnoreCase(jobRequest.getAction())) {
 					job.setStatus("Applied");
-					job.setPharmacistId(CommonUtil.getCurrentUserId());
+					job.setPharmacistId(commonUtil.getCurrentUserId());
 
 					// Check if any open negotiation
 					List<Negotiation> negotiationList = negotiationRepository.findByJobId(id);
@@ -122,7 +125,7 @@ public class JobService {
 						for (Negotiation negotiation : negotiationList) {
 							negotiation.setStatus("Job Picked by others");
 							negotiation.setUpdatedAt(LocalDateTime.now());
-							negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId());
+							negotiation.setUpdatedUserId(commonUtil.getCurrentUserId());
 						}
 
 						return updateWithTrxHandling(job, negotiationList);
@@ -169,7 +172,7 @@ public class JobService {
 			}
 
 			job.setUpdatedAt(LocalDateTime.now()); // Set current time for update
-			job.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+			job.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 
 			return jobRepository.save(job);
 		} else {

@@ -58,7 +58,6 @@ C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\CustomUse
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\JwtAuthenticationFilter.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\JwtTokenProvider.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\SecurityConfig.java
-C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\security\WebConfig.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\service\EmailService.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\service\JobService.java
 C:\lab\code\java4\apiapp\apiapp\src\main\java\com\hope\apiapp\service\NegotiationService.java

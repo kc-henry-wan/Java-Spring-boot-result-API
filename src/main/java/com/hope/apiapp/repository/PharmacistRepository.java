@@ -1,5 +1,6 @@
 package com.hope.apiapp.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,7 @@ public interface PharmacistRepository extends JpaRepository<Pharmacist, Long>, C
 	Optional<Pharmacist> findById(Long pharmacistId);
 
 	Optional<Pharmacist> findByEmail(String email);
+
+	@Query("SELECT p FROM Pharmacist p WHERE p.latitude IS NULL OR p.longitude IS NULL")
+	List<Pharmacist> findPharmacistsWithMissingCoordinates();
 }

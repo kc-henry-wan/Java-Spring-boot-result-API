@@ -36,9 +36,12 @@ public class JobController {
 
 	private final JobService jobService;
 
+	private final CommonUtil commonUtil;
+
 	@Autowired
-	public JobController(JobService jobService) {
+	public JobController(JobService jobService, CommonUtil commonUtil) {
 		this.jobService = jobService;
+		this.commonUtil = commonUtil;
 	}
 
 	// GET /v1/job
@@ -51,7 +54,7 @@ public class JobController {
 
 		Pageable pageable = PageRequest.of(page, size);
 
-		Double[] coordinate = CommonUtil.getUserCoordinates();
+		Double[] coordinate = commonUtil.getUserCoordinates();
 
 		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, coordinate[0], coordinate[1],
 				fromDate, toDate, statusCode, jobIds, groupCode, null, orderBy);
@@ -66,8 +69,8 @@ public class JobController {
 
 		Pageable pageable = PageRequest.of(page, size);
 
-		Double[] coordinate = CommonUtil.getUserCoordinates();
-		Long userId = CommonUtil.getCurrentUserId();
+		Double[] coordinate = commonUtil.getUserCoordinates();
+		Long userId = commonUtil.getCurrentUserId();
 
 		Page<JobDto> jobs = jobService.findFilteredJobsWithLimitedFields(pageable, coordinate[0], coordinate[1], null,
 				null, null, null, null, userId, orderBy);
@@ -75,7 +78,7 @@ public class JobController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", jobs), HttpStatus.OK);
 	}
 
-	@GetMapping("/staff/v1/job/{id}")
+	@GetMapping("/admin/v1/job/{id}")
 	public ResponseEntity<ApiResponseSuccess<JobProjection>> getJobByIdWithLimitedFields(@PathVariable Long id) {
 
 		JobProjection job = jobService.getJobByIdWithLimitedFields(id);
@@ -83,7 +86,7 @@ public class JobController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", job), HttpStatus.OK);
 	}
 
-	@PostMapping("/staff/v1/job")
+	@PostMapping("/admin/v1/job")
 	public ResponseEntity<ApiResponseSuccess<Long>> addJob(@RequestBody JobRequestDto jobRequest) {
 
 		Job createdJob = jobService.addJob(jobRequest);
@@ -100,7 +103,7 @@ public class JobController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", updatedJob.getJobId()), HttpStatus.OK);
 	}
 
-	@PutMapping("/staff/v1/job/{id}")
+	@PutMapping("/admin/v1/job/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updateJob(@PathVariable Long id,
 			@RequestBody JobRequestDto jobRequest) {
 

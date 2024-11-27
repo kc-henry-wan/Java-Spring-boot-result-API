@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import com.hope.apiapp.security.CustomUserDetails;
 import com.opencagedata.jopencage.JOpenCageGeocoder;
@@ -12,14 +13,15 @@ import com.opencagedata.jopencage.model.JOpenCageForwardRequest;
 import com.opencagedata.jopencage.model.JOpenCageLatLng;
 import com.opencagedata.jopencage.model.JOpenCageResponse;
 
+@Component
 public class CommonUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 
-	@Value("${opencage.api.key}")
-	private static String opencageApiKey;
+	@Value("${ooK}")
+	private String opencageApiKey;
 
-	public static Long getCurrentUserId() {
+	public Long getCurrentUserId() {
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -39,7 +41,7 @@ public class CommonUtil {
 		}
 	}
 
-	public static Double[] getUserCoordinates() {
+	public Double[] getUserCoordinates() {
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -51,33 +53,41 @@ public class CommonUtil {
 				return new Double[] { userDetails.getLatitude(), userDetails.getLongitude() };
 			}
 
-			logger.info("getCurrentUserId Failed");
-//			return new Double[] { 52.4, -1.5 };
+			logger.info("getUserCoordinates Failed");
 			return new Double[] { 0.0, 0.0 };
 		} catch (RuntimeException ex) {
-			logger.info("getCurrentUserId RuntimeException=" + ex.toString());
+			logger.info("getUserCoordinates RuntimeException=" + ex.toString());
 			return new Double[] { 0.0, 0.0 };
 		}
 	}
 
-	public static double[] getCoordinatesFromAddress(String address) {
+	public Double[] getCoordinatesFromAddress(String address) {
 
-		JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder(opencageApiKey);
+		try {
+			JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder(opencageApiKey);
 
-		JOpenCageForwardRequest request = new JOpenCageForwardRequest(address);
-		request.setMinConfidence(1);
-		request.setRestrictToCountryCode("gb");
-		request.setNoAnnotations(false);
-		request.setNoDedupe(true);
-		JOpenCageResponse response = jOpenCageGeocoder.forward(request);
-		JOpenCageLatLng firstResultLatLng = response.getFirstPosition(); // get the coordinate pair of the first result
-		logger.info(firstResultLatLng.getLat().toString() + "," + firstResultLatLng.getLng().toString());
+			JOpenCageForwardRequest request = new JOpenCageForwardRequest(address);
+			request.setMinConfidence(1);
+			request.setRestrictToCountryCode("gb");
+			request.setNoAnnotations(false);
+			request.setNoDedupe(true);
+			JOpenCageResponse response = jOpenCageGeocoder.forward(request);
+			if (response != null) {
+				JOpenCageLatLng firstResultLatLng = response.getFirstPosition();
 
-		return new double[] { firstResultLatLng.getLat(), firstResultLatLng.getLng() };
+				return new Double[] { firstResultLatLng.getLat(), firstResultLatLng.getLng() };
+			} else {
+				logger.info("getCoordinatesFromAddress Failed");
+				return new Double[] { 0.0, 0.0 };
+			}
+		} catch (RuntimeException ex) {
+			logger.info("getCoordinatesFromAddress RuntimeException=" + ex.toString());
+			return new Double[] { 0.0, 0.0 };
+		}
 	}
 
 	// Haversine formula for distance calculation
-	public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+	public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
 		double earthRadius = 3959; // miles
 		double dLat = Math.toRadians(lat2 - lat1);
 		double dLng = Math.toRadians(lon2 - lon1);

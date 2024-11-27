@@ -34,6 +34,9 @@ public class NegotiationService {
 	@Autowired
 	private JobRepository jobRepository;
 
+	@Autowired
+	private CommonUtil commonUtil;
+
 	public Page<NegotiationDto> getNegotiations(Pageable pageable, String status, Long pharmacistId) {
 		return negotiationRepository.getNegotiations(pageable, status, pharmacistId);
 
@@ -57,14 +60,14 @@ public class NegotiationService {
 			negotiation.setJobId(request.getJobId());
 			negotiation.setOriginalHourlyRate(job.getHourlyRate());
 			negotiation.setOriginalTotalPaid(job.getTotalPaid());
-			negotiation.setPharmacistId(CommonUtil.getCurrentUserId());
+			negotiation.setPharmacistId(commonUtil.getCurrentUserId());
 			negotiation.setPurposedHourlyRate(request.getPurposedHourlyRate());
 			negotiation.setPurposedTotalPaid(request.getPurposedTotalPaid());
 			negotiation.setReason(request.getReason());
 
 			// Set default values for additional fields
 			negotiation.setStatus("New"); // Default status
-			negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+			negotiation.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 			negotiation.setCreatedAt(LocalDateTime.now()); // Set current time for creation
 			negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 
@@ -86,7 +89,7 @@ public class NegotiationService {
 
 		if (negotiation != null && job != null) {
 			negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
-			negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+			negotiation.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 
 			if ("AdminAccept".equalsIgnoreCase(negotiationRequest.getMode())) {
 
@@ -98,10 +101,10 @@ public class NegotiationService {
 				if ("Open".equalsIgnoreCase(job.getStatus())) {
 					negotiation.setStatus("Admin Accepted");
 
-					job.setPharmacistId(CommonUtil.getCurrentUserId());
+					job.setPharmacistId(commonUtil.getCurrentUserId());
 					job.setStatus("Assigned");
 					job.setUpdatedAt(LocalDateTime.now());
-					job.setUpdatedUserId(CommonUtil.getCurrentUserId());
+					job.setUpdatedUserId(commonUtil.getCurrentUserId());
 
 					return updateWithTrxHandling(job, negotiation);
 				} else {
@@ -143,13 +146,13 @@ public class NegotiationService {
 
 			if ("Open".equalsIgnoreCase(job.getStatus())) {
 				negotiation.setUpdatedAt(LocalDateTime.now()); // Set current time for update
-				negotiation.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+				negotiation.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 				negotiation.setStatus("Pharmacist Accepted");
 
-				job.setPharmacistId(CommonUtil.getCurrentUserId());
+				job.setPharmacistId(commonUtil.getCurrentUserId());
 				job.setStatus("Assigned");
 				job.setUpdatedAt(LocalDateTime.now());
-				job.setUpdatedUserId(CommonUtil.getCurrentUserId());
+				job.setUpdatedUserId(commonUtil.getCurrentUserId());
 
 				return updateWithTrxHandling(job, negotiation);
 			} else {

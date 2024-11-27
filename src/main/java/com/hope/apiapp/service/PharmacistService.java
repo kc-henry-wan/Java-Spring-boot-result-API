@@ -1,6 +1,7 @@
 package com.hope.apiapp.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,9 @@ public class PharmacistService {
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
 
+	@Autowired
+	private CommonUtil commonUtil;
+
 	public Page<PharmacistDto> searchPharmacists(Pageable pageable, String term, String status) {
 		return pharmacistRepository.searchPharmacists(pageable, term, status);
 
@@ -53,7 +57,7 @@ public class PharmacistService {
 	public Pharmacist addPharmacist(PharmacistAddRequestDto pharmacistRequest) {
 		String fullAddress = pharmacistRequest.getAddress1() + " " + pharmacistRequest.getAddress2() + " "
 				+ pharmacistRequest.getPostalCode();
-		double[] coordinates = CommonUtil.getCoordinatesFromAddress(fullAddress);
+		Double[] coordinates = commonUtil.getCoordinatesFromAddress(fullAddress);
 
 		Pharmacist pharmacist = new Pharmacist();
 		pharmacist.setPassword(passwordEncoder.encode(pharmacistRequest.getPassword()));
@@ -64,13 +68,13 @@ public class PharmacistService {
 		pharmacist.setAddress1(pharmacistRequest.getAddress1());
 		pharmacist.setAddress2(pharmacistRequest.getAddress2());
 		pharmacist.setPostalCode(pharmacistRequest.getPostalCode());
-		pharmacist.setLongitude(coordinates[0]);
-		pharmacist.setLatitude(coordinates[1]);
+		pharmacist.setLatitude(coordinates[0]);
+		pharmacist.setLongitude(coordinates[1]);
 		pharmacist.setRole(defaultRole);
 
 		// Set default values for additional fields
 		pharmacist.setStatus("Pending"); // Default status, change to active after call activate API
-		pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+		pharmacist.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 		pharmacist.setCreatedAt(LocalDateTime.now()); // Set current time for creation
 		pharmacist.setUpdatedAt(LocalDateTime.now()); // Set current time for update
 
@@ -92,7 +96,7 @@ public class PharmacistService {
 			// Build the full address for the API call
 			String fullAddress = pharmacistRequest.getAddress1() + " " + pharmacistRequest.getAddress2() + " "
 					+ pharmacistRequest.getPostalCode();
-			double[] coordinates = CommonUtil.getCoordinatesFromAddress(fullAddress);
+			Double[] coordinates = commonUtil.getCoordinatesFromAddress(fullAddress);
 
 			// Password and email not allow to update
 			pharmacist.setFirstName(pharmacistRequest.getFirstName());
@@ -101,10 +105,10 @@ public class PharmacistService {
 			pharmacist.setAddress1(pharmacistRequest.getAddress1());
 			pharmacist.setAddress2(pharmacistRequest.getAddress2());
 			pharmacist.setPostalCode(pharmacistRequest.getPostalCode());
-			pharmacist.setLongitude(coordinates[0]);
-			pharmacist.setLatitude(coordinates[1]);
+			pharmacist.setLatitude(coordinates[0]);
+			pharmacist.setLongitude(coordinates[1]);
 			pharmacist.setUpdatedAt(LocalDateTime.now()); // Set current time for update
-			pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+			pharmacist.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 
 			return pharmacistRepository.save(pharmacist);
 		} else {
@@ -118,7 +122,7 @@ public class PharmacistService {
 		if (pharmacist != null) {
 			pharmacist.setStatus("Active");
 			pharmacist.setUpdatedAt(LocalDateTime.now());
-			pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+			pharmacist.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 
 			pharmacistRepository.save(pharmacist);
 
@@ -134,7 +138,7 @@ public class PharmacistService {
 		if (pharmacist != null) {
 			pharmacist.setPassword(passwordEncoder.encode(newPassword));
 			pharmacist.setUpdatedAt(LocalDateTime.now());
-			pharmacist.setUpdatedUserId(CommonUtil.getCurrentUserId()); // Retrieve from the current session
+			pharmacist.setUpdatedUserId(commonUtil.getCurrentUserId()); // Retrieve from the current session
 
 			pharmacistRepository.save(pharmacist);
 
@@ -142,5 +146,29 @@ public class PharmacistService {
 		} else {
 			throw new ResourceNotFoundException("RNF-P005-" + id);
 		}
+	}
+
+	public void updateMissingCoordinates() {
+		List<Pharmacist> pharmacists = pharmacistRepository.findPharmacistsWithMissingCoordinates();
+
+		for (Pharmacist pharmacist : pharmacists) {
+			String fullAddress = pharmacist.getAddress1() + " " + pharmacist.getAddress2() + " "
+					+ pharmacist.getPostalCode();
+
+			try {
+				Double[] coordinates = commonUtil.getCoordinatesFromAddress(fullAddress);
+
+				if (coordinates != null && coordinates.length == 2) {
+					pharmacist.setLatitude(coordinates[0]);
+					pharmacist.setLongitude(coordinates[1]);
+				}
+			} catch (Exception e) {
+				// Log error and skip the branch if API call fails
+				logger.info("Failed to update coordinates for branch ID " + pharmacist.getPharmacistId());
+			}
+		}
+
+		// Save all updated branches
+		pharmacistRepository.saveAll(pharmacists);
 	}
 }

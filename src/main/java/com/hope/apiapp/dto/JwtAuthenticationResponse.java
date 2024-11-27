@@ -8,14 +8,10 @@ public class JwtAuthenticationResponse {
 	private String accessToken;
 	private String tokenType = "Bearer";
 	private Long userId = null;
-	private Double userLat = null;
-	private Double userLng = null;
 
-	public JwtAuthenticationResponse(String accessToken, Long userId, Double userLat, Double userLng) {
+	public JwtAuthenticationResponse(String accessToken, Long userId) {
 		this.accessToken = accessToken;
 		this.userId = userId;
-		this.userLat = userLat;
-		this.userLng = userLng;
 	}
 
 	public String getAccessToken() {
@@ -40,22 +36,6 @@ public class JwtAuthenticationResponse {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
-	}
-
-	public Double getUserLat() {
-		return userLat;
-	}
-
-	public void setUserLat(Double userLat) {
-		this.userLat = userLat;
-	}
-
-	public Double getUserLng() {
-		return userLng;
-	}
-
-	public void setUserLng(Double userLng) {
-		this.userLng = userLng;
 	}
 
 }

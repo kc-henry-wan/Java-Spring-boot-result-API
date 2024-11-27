@@ -39,17 +39,18 @@ public class PharmacistController {
 	private static final Logger logger = LoggerFactory.getLogger(PharmacistController.class);
 
 	private final PharmacistService pharmacistService;
+	private final CommonUtil commonUtil;
+	private final PasswordResetTokenService passwordResetService;
 
 	@Autowired
-	private PasswordResetTokenService passwordResetService;
-
-	@Autowired
-	public PharmacistController(PharmacistService pharmacistService, PasswordResetTokenService passwordResetService) {
+	public PharmacistController(PharmacistService pharmacistService, PasswordResetTokenService passwordResetService,
+			CommonUtil commonUtil) {
 		this.pharmacistService = pharmacistService;
 		this.passwordResetService = passwordResetService;
+		this.commonUtil = commonUtil;
 	}
 
-	@GetMapping("/staff/v1/pharmacist")
+	@GetMapping("/admin/v1/pharmacist")
 	public ResponseEntity<ApiResponseSuccess<Page<PharmacistDto>>> searchPharmacists(
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size,
 			@RequestParam(required = false) String term, @RequestParam(required = false) String status) {
@@ -64,13 +65,13 @@ public class PharmacistController {
 	@GetMapping("/v1/myprofile")
 	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getMyProfile() {
 
-		Long userId = CommonUtil.getCurrentUserId();
+		Long userId = commonUtil.getCurrentUserId();
 		PharmacistProjection pharmacist = pharmacistService.getPharmacistByIdWithLimitedFields(userId);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", pharmacist), HttpStatus.OK);
 	}
 
-	@GetMapping("/staff/v1/pharmacist/{id}")
+	@GetMapping("/admin/v1/pharmacist/{id}")
 	public ResponseEntity<ApiResponseSuccess<PharmacistProjection>> getPharmacistByIdWithLimitedFields(
 			@PathVariable Long id) {
 
@@ -114,14 +115,14 @@ public class PharmacistController {
 	public ResponseEntity<ApiResponseSuccess<Long>> updateMyProfile(
 			@RequestBody PharmacistUpdateRequestDto pharmacistRequest) {
 
-		Long userId = CommonUtil.getCurrentUserId();
+		Long userId = commonUtil.getCurrentUserId();
 		Pharmacist updatedPharmacist = pharmacistService.updatePharmacist(userId, pharmacistRequest);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", updatedPharmacist.getPharmacistId()),
 				HttpStatus.OK);
 	}
 
-	@PutMapping("/staff/v1/pharmacist/{id}")
+	@PutMapping("/admin/v1/pharmacist/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updatePharmacist(@PathVariable Long id,
 			@RequestBody PharmacistUpdateRequestDto pharmacistRequest) {
 
@@ -131,4 +132,10 @@ public class PharmacistController {
 				HttpStatus.OK);
 	}
 
+	@GetMapping("/admin/v1/pharmacist/coordinates")
+	public ResponseEntity<ApiResponseSuccess<String>> updateMissingCoordinates() {
+		pharmacistService.updateMissingCoordinates();
+
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", "Done"), HttpStatus.OK);
+	}
 }

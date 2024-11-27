@@ -28,14 +28,20 @@ import com.hope.apiapp.util.CommonUtil;
 
 public class PharmacistDocControllar {
 
-	@Autowired
 	private PharmacistDocService pharmacistDocService;
+	private final CommonUtil commonUtil;
+
+	@Autowired
+	public PharmacistDocControllar(PharmacistDocService pharmacistDocService, CommonUtil commonUtil) {
+		this.pharmacistDocService = pharmacistDocService;
+		this.commonUtil = commonUtil;
+	}
 
 	@PostMapping("/v1/mydoc/upload")
 	public ResponseEntity<ApiResponseSuccess<Long>> uploadImage(@RequestParam("imageType") String imageType,
 			@RequestParam("imageFile") MultipartFile imageFile) {
 
-		Long userId = CommonUtil.getCurrentUserId();
+		Long userId = commonUtil.getCurrentUserId();
 		// Save the image and get the metadata with image_id
 		PharmacistDoc savedImage = pharmacistDocService.saveImage(userId, imageType, imageFile);
 
@@ -48,7 +54,7 @@ public class PharmacistDocControllar {
 
 		try {
 			// Get the image bytes
-			Long userId = CommonUtil.getCurrentUserId();
+			Long userId = commonUtil.getCurrentUserId();
 			byte[] imageBytes = pharmacistDocService.viewImage(id, userId);
 			PharmacistDoc image = pharmacistDocService.findByImageId(id);
 
@@ -59,7 +65,7 @@ public class PharmacistDocControllar {
 		}
 	}
 
-	@GetMapping("/staff/v1/image/download/{id}")
+	@GetMapping("/admin/v1/image/download/{id}")
 	public ResponseEntity<byte[]> viewImage(@PathVariable Long id) {
 
 		try {
@@ -77,13 +83,13 @@ public class PharmacistDocControllar {
 	@GetMapping("/v1/mydoc/")
 	public ResponseEntity<ApiResponseSuccess<List<PharmacistDocProjection>>> getMyDoc() {
 
-		Long userId = CommonUtil.getCurrentUserId();
+		Long userId = commonUtil.getCurrentUserId();
 		List<PharmacistDocProjection> imageIds = pharmacistDocService.getImageIdsByPharmacistId(userId);
 
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", imageIds), HttpStatus.OK);
 	}
 
-	@GetMapping("/staff/v1/image/pharmacist/{id}")
+	@GetMapping("/admin/v1/image/pharmacist/{id}")
 	public ResponseEntity<ApiResponseSuccess<List<PharmacistDocProjection>>> getImagesByPharmacistId(
 			@PathVariable Long id) {
 

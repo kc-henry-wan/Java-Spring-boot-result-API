@@ -52,7 +52,7 @@ public class PharmacyBranchController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", branch), HttpStatus.OK);
 	}
 
-	@PostMapping("/staff/v1/branch")
+	@PostMapping("/admin/v1/branch")
 	public ResponseEntity<ApiResponseSuccess<Long>> addPharmacyBranch(
 			@RequestBody PharmacyBranchRequestDto pharmacyBranch) {
 		PharmacyBranch branch = pharmacyBranchService.addPharmacyBranch(pharmacyBranch);
@@ -60,7 +60,7 @@ public class PharmacyBranchController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", branch.getPharmacyBranchId()), HttpStatus.CREATED);
 	}
 
-	@PutMapping("/staff/v1/branch/{id}")
+	@PutMapping("/admin/v1/branch/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updatePharmacyBranch(@PathVariable Long id,
 			@RequestBody PharmacyBranchRequestDto branchDetails) {
 		PharmacyBranch updatedBranch = pharmacyBranchService.updatePharmacyBranch(id, branchDetails);
@@ -68,4 +68,12 @@ public class PharmacyBranchController {
 		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", updatedBranch.getPharmacyBranchId()),
 				HttpStatus.OK);
 	}
+
+	@GetMapping("/admin/v1/branch/coordinates")
+	public ResponseEntity<ApiResponseSuccess<String>> updateMissingCoordinates() {
+		pharmacyBranchService.updateMissingCoordinates();
+
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", "Done"), HttpStatus.OK);
+	}
+
 }

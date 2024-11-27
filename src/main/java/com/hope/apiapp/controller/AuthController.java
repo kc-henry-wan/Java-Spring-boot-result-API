@@ -55,8 +55,7 @@ public class AuthController {
 				// Generate JWT token
 				String jwtToken = jwtTokenProvider.generateToken(loginRequest.getUsername());
 
-				JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwtToken, userDetails.getUserId(),
-						userDetails.getLatitude(), userDetails.getLongitude());
+				JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwtToken, userDetails.getUserId());
 
 				return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", response), HttpStatus.OK);
 			} else {

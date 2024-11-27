@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,9 @@ import jakarta.persistence.TypedQuery;
 public class CustomJobRepositoryImpl implements CustomJobRepository {
 
 	private static final Logger logger = LoggerFactory.getLogger(CustomJobRepositoryImpl.class);
+
+	@Autowired
+	private CommonUtil commonUtil;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -140,7 +144,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 		for (Object[] row : results) {
 			Double distance = 0.0;
 			if (fromLat != null && fromLng != null) {
-				distance = CommonUtil.calculateDistance(fromLat, fromLng, (Double) row[16], (Double) row[17]);
+				distance = commonUtil.calculateDistance(fromLat, fromLng, (Double) row[16], (Double) row[17]);
 			}
 
 			resultList.add(new JobDto( // Use DTO instead of projection class

@@ -81,7 +81,7 @@ public class NegotiationController {
 				HttpStatus.OK);
 	}
 
-	@PutMapping("/staff/v1/negotiation/{id}")
+	@PutMapping("/admin/v1/negotiation/{id}")
 	public ResponseEntity<ApiResponseSuccess<Long>> updateNegotiation(@PathVariable Long id,
 			@RequestBody NegotiationUpdateRequestDto negotiationRequest) {
 
