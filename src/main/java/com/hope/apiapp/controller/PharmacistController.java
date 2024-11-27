@@ -133,9 +133,9 @@ public class PharmacistController {
 	}
 
 	@GetMapping("/admin/v1/pharmacist/coordinates")
-	public ResponseEntity<ApiResponseSuccess<String>> updateMissingCoordinates() {
-		pharmacistService.updateMissingCoordinates();
+	public ResponseEntity<ApiResponseSuccess<Integer>> updateMissingCoordinates() {
+		Integer count = pharmacistService.updateMissingCoordinates();
 
-		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", "Done"), HttpStatus.OK);
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", count), HttpStatus.OK);
 	}
 }

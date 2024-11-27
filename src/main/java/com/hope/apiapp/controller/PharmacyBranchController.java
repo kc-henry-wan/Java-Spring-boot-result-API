@@ -70,10 +70,10 @@ public class PharmacyBranchController {
 	}
 
 	@GetMapping("/admin/v1/branch/coordinates")
-	public ResponseEntity<ApiResponseSuccess<String>> updateMissingCoordinates() {
-		pharmacyBranchService.updateMissingCoordinates();
+	public ResponseEntity<ApiResponseSuccess<Integer>> updateMissingCoordinates() {
+		Integer count = pharmacyBranchService.updateMissingCoordinates();
 
-		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", "Done"), HttpStatus.OK);
+		return new ResponseEntity<>(new ApiResponseSuccess<>("1.0", count), HttpStatus.OK);
 	}
 
 }

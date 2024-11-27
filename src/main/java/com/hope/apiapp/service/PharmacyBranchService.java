@@ -93,7 +93,7 @@ public class PharmacyBranchService {
 		}
 	}
 
-	public void updateMissingCoordinates() {
+	public Integer updateMissingCoordinates() {
 		List<PharmacyBranch> branches = pharmacyBranchRepository.findBranchesWithMissingCoordinates();
 
 		for (PharmacyBranch branch : branches) {
@@ -114,5 +114,7 @@ public class PharmacyBranchService {
 
 		// Save all updated branches
 		pharmacyBranchRepository.saveAll(branches);
+
+		return branches.size();
 	}
 }

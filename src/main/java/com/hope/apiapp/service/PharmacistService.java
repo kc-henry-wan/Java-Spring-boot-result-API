@@ -148,7 +148,7 @@ public class PharmacistService {
 		}
 	}
 
-	public void updateMissingCoordinates() {
+	public Integer updateMissingCoordinates() {
 		List<Pharmacist> pharmacists = pharmacistRepository.findPharmacistsWithMissingCoordinates();
 
 		for (Pharmacist pharmacist : pharmacists) {
@@ -170,5 +170,7 @@ public class PharmacistService {
 
 		// Save all updated branches
 		pharmacistRepository.saveAll(pharmacists);
+
+		return pharmacists.size();
 	}
 }
